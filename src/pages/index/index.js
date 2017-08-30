@@ -3,7 +3,7 @@
 var app = getApp()
 Page({
   data: {
-    motto: 'Koomii运动手环',
+    motto: 'index',
     userInfo: {}
   },
   //事件处理函数
@@ -14,7 +14,6 @@ Page({
   },
   onLoad: function () {
     console.log('onLoad')
-    alert("ok");
     var that = this
     //调用应用实例的方法获取全局数据
     app.getUserInfo(function(userInfo){

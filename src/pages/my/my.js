@@ -3,7 +3,7 @@
 var app = getApp()
 Page({
   data: {
-    motto: 'Koomii运动手环',
+    motto: '我的',
     userInfo: {}
   },
   //事件处理函数
