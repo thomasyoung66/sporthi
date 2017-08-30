@@ -1,7 +1,9 @@
 /**index.wxss**/
 .userinfo {
   display: flex;
+  margin-top:0px;
   flex-direction: column;
+  top:10px;
   align-items: center;
 }
 
