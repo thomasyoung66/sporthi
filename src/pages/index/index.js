@@ -12,6 +12,10 @@ Page({
       url: '../logs/logs'
     })
   },
+  addTap:function(){
+    console.log("我的按钮刘测试");
+    alert("add....");
+  },
   onLoad: function () {
     console.log('onLoad')
     var that = this
