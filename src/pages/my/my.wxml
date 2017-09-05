@@ -1,11 +1,38 @@
 <!--index.wxml-->
-<view class="container">
-  <view  bindtap="bindViewTap" class="my-userinfo">
-    <image class="my-userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-    <text class="my-userinfo-nickname">{{userInfo.nickName}}</text>
-  </view>
-  <view class="my-usermotto">
-    <text class="my-user-motto">{{motto}}</text>
-    <button>kkkkk</button>
-  </view>
+<view class="my-container">
+    <view bindtap="bindViewTap" class="my-userinfo">
+        <image class="my-userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+        <text class="my-userinfo-nickname">{{userInfo.nickName}}</text>
+    </view>
+    <!--
+    <view class="my-usermotto">
+        <text class="my-user-motto">{{motto}}</text>
+        <button></button>
+    </view>
+    -->
+<view style="width:100%">
+    <scroll-view scroll-y="true" bindscrolltolower="lower" 
+      style="height1:{{windowHeight}};" lower-threshold="200">
+        <view wx:for="{{items}}" url="">
+
+            <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+                <view class="main-1">
+                  <image class="img" src="{{item.img}}" />
+                      <text class="title">{{item.name}}</text>
+                 </view>
+                 <view class="main-2">
+                  <text>
+                  </text>
+                 </view>
+                <view class="right-row">
+                 <text class="right-text">{{item.keywords}}</text>
+                  <image style="width:16px;" class="img" src="../../images/right.png" />
+                </view>
+            </view>
+           
+        </view>
+    </scroll-view>
+</view>
+
+
 </view>

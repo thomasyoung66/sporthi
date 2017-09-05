@@ -1,0 +1,862 @@
+#
+# generated on 2017/06/14 02:54:45
+#
+# --table-start--
+dataClass=com.egoman.blesports.db.HeartRateEntity
+tableName=heart_rate
+# --table-fields-start--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=total_sec
+# --field-end--
+# --field-start--
+fieldName=warmup
+# --field-end--
+# --field-start--
+fieldName=weightloss
+# --field-end--
+# --field-start--
+fieldName=aerobic
+# --field-end--
+# --field-start--
+fieldName=athletic
+# --field-end--
+# --field-start--
+fieldName=avg_bpm
+# --field-end--
+# --field-start--
+fieldName=max_bpm
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=heart_rate_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.HrmDynamicEntity
+tableName=hrm_dynamic
+# --table-fields-start--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=count
+# --field-end--
+# --field-start--
+fieldName=minute
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=hrm_dynamic_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.HrmIntervalEntity
+tableName=hrm_interval
+# --table-fields-start--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=count
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=hrm_interval_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.LapEntity
+tableName=lap
+# --table-fields-start--
+# --field-start--
+fieldName=lap
+# --field-end--
+# --field-start--
+fieldName=track_start
+# --field-end--
+# --field-start--
+fieldName=start_point
+# --field-end--
+# --field-start--
+fieldName=end_point
+# --field-end--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=end
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=coordinate_array
+# --field-end--
+# --field-start--
+fieldName=altitude_array
+# --field-end--
+# --field-start--
+fieldName=speed_array
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=meter
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=area
+# --field-end--
+# --field-start--
+fieldName=active_sec
+# --field-end--
+# --field-start--
+fieldName=speed_max
+# --field-end--
+# --field-start--
+fieldName=speed_avg
+# --field-end--
+# --field-start--
+fieldName=speed_min
+# --field-end--
+# --field-start--
+fieldName=v_speed_max
+# --field-end--
+# --field-start--
+fieldName=v_speed_avg
+# --field-end--
+# --field-start--
+fieldName=v_speed_min
+# --field-end--
+# --field-start--
+fieldName=hrm_max
+# --field-end--
+# --field-start--
+fieldName=hrm_avg
+# --field-end--
+# --field-start--
+fieldName=hrm_min
+# --field-end--
+# --field-start--
+fieldName=mode
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=target_km
+# --field-end--
+# --field-start--
+fieldName=target_kcal
+# --field-end--
+# --field-start--
+fieldName=target_minute
+# --field-end--
+# --field-start--
+fieldName=target_step
+# --field-end--
+# --field-start--
+fieldName=perimeter
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=total_point
+# --field-end--
+# --field-start--
+fieldName=cadence_max
+# --field-end--
+# --field-start--
+fieldName=cadence_min
+# --field-end--
+# --field-start--
+fieldName=cadence_avg
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=lap_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.PedometerDetailEntity
+tableName=pedometer_detail
+# --table-fields-start--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=hour
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=pedometer_detail_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.PedometerEntity
+tableName=pedometer
+# --table-fields-start--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=second
+# --field-end--
+# --field-start--
+fieldName=meter
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=pedometer_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.PoiEntity
+tableName=poi
+# --table-fields-start--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=icon
+# --field-end--
+# --field-start--
+fieldName=lat
+# --field-end--
+# --field-start--
+fieldName=lon
+# --field-end--
+# --field-start--
+fieldName=ati
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=poi_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.RankEntity
+tableName=rank
+# --table-fields-start--
+# --field-start--
+fieldName=user_id
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=value
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.RouteEntity
+tableName=route
+# --table-fields-start--
+# --field-start--
+fieldName=coordinate_array
+# --field-end--
+# --field-start--
+fieldName=altitude_array
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=route_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.SleepDetailEntity
+tableName=sleep_detail
+# --table-fields-start--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=hour
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=sleep_detail_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.SleepEntity
+tableName=sleep
+# --table-fields-start--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=end
+# --field-end--
+# --field-start--
+fieldName=wake
+# --field-end--
+# --field-start--
+fieldName=bad
+# --field-end--
+# --field-start--
+fieldName=good
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=sleep_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.SyncEntity
+tableName=syncentity
+# --table-fields-start--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=syncentity_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.TrackEntity
+tableName=track
+# --table-fields-start--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=end
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=coordinate_array
+# --field-end--
+# --field-start--
+fieldName=altitude_array
+# --field-end--
+# --field-start--
+fieldName=speed_array
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=meter
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=area
+# --field-end--
+# --field-start--
+fieldName=active_sec
+# --field-end--
+# --field-start--
+fieldName=speed_max
+# --field-end--
+# --field-start--
+fieldName=speed_avg
+# --field-end--
+# --field-start--
+fieldName=speed_min
+# --field-end--
+# --field-start--
+fieldName=v_speed_max
+# --field-end--
+# --field-start--
+fieldName=v_speed_avg
+# --field-end--
+# --field-start--
+fieldName=v_speed_min
+# --field-end--
+# --field-start--
+fieldName=hrm_max
+# --field-end--
+# --field-start--
+fieldName=hrm_avg
+# --field-end--
+# --field-start--
+fieldName=hrm_min
+# --field-end--
+# --field-start--
+fieldName=mode
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=target_km
+# --field-end--
+# --field-start--
+fieldName=target_kcal
+# --field-end--
+# --field-start--
+fieldName=target_minute
+# --field-end--
+# --field-start--
+fieldName=target_step
+# --field-end--
+# --field-start--
+fieldName=perimeter
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=total_point
+# --field-end--
+# --field-start--
+fieldName=cadence_max
+# --field-end--
+# --field-start--
+fieldName=cadence_min
+# --field-end--
+# --field-start--
+fieldName=cadence_avg
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=track_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.TrackTodayEntity
+tableName=track_today
+# --table-fields-start--
+# --field-start--
+fieldName=date
+# --field-end--
+# --field-start--
+fieldName=meter
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=area
+# --field-end--
+# --field-start--
+fieldName=active_sec
+# --field-end--
+# --field-start--
+fieldName=speed_max
+# --field-end--
+# --field-start--
+fieldName=speed_avg
+# --field-end--
+# --field-start--
+fieldName=speed_min
+# --field-end--
+# --field-start--
+fieldName=v_speed_max
+# --field-end--
+# --field-start--
+fieldName=v_speed_avg
+# --field-end--
+# --field-start--
+fieldName=v_speed_min
+# --field-end--
+# --field-start--
+fieldName=hrm_max
+# --field-end--
+# --field-start--
+fieldName=hrm_avg
+# --field-end--
+# --field-start--
+fieldName=hrm_min
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=target_km
+# --field-end--
+# --field-start--
+fieldName=target_kcal
+# --field-end--
+# --field-start--
+fieldName=target_minute
+# --field-end--
+# --field-start--
+fieldName=target_step
+# --field-end--
+# --field-start--
+fieldName=perimeter
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=track_today_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.TriathlonEntity
+tableName=triathlon
+# --table-fields-start--
+# --field-start--
+fieldName=index
+# --field-end--
+# --field-start--
+fieldName=track_start
+# --field-end--
+# --field-start--
+fieldName=start
+# --field-end--
+# --field-start--
+fieldName=end
+# --field-end--
+# --field-start--
+fieldName=bpm_array
+# --field-end--
+# --field-start--
+fieldName=coordinate_array
+# --field-end--
+# --field-start--
+fieldName=altitude_array
+# --field-end--
+# --field-start--
+fieldName=speed_array
+# --field-end--
+# --field-start--
+fieldName=type
+# --field-end--
+# --field-start--
+fieldName=meter
+# --field-end--
+# --field-start--
+fieldName=kcal
+# --field-end--
+# --field-start--
+fieldName=area
+# --field-end--
+# --field-start--
+fieldName=active_sec
+# --field-end--
+# --field-start--
+fieldName=speed_max
+# --field-end--
+# --field-start--
+fieldName=speed_avg
+# --field-end--
+# --field-start--
+fieldName=speed_min
+# --field-end--
+# --field-start--
+fieldName=v_speed_max
+# --field-end--
+# --field-start--
+fieldName=v_speed_avg
+# --field-end--
+# --field-start--
+fieldName=v_speed_min
+# --field-end--
+# --field-start--
+fieldName=hrm_max
+# --field-end--
+# --field-start--
+fieldName=hrm_avg
+# --field-end--
+# --field-start--
+fieldName=hrm_min
+# --field-end--
+# --field-start--
+fieldName=mode
+# --field-end--
+# --field-start--
+fieldName=step
+# --field-end--
+# --field-start--
+fieldName=target_km
+# --field-end--
+# --field-start--
+fieldName=target_kcal
+# --field-end--
+# --field-start--
+fieldName=target_minute
+# --field-end--
+# --field-start--
+fieldName=target_step
+# --field-end--
+# --field-start--
+fieldName=perimeter
+# --field-end--
+# --field-start--
+fieldName=name
+# --field-end--
+# --field-start--
+fieldName=total_point
+# --field-end--
+# --field-start--
+fieldName=cadence_max
+# --field-end--
+# --field-start--
+fieldName=cadence_min
+# --field-end--
+# --field-start--
+fieldName=cadence_avg
+# --field-end--
+# --field-start--
+fieldName=guid
+canBeNull=false
+id=true
+indexName=triathlon_guid_idx
+# --field-end--
+# --field-start--
+fieldName=deleted
+# --field-end--
+# --field-start--
+fieldName=last_modified
+# --field-end--
+# --field-start--
+fieldName=sync_status
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=com.egoman.blesports.db.UserEntity
+tableName=user_info
+# --table-fields-start--
+# --field-start--
+fieldName=user_id
+canBeNull=false
+id=true
+indexName=user_info_user_id_idx
+# --field-end--
+# --field-start--
+fieldName=nick_name
+# --field-end--
+# --field-start--
+fieldName=unit
+# --field-end--
+# --field-start--
+fieldName=height
+# --field-end--
+# --field-start--
+fieldName=weight
+# --field-end--
+# --field-start--
+fieldName=gender
+# --field-end--
+# --field-start--
+fieldName=birthday
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################

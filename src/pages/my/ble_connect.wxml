@@ -1,0 +1,40 @@
+<!--pages/my/ble_connect.wxml-->
+<!--index.wxml-->
+<view class="container">
+    <view class="section">
+        <view class="content">
+            <text>蓝牙初始化:</text>
+            <text>{{isbluetoothready?"ok":"尚未初始化"}}</text>
+        </view>
+        <view class="switch">
+            <switch checked="{{isbluetoothready}}" bindchange="switchBlueTooth" />
+        </view>
+    </view>
+    <view class="section" hidden="{{!isbluetoothready}}">
+        <button type="default" size="{{primarySize}}" loading="{{searchingstatus}}" plain="{{plain}}" disabled="{{disabled}}" bindtap="searchbluetooth"> {{searchingstatus?"搜索中":"搜索蓝牙"}} </button>
+    </view>
+    <block>
+        <view class="section" hidden="{{!isbluetoothready}}">
+            <view wx:for="{{devices}}" bindtap="connectAsk"  data-id="{{item.deviceId}}"  class="main {{deviceconnected?'deviceconnected':''}}">
+              <view class="main-1">
+                  <image class="img" src="../../images/band.png" />
+                      <text class="title">{{item.name}}</text>
+                 </view>
+                 <view class="main-2">
+                  <text>
+                  </text>
+                 </view>
+                <view class="right-row">
+                 <text class="right-text">{{deviceconnected?"已连接":"链接"}}</text>
+                  <image  class="img" 
+                  src="{{deviceconnected?'../../images/connect_ok.png':'../../images/connect_no.png'}}" />
+                </view>
+            <!--
+                <text>设备编号:{{item.deviceId}}</text>
+                <text>设备名称:{{item.name}}</text>
+                <button id="{{item.deviceId}}" type="default" size="mini" bindtap="connectTO">{{deviceconnected?"已连接":"链接"}}</button>
+                -->
+            </view>
+        </view>
+    </block>
+</view>

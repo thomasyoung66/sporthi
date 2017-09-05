@@ -1,11 +1,25 @@
 <!--index.wxml-->
-<view class="container">
-  <view  bindtap="bindViewTap" class="userinfo">
-    <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-    <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-  </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
-      <button bindtap="addTap" style="background-color: red;">我的测试</button>
-  </view>
+<view class="section">
+
+    <view class="main_header">
+          <image  class="header_img" src="../../images/disconnect.png" />
+
+          <image  class="lr_img" src="../../images/left_arrow_white.png" />
+    <text>2017-08-31</text>
+      <image  class="lr_img" src="../../images/right_arrow_white.png" />
+
+      <image  class="lr_img" src="../../images/longsit_week.png" />
+          
+    </view>
+
+    <view class='unconnect'>
+      <text class="unconnect_text">设备未连接</text>
+    </view>
+
+    <scroll-view class="scroll-view" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+
+      dddd
+
+    </scroll-view>
+
 </view>

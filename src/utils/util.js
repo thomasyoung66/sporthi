@@ -46,6 +46,11 @@ function toast(t)
     title: t,
   });
 }
+function getTimeDiff()
+{
+  var d = new Date().getTime() - new Date("2000/01/01 00:00:00").getTime();
+  return Math.floor(d/1000);
+}
 
 module.exports = {
   formatTime: formatTime,
