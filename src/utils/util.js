@@ -1,3 +1,5 @@
+var base64 = require('base64.js');
+
 function formatTime(date) {
   var year = date.getFullYear()
   var month = date.getMonth() + 1
@@ -51,11 +53,21 @@ function getTimeDiff()
   var d = new Date().getTime() - new Date("2000/01/01 00:00:00").getTime();
   return Math.floor(d/1000);
 }
+function getUrl(url)
+{
+  return "https://apps.movnow.com/a/sporthi_web/api/"+url;
+}
+function objToBase64(str){
+  
 
+  return base64.encode(JSON.stringify(str));
+}
 module.exports = {
   formatTime: formatTime,
   test:test,
   alert:alert,
   dump_obj:dump_obj,
-  toast: toast
+  toast: toast,
+  getUrl: getUrl,
+  objToBase64: objToBase64
 }

@@ -2,7 +2,7 @@
 <view class="section">
 
     <view class="main_header">
-          <image  class="header_img" src="../../images/disconnect.png" />
+          <image  class="header_img" src="{{isConnect?'../../images/band.png':'../../images/disconnect.png'}}" />
 
           <image  class="lr_img" src="../../images/left_arrow_white.png" />
     <text>2017-08-31</text>
@@ -12,7 +12,7 @@
           
     </view>
 
-    <view class='unconnect'>
+    <view class='unconnect' hidden="{{isConnect}}">
       <text class="unconnect_text">设备未连接</text>
     </view>
 

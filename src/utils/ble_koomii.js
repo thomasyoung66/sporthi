@@ -6,6 +6,7 @@ var cd1 = null;
 var cd2 = null;
 var cd3 = null;
 var cd4 = null;
+var isConnect=0;
 var board_serverId = "00001800-0000-1000-8000-00805F9B34FB";
 
 var serverIdFee7 ="0000FEE7-0000-1000-8000-00805F9B34FB";
@@ -564,6 +565,7 @@ function loadBleDevice(serviceId) {
       })
       console.log("连接设备成功")
       console.log(res)
+	  isConnect=1;
       findMe();
     //  findService();
 
@@ -576,6 +578,7 @@ function loadBleDevice(serviceId) {
         duration: 1000
       })
       console.log("连接设备失败")
+	  isConnect = 0;
       console.log(res)
     }
   });
@@ -599,8 +602,13 @@ function openBleDevice  () {
     }
   })
 }
+function getConnectState()
+{
+	return isConnect;
+}
 module.exports = {
   initBle: initBle,
   syncBle: syncBle,
-  openBleDevice: openBleDevice
+  openBleDevice: openBleDevice,
+  getConnectState: getConnectState
 }
