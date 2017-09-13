@@ -25,8 +25,26 @@
                   </text>
                  </view>
                 <view class="right-row">
-                 <text class="right-text">{{item.keywords}}</text>
-                  <image style="width:16px;" class="img" src="../../images/right.png" />
+		    	<view class="section" hidden="{{index==4?false:true}}">
+				<picker bindchange="bindDestPickerChange" value="" range="{{destArray}}">
+				<view class="picker">
+				{{currDest}}
+				</view>
+				</picker>
+			</view>
+			 <view class="section" hidden="{{index==5?false:true}}">
+				<picker bindchange="bindUtilPickerChange" value="" range="{{utilArray}}">
+				<view class="picker">
+				{{currUtil}}
+				</view>
+				</picker>
+			</view>
+
+                 <text class="right-text" hidden="{{(index==5||index==4)?true:false}}">
+		     		{{item.keywords}}
+
+		     </text>
+               	  <image style="width:16px;height:24" class="img" src="../../images/right.png" />
                 </view>
             </view>
            
