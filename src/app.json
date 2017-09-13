@@ -3,13 +3,14 @@
     "pages/index/index",
     "pages/run/run",
     "pages/my/my",
+    "pages/my/my_device",
     "pages/my/ble_connect",
     "pages/logs/logs"
   ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Koomii运动手环",
+    "navigationBarTitleText": "海斯波HiSport",
     "navigationBarTextStyle":"black"
   },
   "tabBar": {

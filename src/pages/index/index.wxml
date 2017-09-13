@@ -52,6 +52,11 @@
                     </view>
 
                 </view>
+		<view class="step_comment">
+			步数完成率/目标步数
+		</view>
+            <view class="view_white_line">
+            </view>
                 <!--开始卡路里-->
                 <view class="step_detail_frame">
                     <view class="def_col_view">
@@ -92,6 +97,7 @@
 		<view class="step_comment">
 			当日睡眠情况
 		</view>
+		     <view class="view_white_line"/>
 		                <!--开始卡路里-->
                 <view class="step_detail_frame">
                     <view class="def_col_view">
@@ -127,30 +133,31 @@
                     <image style="width:44px;height:38px" src="../../images/hrm_big.png" /> <text style="padding-left:10px">心率</text>
                 </view>
                 <view style="padding-right:10px" class="step_total_first">
-                    {{sleep_total}}
+                    {{hb_last}}
 			
                 </view>
 		    <view class="step_total_first">
-		      <button style="background:rgb(44,210,168);color:white">心率测试</button>
+		      <button bindtap="heartBeatTest"  style="background:rgb(26,172,25);color:white">心率测试</button>
 		    </view>
             </view>
 		<view class="step_comment">
 			心率
 		</view>
+		 <view class="view_white_line"/>
 		                <!--开始卡路里-->
 	
                 <view class="step_detail_frame">
                     <view class="def_col_view">
                         <image style="width:32px;height:32px" src="../../images/hrm_red_max.png" /> 
-				{{good_sleep_time}}bpm
+				{{hb_max}}bpm
 
                     </view>
                     <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_avg.png" /> {{bad_sleep_time}}bpm
+                        <image style="width:32px;height:32px" src="../../images/hrm_red_avg.png" /> {{hb_avg}}bpm
 
                     </view>
                     <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_min.png" /> {{sober_sleep_time}}bpm
+                        <image style="width:32px;height:32px" src="../../images/hrm_red_min.png" /> {{hb_min}}bpm
 
                     </view>
                 </view>
@@ -171,47 +178,49 @@
 	  <view class="sleep_frame">
 		<view class="step_total">
                 <view class="step_total_first">
-                    <image style="width:44px;height:38px" src="../../images/hrm_big.png" /> <text style="padding-left:10px">心率</text>
+                    <image style="width:44px;height:38px" src="../../images/bp_big.png" /> <text style="padding-left:10px">血压</text>
                 </view>
                 <view style="padding-right:10px" class="step_total_first">
-                    {{sleep_total}}
-			
+                    {{bp_last}}
                 </view>
+		 
 		    <view class="step_total_first">
-		      <button style="background:rgb(44,210,168);color:white">心率测试</button>
+		      <button bindtap="bpTest"   style="background:rgb(26,172,25);color:white">血压测试</button>
 		    </view>
             </view>
 		<view class="step_comment">
-			心率
+			血压
 		</view>
-		                <!--开始卡路里-->
+		    <view class="view_white_line"/>
+		                <!--血压-->
 	
                 <view class="step_detail_frame">
                     <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_max.png" /> 
-				{{good_sleep_time}}bpm
+                        <image style="width:32px;height:32px" src="../../images/bp_max.png" /> 
+				{{bp_max}}
 
                     </view>
                     <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_avg.png" /> {{bad_sleep_time}}bpm
+                        <image style="width:32px;height:32px" src="../../images/bp_avg.png" /> {{bp_avg}}
 
                     </view>
                     <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_min.png" /> {{sober_sleep_time}}bpm
+                        <image style="width:32px;height:32px" src="../../images/bp_min.png" /> {{bp_min}}
 
                     </view>
                 </view>
 		    	<view class="step_comment">
-			最高/平均/最低(单位:次/分)
+			最高/平均/最低(单位:毫米汞柱/mmHg)
 			</view>
             <view class="view_white_line"/>
-                <!--结束卡路里-->
+            
 		      <view>
                     <canvas style="width: 3600px; height: 200px;border:1px soild red" 
-			  canvas-id="heartrateCanvas"></canvas>
+			  canvas-id="bpCanvas"></canvas>
                 </view>
 	  </view>
 	  </view>
+	  <!--结束心率-->
     </scroll-view>
 
 </view>

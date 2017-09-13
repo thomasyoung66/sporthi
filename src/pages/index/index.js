@@ -3,7 +3,7 @@
 var util = require('../../utils/util.js');
 var ble = require('../../utils/ble_api.js');
 var Charts = require('../../utils/wxcharts.js');
-var debug_ui=true;
+var debug_ui=false;
 
 var app = getApp()
 Page({
@@ -13,16 +13,24 @@ Page({
 		userInfo: {},
 		currDateShow:'',
 		isConnect: 0,
-		step_total:1600,// 总的步数
-		step_ps:40,//步数的百分比
+		step_total:"-",// 总的步数
+		step_ps:'-',//步数的百分比
 		step_dest:7000,//步数目标
-		step_dist:1314, //距离
-		step_cal:183,
-		step_time:"10:00:00",
-		sleep_total:"3.5", 
-		good_sleep_time:3.5,
-		bad_sleep_time:2.0,
-		sober_sleep_time:1.0,
+		step_dist:'-', //距离
+		step_cal:'-',
+		step_time:"-:-:-",
+		sleep_total:"-", 
+		good_sleep_time:"-",
+		bad_sleep_time:"-",
+		sober_sleep_time:'-',
+		hb_last:'-',
+		hb_max:'-',
+		hb_min:'-',
+		hb_avg:'-',
+		bp_max:"-/-",//最高血压
+		bp_min:"-/-",//最小血压
+		bp_avg:"-/-",//
+		bp_last:"-/-",
 		end:0
 	},
 	showDetail: function (data) {
@@ -50,7 +58,18 @@ Page({
 	addTap: function () {
 		//alert("add....");
 	},
-
+	heartBeatTest:function(){
+		console.log("heartBeat test...");
+		wx.showToast({
+			title: '开始测试心率...',
+		});
+	},
+	bpTest: function () {
+		console.log("bp test...");
+		wx.showToast({
+			title: '开始测试血压...',
+		});
+	},
 	/**
 	 * 页面相关事件处理函数--监听用户下拉动作
 	 */
@@ -80,17 +99,84 @@ Page({
 			});
 		}
 	},
+	showHistoryData: function (pDate)
+	{
+		//show step data....
+		var stepData = wx.getStorageSync("step-" + pDate);
+		if (stepData != null) {
+			console.log("stepData.step===", stepData);
+			this.setData({
+				step_total: stepData.step,
+				step_ps: parseInt(stepData.step * 100 / this.data.step_dest)
+			});
+			var stepHour = new Array(stepData.h0, stepData.h1, stepData.h2, stepData.h3,
+				stepData.h4, stepData.h5, stepData.h6, stepData.h7,
+				stepData.h8, stepData.h9, stepData.h10, stepData.h11,
+				stepData.h12, stepData.h13, stepData.h14, stepData.h15,
+				stepData.h16, stepData.h17, stepData.h18, stepData.h19,
+				stepData.h20, stepData.h21, stepData.h22, stepData.h23);
+			this.drawStepCanvas(stepHour);
+		}
+	},
 	prepDateTap:function(){
-		console.log("prep date");
+		var pDate = util.getPrevDate(this.data.currDateShow,-1);
+		this.setData({
+			currDateShow: pDate
+		});
+		this.showHistoryData(pDate);
+	
+		console.log("begin-----date....", wx.getStorageSync("step-" + pDate));
 	},
 	nextDateTap: function () {
-		console.log("next date");
+		if (util.getDateOffset(0, "yyyy-MM-dd") == this.data.currDateShow){
+			wx.showToast({
+				title: '数据已经是最后一天！',
+			})
+			return ;
+		}
+		var pDate = util.getPrevDate(this.data.currDateShow, 1);
+		this.setData({
+			currDateShow: pDate
+		});
+
+		this.showHistoryData(pDate);
 	},
 	bindDateChange: function (e) {
+		var pDate = e.detail.value;
 		this.setData({
-			currDateShow: e.detail.value
+			currDateShow: pDate
 		})
+		this.showHistoryData(pDate);
 	},  
+	drawBpCanvas: function () {
+		new Charts({
+			canvasId: 'bpCanvas',
+			type: 'column',
+			categories: ['0:00', '', '', '',
+				'4:00', '', '', '',
+				'8:00', '', '', '',
+				'12:00', '', '', '',
+				'16:00', '', '', '',
+				'20:00', '', '', '',
+				'24:00'],
+			series: [{
+				name: '低压(舒张压)',
+				data: [0]
+			}, {
+					name: '高压(收缩压)',
+				data: [0]
+			}],
+			yAxis: {
+				format: function (val) {
+					return val + 'mmHg';
+				}
+			},
+			width: 360,
+			height: 200,
+			dataLabel: false
+		});
+		return;
+	},
 	drawHeartRateCanvas: function () {
 		new Charts({
 			canvasId: 'heartrateCanvas',
@@ -103,12 +189,12 @@ Page({
 				'20:00', '', '', '',
 				'24:00'],
 			series: [{
-				name: '时间段步数详细信息',
-				data: [0, 0, 4000, 8000, 4, 13000]
+				name: '时间段心率详细情况',
+				data: [0]
 			}],
 			yAxis: {
 				format: function (val) {
-					return val + '步';
+					return val + 'bpm';
 				}
 			},
 			width: 360,
@@ -117,7 +203,7 @@ Page({
 		});
 		return;
 	},
-	drawStepCanvas:function(){
+	drawStepCanvas:function(stepData){
 		new Charts({
 			canvasId: 'setpCanvas',
 			type: 'column',
@@ -130,7 +216,7 @@ Page({
 				'24:00'],
 			series: [{
 				name: '时间段步数详细信息',
-				data: [0, 0, 4000, 8000, 4, 13000]
+				data: stepData
 			}],
 			yAxis: {
 				format: function (val) {
@@ -155,11 +241,11 @@ Page({
 				'16:00'],
 			series: [{
 				name: '翻身数量统计',
-				data: [0, 0, 4000, 8000, 4, 13000]
+				data: [1]
 			}],
 			yAxis: {
 				format: function (val) {
-					return val + '步';
+					return val + '次';
 				}
 			},
 			width: 360,
@@ -175,24 +261,24 @@ Page({
 		var now = new Date();
 		that.setData({
 			currDateShow: util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate())
-		});
+		}); 
+		getApp().globalData.indexPage=this;
+
+		
 		console.log("getTimeDiff=" + this.getTimeDiff());
 		if (debug_ui==false){
+			console.log("currDeviceId" + app.data.currDeviceId);
 			ble.init(0);
-			wx.getStorage({
-				key: 'curr_device_id',
-				success: function (res) {
-					console.log(res);
-					ble.run(res.data);
-				}
-			});
+			ble.run(app.data.currDeviceId);
+
 			setInterval(this.onTimer, 1000);
 		}
 
 	
-		this.drawStepCanvas();
+		this.drawStepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		this.drawSleepCanvas();
 		this.drawHeartRateCanvas();
+		this.drawBpCanvas();
 		/*
 		  wx.getLocation({
 			type: 'wgs84',

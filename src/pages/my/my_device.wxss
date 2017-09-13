@@ -1,46 +1,67 @@
-/**index.wxss**/
-.my-container{
-    height: 100%;
-    width:100%;
-    /*background-color:beige;
-    border:1px solid #ff0000; 
-    */
+/* pages/my/my_device.wxss */
+
+view {
+  display: inline-block;
 }
 
-.my-userinfo {
+.container {
+  padding: 0;
+  margin: 0;
+  align-items: flex-start;
+}
+
+.section {
+  display: inline-block;
+  width: 100%;
+  position: relative;
+}
+
+.content {
+  margin: auto;
+  padding: auto;
+  position: absolute;
+  top: 5px;
+  left: 10px;
+}
+
+.switch {
+  position: relative;
+  float: right;
+  right: 0px;
+}
+
+button {
+  background: red\;
+}
+
+.list-item {
+  margin-top: 20rpx;
+  margin-bottom: 20rpx; 
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-
+  box-sizing: border-box;
+  border: 1px dashed #000;
 }
 
-.my-userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 5rpx;
-  top:10px;
-  border-radius: 50%;
+.list-item text {
+   margin-top: 10rpx;
 }
 
-.my-userinfo-nickname {
-  color: #aaa;
-}
 
-.my-usermotto {
-  margin-top: 10px;
+.list-item button {
+  margin-right: 10rpx;
 }
 
 /*for list begin*/
 .main {
     display: flex;
     flex-direction: row;
-    //justify-content: flex-start;
-    justify-content: space-between;
+    justify-content: flex-start;
+   // justify-content: space-between;
     align-items: center;
     margin: 0px 5px 0px 5px;
     border-bottom: solid 1px #d9d9d9;
-    height:48px;
+    height:60px;
 }
 
 .img {
@@ -53,7 +74,12 @@
     display: flex;
     flex-direction: row ;
     align-items: center;
-    height:60px;
+
+}
+.main_1col{
+    display: flex;
+    flex-direction: column ;
+    align-items: flex-start;
 }
 .main-2 {
     /*
@@ -90,6 +116,7 @@
 .right-row{
   display: flex;
   flex-direction: row;
+  align-content: center;
   justify-content:  space-between; 
 
 }

@@ -2,7 +2,6 @@ function openBluetooth () {
   wx.openBluetoothAdapter({
     success: function (res) {
       console.log(res.errMsg)
-      // success  
       wx.showToast({
         title: "初始化蓝牙适配器成功",
         duration: 2000

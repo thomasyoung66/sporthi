@@ -80,6 +80,49 @@ function convert(match, nosign) {
 		}
 	}
 }
+Date.prototype.Format = function (fmt) { //author: meizz 
+	var o = {
+		"M+": this.getMonth() + 1, //月份 
+		"d+": this.getDate(), //日 
+		"h+": this.getHours(), //小时 
+		"m+": this.getMinutes(), //分 
+		"s+": this.getSeconds(), //秒 
+		"q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+		"S": this.getMilliseconds() //毫秒 
+	};
+	if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+	for (var k in o)
+		if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+	return fmt;
+}
+function getDate(fmt){
+
+}
+function getDataFrom1970(sec,fmt)
+{
+	var d = new Date((new Date("1970/01/01 00:00:00").getTime() + sec * 1000));
+
+	return d.Format(fmt);
+}
+function getPrevDate(str,sec)
+{
+	var d = new Date((new Date(str.replace(/-/g,"/") + " 12:00:00").getTime() +sec* 3600 * 24 * 1000));	
+	return d.Format("yyyy-MM-dd");
+}
+function getDateOffset(sec, fmt) {
+	var d = new Date((new Date().getTime() + parseInt(sec)*3600*24 * 1000));
+
+	return d.Format(fmt);
+}
+function isValDate(sec){
+	var d = new Date((new Date("1970/01/01 00:00:00").getTime() + sec * 1000));
+	var begin = new Date((new Date().getTime() + parseInt(-30) * 3600 * 24 * 1000));
+	var end = new Date((new Date().getTime() + parseInt(1) * 3600 * 24 * 1000));
+	if (d.getTime()>begin.getTime() && d.getTime()<end.getTime())
+		return true;
+	else
+		return false;
+}
 function sprintf() {
 	if (typeof arguments == "undefined") {
 		return null;
@@ -197,5 +240,10 @@ module.exports = {
 	toast: toast,
 	getUrl: getUrl,
 	sprintf: sprintf,
-	objToBase64: objToBase64
+	getDate: getDate,
+	getDataFrom1970: getDataFrom1970,
+	getDateOffset: getDateOffset,
+	objToBase64: objToBase64,
+	isValDate: isValDate,
+	getPrevDate: getPrevDate
 }

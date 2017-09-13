@@ -1,0 +1,26 @@
+<!--pages/my/my_device.wxml-->
+<!--my_device.wxml-->
+<view class="container">
+
+
+      <block>
+            <view class="section" >
+                  <view wx:for="{{devices}}" bindtap="connectAsk" data-id="{{item.deviceId}}" 
+			class="main deviceconnected">
+                        <view class="main-1">
+                              <image class="img" src="../../images/band.png" style="width:32px;height:32px" />
+                              <view class="main_1col">
+                                    <text class="title" style="font-size:14px">{{item.name}}</text>
+                                    <text class="title" style="font-size:10px">品牌:{{item.brand}} 运营商:{{item.corp}}</text>
+
+                              </view>
+                        </view>
+                        <view class="right-row">
+                              <text class="right-text"></text>
+                              <image class="img" src="../../images/connect_ok.png" style="width:32px;height:32px"/>
+                        </view>
+
+                  </view>
+            </view>
+      </block>
+</view>

@@ -74,7 +74,12 @@ button {
     display: flex;
     flex-direction: row ;
     align-items: center;
-    height:60px;
+
+}
+.main_1col{
+    display: flex;
+    flex-direction: column ;
+    align-items: flex-start;
 }
 .main-2 {
     /*
@@ -111,6 +116,7 @@ button {
 .right-row{
   display: flex;
   flex-direction: row;
+  align-content: center;
   justify-content:  space-between; 
 
 }
