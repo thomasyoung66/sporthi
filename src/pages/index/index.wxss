@@ -1,114 +1,119 @@
 /**index.wxss**/
 
-		  
-.main_header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    height:60px;
-    align-items: center;
-    background: rgb(44,210,168);
-}
-.header_img{
-  width:32px;
-  height:32px;
-  margin-left:10px;
-}
-.lr_img{
-  width:16px;
-  height:32px;
-}
-.lr_img1{
-  width:48px;
-  height:48px;
-}
-.unconnect{
-  text-align: center;
-  font-color:white;
-  margin-top:10rpx;
-  background: rgb(255,75,145);
-  height:32px;
-}
-.unconnect_text{
-  color:#fff;
-  font-size:16px;
-  line-height:32px;
-}
-.step_frame{
-	margin: 5px;
-	background: white;
-	border-radius: 10px;
-	color:#b0b0b0
-}
-.step_total{
-  display: flex;
-    flex-direction: row;
-    //justify-content: flex-start;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 5px 0px 5px;
-}
-.step_total_first{
-  display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin: 10px 5px 0px 5px;
-
-    
-
-}
-.view_white_line{
-	height:1px;
-	background: #f8f8f8;
-}
-.step_ps{
-	height:30px;
-}
-.step_comment{
-   display: flex;
-    flex-direction: row;
-    justify-content:center;
-    align-items: center;
-    font-size:12px;
-    margin-bottom: 5px;
-
-}
-.step_ps_frame{
-  display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 5px;
-
-}
-.def_row_view{
-    display: flex;
-    flex-direction: row;
-    justify-content:flex-start;
-    align-items: center;
-
-}
-.def_col_view{
-    display: flex;
-    flex-direction:column;
-    justify-content:flex-start;
-
-    align-items: center;
-
-}
-.step_detail_frame
-{
-  display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 30px 10px 30px;
+.main_header {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      height: 60px;
+      align-items: center;
+      background: rgb(44, 210, 168);
 }
 
-.sleep_frame{
-	margin-top:10px;
-	border-radius: 10px;
-	background:white;
-	margin:5px;
+.header_img {
+      width: 32px;
+      height: 32px;
+      margin-left: 10px;
+}
+
+.lr_img {
+      width: 16px;
+      height: 32px;
+}
+
+.lr_img1 {
+      width: 48px;
+      height: 48px;
+}
+
+.unconnect {
+      text-align: center;
+      font-color: white;
+      margin-top: 10rpx;
+      background: rgb(255, 75, 145);
+      height: 32px;
+}
+
+.unconnect_text {
+      color: #fff;
+      font-size: 16px;
+      line-height: 32px;
+}
+
+.step_frame {
+      margin: 5px;
+      background: white;
+      border-radius: 10px;
+      color: #b0b0b0;
+}
+
+.step_total {
+      display: flex;
+      flex-direction: row;
+      //justify-content: flex-start;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 5px 0px 5px;
+}
+
+.step_total_first {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 10px 5px 0px 5px;
+}
+
+.view_white_line {
+      height: 1px;
+      background: #f8f8f8;
+}
+
+.step_ps {
+      height: 30px;
+}
+
+.step_comment {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 5px;
+}
+
+.step_ps_frame {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px;
+}
+
+.def_row_view {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+}
+
+.def_col_view {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+}
+
+.step_detail_frame {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 30px 10px 30px;
+}
+
+.sleep_frame {
+      margin-top: 10px;
+      border-radius: 10px;
+      background: white;
+      margin: 5px;
 }

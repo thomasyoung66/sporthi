@@ -260,6 +260,7 @@ Page({
 		var that = this;
 		var now = new Date();
 		that.setData({
+			step_dest: wx.getStorageSync('dest'),
 			currDateShow: util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate())
 		}); 
 		getApp().globalData.indexPage=this;
