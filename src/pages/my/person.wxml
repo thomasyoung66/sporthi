@@ -1,0 +1,56 @@
+<!--index.wxml-->
+<view class="my-container">
+    <view bindtap="bindViewTap" class="my-userinfo">
+        <image class="my-userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+        <text class="my-userinfo-nickname">{{userInfo.nickName}}</text>
+    </view>
+    <!--
+    <view class="my-usermotto">
+        <text class="my-user-motto">{{motto}}</text>
+        <button></button>
+    </view>
+    -->
+<view style="width:100%">
+    <scroll-view scroll-y="true" bindscrolltolower="lower" 
+      style="height1:{{windowHeight}};" lower-threshold="200">
+        <view wx:for="{{items}}" url="">
+
+            <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+                <view class="main-1">
+                  <image class="img" src="{{item.img}}" />
+                      <text class="title">{{item.name}}</text>
+                 </view>
+                 <view class="main-2">
+                  <text>
+                  </text>
+                 </view>
+                <view class="right-row">
+		    	<view class="section" hidden="{{index==4?false:true}}">
+				<picker bindchange="bindDestPickerChange" value="" range="{{destArray}}">
+				<view class="picker">
+				{{currDest}}
+				</view>
+				</picker>
+			</view>
+			 <view class="section" hidden="{{index==5?false:true}}">
+				<picker bindchange="bindUtilPickerChange" value="" range="{{utilArray}}">
+				<view class="picker">
+				{{currUtil}}
+				</view>
+				</picker>
+			</view>
+
+                 <text class="right-text" hidden="{{(index==5||index==4)?true:false}}">
+		     		{{item.keywords}}
+
+		     </text>
+               	  <image style="width:16px;height:24" class="img" src="../../images/right.png" />
+                </view>
+            </view>
+           
+        </view>
+    </scroll-view>
+</view>
+
+
+</view>
