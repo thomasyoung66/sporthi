@@ -69,6 +69,15 @@ App({
 				
 				wx.setStorageSync('match_rule', res.data.match_rule);
 				wx.setStorageSync('devices', res.data.devices);
+				wx.setStorageSync('dest', res.data.dest);
+				wx.setStorageSync('util', res.data.util);
+				wx.setStorageSync('height', res.data.height);
+				wx.setStorageSync('weight', res.data.weight);
+				wx.setStorageSync('phone', res.data.phone);
+
+
+
+
 				that.data.allDevice = res.data.devices;
 				for(var n=0;n<res.data.devices.length;n++){
 					console.log("loop...." + res.data.devices[n]);
@@ -105,7 +114,7 @@ App({
 							data: {},
 							method: 'GET',
 							success: function (res) {
-								console.log("kkkkkk----", res);
+								console.log("kkkkk----", res);
 								var obj = {};
 								obj.openid = res.data.openid;
 								obj.expires_in = Date.now() + res.data.expires_in;

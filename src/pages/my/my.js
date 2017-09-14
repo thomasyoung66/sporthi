@@ -61,7 +61,7 @@ Page({
 		],
 		items: [
 			{ "id": 1, "name": "连接设备", "keywords": "连接设备", "img": "../../images/band.png" },
-			{ "id": 2, "name": "我的设备", "keywords": device_num+"个设备", "img": "../../images/user.png" },
+			{ "id": 2, "name": "我的设备", "keywords": device_num+"个设备", "img": "../../images/user1.png" },
 			{ "id": 3, "name": "个人信息", "keywords":"身高/体重等", "img": "../../images/setting_blue.png" },
 			
 			{ "id": 4, "name": "我的排名", "keywords": "无", "img": "../../images/rank.png" },
@@ -127,6 +127,11 @@ Page({
 		else if (event.currentTarget.dataset.id == 1) {
 			wx.navigateTo({
 				url: 'my_device',
+			})
+		}
+		else if (event.currentTarget.dataset.id == 2) {
+			wx.navigateTo({
+				url: 'person',
 			})
 		}
 		console.log("this is ok.." + event.currentTarget.dataset.id);

@@ -17,6 +17,13 @@ function formatNumber(n) {
 	n = n.toString()
 	return n[1] ? n : '0' + n
 }
+function getWeekName(str){
+	var arys1 = new Array();
+	arys1 =str.split('-'); 
+	var ssdate = new Date(arys1[0], parseInt(arys1[1] - 1), arys1[2]);
+	var week1 = String(ssdate.getDay()).replace("0", "日").replace("1", "一").replace("2", "二").replace("3", "三").replace("4", "四").replace("5", "五").replace("6", "六");
+	return  "星期" + week1; 
+}
 function alert(str) {
 	wx.showModal({
 		title: '弹窗标题',
@@ -229,9 +236,26 @@ function sprintf() {
 	return newString;
 }
 
+/*
+calorie=(weight(kg) * height(cm) * steps * 6.92)/1000000
+odo = (steps * stride(cm))/100;
+stride = height(cm)*0.415;(male)
+stride = height(vm)*0.415;(female)
+*/
+function calcCalorie(step)
+{
+	var height=wx.getStorageSync("height");
+	var weight = wx.getStorageSync("weight");
 
-
-
+	return parseInt((weight * height * step * 6.92) / 1000000);
+}
+function calcOdo(step){
+	var height = wx.getStorageSync("height");
+	return Math.floor(height*0.415*step/100);
+}
+function toHourMinute(minutes) {
+	return (Math.floor(minutes / 60) + "." + (minutes % 60) + "");
+}
 module.exports = {
 	formatTime: formatTime,
 	test: test,
@@ -245,5 +269,9 @@ module.exports = {
 	getDateOffset: getDateOffset,
 	objToBase64: objToBase64,
 	isValDate: isValDate,
-	getPrevDate: getPrevDate
+	getPrevDate: getPrevDate,
+	getWeekName: getWeekName,
+	calcCalorie:calcCalorie,
+	calcOdo:calcOdo,
+	toHourMinute: toHourMinute
 }

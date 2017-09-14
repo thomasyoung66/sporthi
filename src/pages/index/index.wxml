@@ -6,14 +6,18 @@
 
         <image bindtap="prepDateTap" class="lr_img" src="../../images/left_arrow_white.png" />
         <picker mode="date" value=" {{currDateShow}}" start="{{beginDate}}" end="{{endDate}}" bindchange="bindDateChange">
-            <view class="picker">
+            <view class="picker main_title_text">
                 {{currDateShow}}
             </view>
+		<view class="main_title_text">
+			{{currWeekShow}}
+		</view>
         </picker>
 
         <image bindtap="nextDateTap" class="lr_img" src="../../images/right_arrow_white.png" />
 
-        <image class="lr_img1" src="../../images/longsit_week.png" />
+        <image  style="" class="lr_img1" src="" />
+	<!--../../images/longsit_week.png-->
 
     </view>
 

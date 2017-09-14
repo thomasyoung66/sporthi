@@ -8,7 +8,12 @@
       align-items: center;
       background: rgb(44, 210, 168);
 }
-
+.main_title_text{
+	color: white;
+	font-size: 14px;
+	 text-align: center;
+	 align-items: center;
+}
 .header_img {
       width: 32px;
       height: 32px;

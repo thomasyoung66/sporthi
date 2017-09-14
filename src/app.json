@@ -4,6 +4,7 @@
     "pages/run/run",
     "pages/my/my",
     "pages/my/my_device",
+    "pages/my/person",
     "pages/my/ble_connect",
     "pages/logs/logs"
   ],

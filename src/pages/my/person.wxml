@@ -1,9 +1,5 @@
-<!--index.wxml-->
+<!--person.wxml-->
 <view class="my-container">
-    <view bindtap="bindViewTap" class="my-userinfo">
-        <image class="my-userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-        <text class="my-userinfo-nickname">{{userInfo.nickName}}</text>
-    </view>
     <!--
     <view class="my-usermotto">
         <text class="my-user-motto">{{motto}}</text>
@@ -17,7 +13,7 @@
 
             <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
                 <view class="main-1">
-                  <image class="img" src="{{item.img}}" />
+               <!--   <image class="img" src="{{item.img}}" />-->
                       <text class="title">{{item.name}}</text>
                  </view>
                  <view class="main-2">
@@ -25,25 +21,28 @@
                   </text>
                  </view>
                 <view class="right-row">
-		    	<view class="section" hidden="{{index==4?false:true}}">
-				<picker bindchange="bindDestPickerChange" value="" range="{{destArray}}">
+		    	<view class="section" hidden="{{index==0?false:true}}">
+				<picker bindchange="bindHeightPickerChange" value="{{heightIndex}}" range="{{heightArray}}">
 				<view class="picker">
-				{{currDest}}
+				<text class="right-text" style="align-items: center;">{{height}}Cm(厘米)</text>
 				</view>
 				</picker>
 			</view>
-			 <view class="section" hidden="{{index==5?false:true}}">
-				<picker bindchange="bindUtilPickerChange" value="" range="{{utilArray}}">
-				<view class="picker">
-				{{currUtil}}
+			 <view class="section" hidden="{{index==1?false:true}}">
+				<picker bindchange="bindWeightPickerChange" value="{{weightIndex}}" range="{{weightArray}}">
+				<view class="picker" style="align-items: center;">
+				<text class="right-text">{{weight}}Kg(公斤)</text>
 				</view>
 				</picker>
 			</view>
-
-                 <text class="right-text" hidden="{{(index==5||index==4)?true:false}}">
+		<view class="section right-text" hidden="{{(index==0||index==1)?true:false}}"  >
+				<input bindinput="bindPhoneInput" value="{{phone}}" placeholder="电话号码" auto-focus   />
+		</view>
+		<!--
+                 <text class="right-text" hidden="{{(index==0||index==1)?true:false}}">
 		     		{{item.keywords}}
-
-		     </text>
+		
+		     </text>-->
                	  <image style="width:16px;height:24" class="img" src="../../images/right.png" />
                 </view>
             </view>

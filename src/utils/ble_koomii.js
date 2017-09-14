@@ -273,7 +273,8 @@ let dataViewStepToday;
 
 function showAndSaveStepData()
 {
-	console.log(JSON.stringify(stepDataJson));
+	console.log("stepData...",stepDataJson);
+	console.log("sleepData...", sleepDataJson);
 	wx.request({
 		url: util.getUrl('ble.php?action=save_step_data'),
 		data: {
@@ -364,7 +365,7 @@ function syncRunStepToday()
 					}
 				}
 				console.log("run---run---" + JSON.stringify(stepDataJsonToday));
-				//showAndSaveStepData();
+
 			}
 		}
 		else if (res.characteristicId.indexOf("FF21")>0){
@@ -390,8 +391,8 @@ function syncRunStepToday()
 					var runDate = dataViewStep.getUint32(n * 64,true);
 					if (util.isValDate(runDate)){
 						var item = {};
-						var runTime = dataViewStep.getUint32(n * 64 + 4, true);
-						item.step = dataViewStep.getUint32(n * 64 + 8, true);
+
+						
 						var valate = dataViewStep.getUint32(n * 64 + 60, true);
 						item.h0 = dataViewStep.getUint16(n * 64 + 12, true);
 						item.h1 = dataViewStep.getUint16(n * 64 + 14, true);
@@ -419,12 +420,26 @@ function syncRunStepToday()
 						item.h23 = dataViewStep.getUint16(n * 64 + 58, true);
 
 						if (valate == 0x34567890){
+							item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
+							item.step = dataViewStep.getUint32(n * 64 + 8, true);
+
 							var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
 							stepDataJson[pDate] = item;
+
 							//console.log("^_^---step data=" + item.step);
 							wx.setStorageSync("step-" + pDate,item);
 						}
 						else if (valate == 0x45678901){
+							item.startTime = dataViewStep.getUint32(n * 64 + 0, true);
+							item.endTime = dataViewStep.getUint32(n * 64 + 4, true);
+							item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
+							item.restless = dataViewStep.getUint16(n * 64 + 10, true);
+				 	item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;
+
+
+							//item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
+							//item.step = dataViewStep.getUint32(n * 64 + 8, true);
+
 							var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
 							//console.log("^_^---sleep data=" + item.step);
 							sleepDataJson[pDate] = item;

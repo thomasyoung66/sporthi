@@ -27,14 +27,14 @@
                 <view class="right-row">
 		    	<view class="section" hidden="{{index==4?false:true}}">
 				<picker bindchange="bindDestPickerChange" value="" range="{{destArray}}">
-				<view class="picker">
+				<view class="picker right-text">
 				{{currDest}}
 				</view>
 				</picker>
 			</view>
 			 <view class="section" hidden="{{index==5?false:true}}">
 				<picker bindchange="bindUtilPickerChange" value="" range="{{utilArray}}">
-				<view class="picker">
+				<view class="picker right-text">
 				{{currUtil}}
 				</view>
 				</picker>

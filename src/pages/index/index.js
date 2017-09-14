@@ -12,6 +12,7 @@ Page({
 		motto: 'index',
 		userInfo: {},
 		currDateShow:'',
+		currWeekShow:"星期",
 		isConnect: 0,
 		step_total:"-",// 总的步数
 		step_ps:'-',//步数的百分比
@@ -107,8 +108,11 @@ Page({
 			console.log("stepData.step===", stepData);
 			this.setData({
 				step_total: stepData.step,
-				step_ps: parseInt(stepData.step * 100 / this.data.step_dest)
+				step_ps: parseInt(stepData.step * 100 / this.data.step_dest),
+				step_dist: util.calcOdo(stepData.step),
+				step_cal:util.calcCalorie(stepData.step)
 			});
+		
 			var stepHour = new Array(stepData.h0, stepData.h1, stepData.h2, stepData.h3,
 				stepData.h4, stepData.h5, stepData.h6, stepData.h7,
 				stepData.h8, stepData.h9, stepData.h10, stepData.h11,
@@ -117,11 +121,42 @@ Page({
 				stepData.h20, stepData.h21, stepData.h22, stepData.h23);
 			this.drawStepCanvas(stepHour);
 		}
+		var sleepData = wx.getStorageSync("sleep-" + pDate);
+		console.log("------>>>>>>", sleepData);
+		if (sleepData == null || sleepData==""){
+			this.drawSleepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+			this.setData({
+				sleep_total: 0,
+				good_sleep_time: 0,
+				bad_sleep_time: 0,
+				sober_sleep_time: 0
+			});
+		}
+		else{
+				/*item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
+				item.restless = dataViewStep.getUint16(n * 64 + 10, true);
+				item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;*/
+			this.setData({
+				sleep_total: util.toHourMinute(sleepData.deep + item.restless),
+				good_sleep_time: util.toHourMinute(sleepData.deep),
+				bad_sleep_time: util.toHourMinute(item.restless),
+				sober_sleep_time: util.toHourMinute(item.runMin)
+			});
+			var sleepHour = new Array(sleepData.h0, sleepData.h1, sleepData.h2, sleepData.h3,
+				sleepData.h4, sleepData.h5, sleepData.h6, sleepData.h7,
+				sleepData.h8, sleepData.h9, sleepData.h10, sleepData.h11,
+				sleepData.h12, sleepData.h13, sleepData.h14, sleepData.h15,
+				sleepData.h16, sleepData.h17, sleepData.h18, sleepData.h19,
+				sleepData.h20, sleepData.h21, sleepData.h22, sleepData.h23);
+			this.drawStepCanvas(sleepHour);
+		}
+		
 	},
 	prepDateTap:function(){
 		var pDate = util.getPrevDate(this.data.currDateShow,-1);
 		this.setData({
-			currDateShow: pDate
+			currDateShow: pDate,
+			currWeekShow: util.getWeekName(pDate)
 		});
 		this.showHistoryData(pDate);
 	
@@ -136,7 +171,8 @@ Page({
 		}
 		var pDate = util.getPrevDate(this.data.currDateShow, 1);
 		this.setData({
-			currDateShow: pDate
+			currDateShow: pDate,
+			currWeekShow: util.getWeekName(pDate)
 		});
 
 		this.showHistoryData(pDate);
@@ -144,7 +180,8 @@ Page({
 	bindDateChange: function (e) {
 		var pDate = e.detail.value;
 		this.setData({
-			currDateShow: pDate
+			currDateShow: pDate,
+			currWeekShow: util.getWeekName(pDate)
 		})
 		this.showHistoryData(pDate);
 	},  
@@ -229,7 +266,7 @@ Page({
 		});
 		return ;
 	},
-	drawSleepCanvas: function () {
+	drawSleepCanvas: function (sleepData) {
 		new Charts({
 			canvasId: 'sleepCanvas',
 			type: 'column',
@@ -241,7 +278,7 @@ Page({
 				'16:00'],
 			series: [{
 				name: '翻身数量统计',
-				data: [1]
+				data: sleepData
 			}],
 			yAxis: {
 				format: function (val) {
@@ -259,9 +296,11 @@ Page({
 
 		var that = this;
 		var now = new Date();
+		var pDate = util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate());
 		that.setData({
 			step_dest: wx.getStorageSync('dest'),
-			currDateShow: util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate())
+			currDateShow: pDate,
+			currWeekShow: util.getWeekName(pDate)
 		}); 
 		getApp().globalData.indexPage=this;
 
@@ -277,7 +316,7 @@ Page({
 
 	
 		this.drawStepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-		this.drawSleepCanvas();
+		this.drawSleepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		this.drawHeartRateCanvas();
 		this.drawBpCanvas();
 		/*

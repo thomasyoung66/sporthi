@@ -8,81 +8,34 @@ Page({
 		motto: '我的',
 		userInfo: {},
 		currUtil:"公制",
-		currDest:7000,
-		utilArray:[
-			"公制", 
-			"英制"
-		],
-		destArray: [
-			"1000",
-			"2000",
-			"3000",
-			"4000",
-			"5000",
-			"6000",
-			"7000",
-			"8000",
-			"9000",
-			"10000",
-			"11000",
-			"12000",
-			"13000",
-			"14000",
-			"15000",
-			"16000",
-			"17000",
-			"18000",
-			"19000",
-			"21000",
-			"22000",
-			"23000",
-			"24000",
-			"25000",
-			"26000",
-			"27000",
-			"28000",
-			"29000",
-			"30000",
-			"31000",
-			"32000",
-			"33000",
-			"34000",
-			"35000",
-			"36000",
-			"37000",
-			"38000",
-			"39000",
-			"50000",
-			"60000",
-			"70000",
-			"83000",
-			"90000",
-			"100000"
-		],
+		height:170,
+		weight:70,
+		heightArray: [],
+		weightArray: [],
+		heightIndex:0,
+		weightIndex:0,
+		phone:"",
 		items: [
-			{ "id": 1, "name": "连接设备", "keywords": "连接设备", "img": "../../images/band.png" },
-			{ "id": 2, "name": "我的设备", "keywords": device_num+"个设备", "img": "../../images/user.png" },
-			{ "id": 3, "name": "个人信息", "keywords":"身高/体重等", "img": "../../images/setting_blue.png" },
-			
-			{ "id": 4, "name": "我的排名", "keywords": "无", "img": "../../images/rank.png" },
-			{ "id": 5, "name": "运动目标", "keywords": "7000", "img": "../../images/target_big.png" },
-			{ "id": 6, "name": "计量单位", "keywords": "公制", "img": "../../images/unit.png" },
-			{ "id": 7, "name": "关于", "keywords": "", "img": "../../images/about_blue.png" }
+			{ "id": 1, "name": "身高", "keywords": "连接设备", "img": "../../images/band.png" },
+			{ "id": 2, "name": "体重", "keywords": "", "img": "../../images/user.png" },
+			{ "id": 3, "name": "电话号码", "keywords":"身高/体重等", "img": "../../images/setting_blue.png" },
 
 		]
 	},
-	bindUtilPickerChange: function (e) {
+	bindHeightPickerChange: function (e) {
 		var that=this;
-		this.setData({
-			currUtil: that.data.utilArray[e.detail.value]
-		});
+
 		wx.showLoading({
 			title: '正在保存数据...',
 		});
+		this.setData({
+			height: that.data.heightArray[e.detail.value]
+		});
+		wx.setStorageSync("height", that.data.heightArray[e.detail.value]);
 		wx.request({
-			url: util.getUrl('ble.php?action=save_util'),
+			url: util.getUrl('ble.php?action=save_height'),
 			data: {
-				util:e.detail.value,
+				height: that.data.heightArray[e.detail.value],
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
@@ -92,22 +45,58 @@ Page({
 			}
 		});
 	},
-	bindDestPickerChange:function(e){
+	findHeightIndex:function(v){
+		for(var n=0;n<this.data.heightArray.length;n++){
+			if (this.data.heightArray[n]==v){
+				return n;
+			}
+		}
+		return 0;
+	},
+	findWeightIndex: function (v) {
+		for (var n = 0; n < this.data.weightArray.length; n++) {
+			if (this.data.weightArray[n] == v) {
+				return n;
+			}
+		}
+		return 0;
+	},
+	bindWeightPickerChange:function(e){
 		var that = this;
-		this.setData({
-			currDest: that.data.destArray[e.detail.value]
-		});
+
 		wx.showLoading({
 			title: '正在保存数据...',
 		});
-
-		getApp().globalData.indexPage.setData({
-			step_dest: that.data.destArray[e.detail.value]
+		wx.setStorageSync("weight", that.data.weightArray[e.detail.value]);
+		this.setData({
+			weight: that.data.weightArray[e.detail.value]
 		});
 		wx.request({
-			url: util.getUrl('ble.php?action=save_dest'),
+			url: util.getUrl('ble.php?action=save_weight'),
 			data: {
-				dest: that.data.destArray[e.detail.value],
+				weight: that.data.weightArray[e.detail.value],
+				uid: wx.getStorageSync('serverId')
+			},
+			method: 'POST',
+			header: { 'content-type': 'application/x-www-form-urlencoded' },
+			success: function (res) {
+				wx.hideLoading();
+			}
+		});
+	},
+	bindPhoneInput:function (e){
+		if (e.detail.value.length<11){
+
+			console.log("e.detail.value=====" + e.detail.value);
+			return ;
+		}
+		wx.showLoading({
+			title: '正在保存数据...',
+		});
+		wx.request({
+			url: util.getUrl('ble.php?action=save_phone'),
+			data: {
+				phone: e.detail.value,
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
@@ -118,6 +107,7 @@ Page({
 		});
 	},
 	showDetail: function (event) {
+		return ;
 		//  util.dump_obj(data.target);
 		if (event.currentTarget.dataset.id == 0) {
 			wx.navigateTo({
@@ -139,14 +129,26 @@ Page({
 	},
 	onLoad: function () {
 		console.log('onLoad')
-		device_num=app.data.allDevice.length;
-		var that = this
-		//调用应用实例的方法获取全局数据
-		app.getUserInfo(function (userInfo) {
-			//更新数据
-			that.setData({
-				userInfo: userInfo
-			})
+		var that=this;
+		var ha=new Array();
+		var wa = new Array();
+
+		for(var n=50;n<250;n++){
+			ha.push(n);
+		}
+		for (var n = 30; n < 250; n++) {
+			wa.push(n);
+		}
+		this.setData({
+			height:wx.getStorageSync("height"),
+			weight: wx.getStorageSync("weight"),
+			phone: wx.getStorageSync("phone"),
+			heightArray:ha,
+			weightArray:wa
+		})
+		this.setData({
+			heightIndex: that.findHeightIndex(wx.getStorageSync("height")),
+			weightIndex: that.findWeightIndex(wx.getStorageSync("weight"))
 		})
 	}
 })
