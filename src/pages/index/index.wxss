@@ -1,12 +1,19 @@
 /**index.wxss**/
 
+.main_body{
+	margin-top:60px;
+}
 .main_header {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
       height: 60px;
+	position: fixed;
+	top:0px;
+	width: 100%;
       align-items: center;
       background: rgb(44, 210, 168);
+	z-index: 90000000;
 }
 .main_title_text{
 	color: white;
@@ -33,7 +40,8 @@
 .unconnect {
       text-align: center;
       font-color: white;
-      margin-top: 10rpx;
+      margin-top: 60px;
+	
       background: rgb(255, 75, 145);
       height: 32px;
 }

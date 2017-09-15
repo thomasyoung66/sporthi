@@ -16,7 +16,8 @@
 
         <image bindtap="nextDateTap" class="lr_img" src="../../images/right_arrow_white.png" />
 
-        <image  style="" class="lr_img1" src="" />
+        <!--<image  style="" class="lr_img1" src="" />-->
+	    <progress style="width:30px;margin-right:10px" percent="{{power_ps}}" stroke-width="10" />
 	<!--../../images/longsit_week.png-->
 
     </view>
@@ -25,7 +26,7 @@
         <text class="unconnect_text">设备未连接</text>
     </view>
 
-    <scroll-view class="scroll-view" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <scroll-view class="scroll-view main_body" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
 
         <view class="step_frame">
             <view class="step_total">
@@ -81,8 +82,8 @@
 			</view>
             <view class="view_white_line"/>
                 <!--结束卡路里-->
-                <view>
-                    <canvas style="width: 3600px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
+                <view >
+                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
                 </view>
             </view>
 
@@ -124,7 +125,7 @@
             <view class="view_white_line"/>
                 <!--结束卡路里-->
 		      <view>
-                    <canvas style="width: 3600px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
                 </view>
 	  </view>
 	    </view>
@@ -171,7 +172,7 @@
             <view class="view_white_line"/>
                 <!--结束卡路里-->
 		      <view>
-                    <canvas style="width: 3600px; height: 200px;border:1px soild red" 
+                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" 
 			  canvas-id="heartrateCanvas"></canvas>
                 </view>
 	  </view>
@@ -219,7 +220,7 @@
             <view class="view_white_line"/>
             
 		      <view>
-                    <canvas style="width: 3600px; height: 200px;border:1px soild red" 
+                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" 
 			  canvas-id="bpCanvas"></canvas>
                 </view>
 	  </view>

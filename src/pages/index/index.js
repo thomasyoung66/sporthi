@@ -32,6 +32,7 @@ Page({
 		bp_min:"-/-",//最小血压
 		bp_avg:"-/-",//
 		bp_last:"-/-",
+		power_ps:0,
 		end:0
 	},
 	showDetail: function (data) {
@@ -123,8 +124,8 @@ Page({
 		}
 		var sleepData = wx.getStorageSync("sleep-" + pDate);
 		console.log("------>>>>>>", sleepData);
-		if (sleepData == null || sleepData==""){
-			this.drawSleepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+		if (sleepData == null || sleepData == "" || sleepData.deep<0){
+			this.drawSleepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 			this.setData({
 				sleep_total: 0,
 				good_sleep_time: 0,
@@ -137,10 +138,10 @@ Page({
 				item.restless = dataViewStep.getUint16(n * 64 + 10, true);
 				item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;*/
 			this.setData({
-				sleep_total: util.toHourMinute(sleepData.deep + item.restless),
+				sleep_total: util.toHourMinute(sleepData.deep + sleepData.restless),
 				good_sleep_time: util.toHourMinute(sleepData.deep),
-				bad_sleep_time: util.toHourMinute(item.restless),
-				sober_sleep_time: util.toHourMinute(item.runMin)
+				bad_sleep_time: util.toHourMinute(sleepData.restless),
+				sober_sleep_time: util.toHourMinute(sleepData.runMin)
 			});
 			var sleepHour = new Array(sleepData.h0, sleepData.h1, sleepData.h2, sleepData.h3,
 				sleepData.h4, sleepData.h5, sleepData.h6, sleepData.h7,
@@ -275,7 +276,7 @@ Page({
 				'4:00', '', '', '',
 				'8:00', '', '', '',
 				'12:00', '', '', '',
-				'16:00'],
+				'16:00', '', '', '',],
 			series: [{
 				name: '翻身数量统计',
 				data: sleepData
@@ -293,7 +294,7 @@ Page({
 	},
 	onLoad: function () {
 		console.log('onLoad');
-
+		getApp().get_open_id();
 		var that = this;
 		var now = new Date();
 		var pDate = util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate());

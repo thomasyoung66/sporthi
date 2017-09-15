@@ -42,7 +42,10 @@ App({
 		
 		//logs.unshift(Date.now())
 		wx.setStorageSync('logs', logs)
-		this.get_open_id();
+		wx.showToast({
+			title: 'app start...'
+		});
+		//this.get_open_id();
 		// this.getUserInfo(null);
 		this.myTest();
 
@@ -93,9 +96,12 @@ App({
 		var that = this
 		var user = wx.getStorageSync('user') || {};
 		var userInfo = wx.getStorageSync('userInfo') || {};
-		if ((!user.openid || (user.expires_in || Date.now()) < (Date.now() + 600)) && (!userInfo.nickName)) {
+		console.log("get_open_id====begin....");
+		if ((!user.openid || (user.expires_in || Date.now()) < (Date.now() + 1)) && (!userInfo.nickName)) {
+			console.log("get_open_id====begin....login");
 			wx.login({
 				success: function (res) {
+					console.log("get_open_id====begin....login...succeed!",res);
 					if (res.code) {
 						wx.getUserInfo({
 							success: function (res) {
@@ -107,7 +113,7 @@ App({
 							}
 						});
 						var d = that.globalData;//这里存储了appid、secret、token串    
-						console.log("res.code =" + res.code);
+						//console.log("res.code =" + res.code);
 
 						wx.request({
 							url: util.getUrl('wx/login.php?action=get_open_id&code=') + res.code + '&grant_type=authorization_code',
@@ -129,6 +135,7 @@ App({
 				}
 			});
 		} else {
+			console.log("get_open_id====end....");
 			that.save_userinfo_server();
 			console.log("====================end===========================");
 		}

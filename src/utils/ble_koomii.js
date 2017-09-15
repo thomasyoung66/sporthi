@@ -195,7 +195,75 @@ function set_time() {
 	})
 
 }
+function readMacAddr()
+{
+	wx.readBLECharacteristicValue({
+		deviceId: g_deviceId,
+		serviceId: getServerId("180F"),
+		characteristicId: getCharacter("2A25"),
+		success: function (res) {
+			console.log("----------mac---------", res)
+			if (res.value) {
+				let dataView = new DataView(res.value);
+				var ps = dataView.getInt8(0, true);
+			}
+
+
+		}
+	});	
+}
+function readPowerUsed()
+{
+	wx.notifyBLECharacteristicValueChanged({
+		deviceId: g_deviceId,
+		serviceId: getServerId("180F"),
+		characteristicId: getCharacter("2A19"),
+		state: true,
+		success: function (res) {
+			// success
+			readMacAddr();
+			
+			wx.readBLECharacteristicValue({
+				deviceId: g_deviceId,
+				serviceId: getServerId("180F"),
+				characteristicId: getCharacter("2A19"),
+				success: function (res) {
+					console.log("----------power", res)
+					if (res.value){
+						let dataView = new DataView(res.value);
+						var ps = dataView.getInt8(0, true);
+					}
+
+				
+				}
+			});
+			console.log("readPowerUsed -------succed----", res);
+		},
+		fail: function (res) {
+			console.log("readPowerUsed-------failure----", res);
+			// fail
+		}
+	});
+	return ;
+}
 var total=0;
+function bleCommNotifyRegister()
+{
+
+}
+function initCharacteristic180A()
+{
+	wx.getBLEDeviceCharacteristics({
+		deviceId: g_deviceId,
+		serviceId: getServerId("180F"),
+		success: function (res) {
+			readPowerUsed();
+		},
+		fail: function (res) {
+			console.log('180A蓝牙返回错误:readBLECharacteristicValue:', res);
+		}
+	});
+}
 function syncRunStep()
 {
 	wx.readBLECharacteristicValue({
@@ -210,7 +278,13 @@ function syncRunStep()
 				console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 				//    console.log('characteristic value comed:', res)
 				let dataView = new DataView(res.value);
-				
+				if (res.characteristicId.indexOf("2A19")>0){
+					console.log("--------------"+dataView.getUint8(0,true));
+					getApp().globalData.indexPage.setData({
+						power_ps: parseInt(dataView.getUint8(0, true))
+					});
+					return ;
+				}
 				console.log("total=" + dataView.getUint32(0, true));
 				var ps =  dataView.getInt8(4, true) < 0 ? dataView.getUint32(10, true)*100 / 7000 : dataView.getInt8(4, true);
 				getApp().globalData.indexPage.setData({
@@ -221,7 +295,18 @@ function syncRunStep()
 				for (var n = 0; n < dataView.byteLength; n++) {
 					str = str + " " + dataView.getInt8(n);
 				}
-				syncRunStepToday();
+				initCharacteristic180A();
+				
+				var h1 = wx.getStorageSync("step-" + util.getDateOffset(-1,"yyyy-MM-dd"));
+				var h2 = wx.getStorageSync("step-" + util.getDateOffset(-2, "yyyy-MM-dd"));
+
+				if (h1==null&&h2==null){
+					syncStepHistory();
+				}
+				else{
+					console.log("不需要同步历史数据");
+				}
+				
 				console.log("syncStep=" +str );
 			});
 		},
@@ -291,9 +376,11 @@ function showAndSaveStepData()
 		}
 	});
 }
-function syncRunStepToday()
+function syncStepHistory()
 {
-
+	wx.showLoading({
+		title: '同步历史数据...',
+	});
 	wx.onBLECharacteristicValueChange(function (res) {
 		if (!res.value){
 			return ;
@@ -763,6 +850,7 @@ function findCharacteristics() {
 		}
 	})
 }
+/*
 function notifyBLECharacteristicValueChanged() {
 	//onBLECharacteristicValueChange
 	wx.notifyBLECharacteristicValueChanged({
@@ -777,7 +865,7 @@ function notifyBLECharacteristicValueChanged() {
 			//  readVersion();
 		}
 	})
-}
+}*/
 function bleReadCallback() {
 
 
@@ -817,14 +905,8 @@ function readVersion() {
 	dataView.setUint16(2, 0x2A00);
 	dataView.setUint16(4, 0x2A00);
 
-
-
-
 	// dataView.setUint8(4, 0x2A);
 	// dataView.setUint8(5, 0x00);
-
-
-
 
 	console.log("devcice=" + g_deviceId + "----g_services=" + g_services + "-----g_characteristics=" + g_characteristics);
 	wx.writeBLECharacteristicValue({
@@ -863,9 +945,7 @@ function loadBleDevice(serviceId) {
 				duration: 1000
 			})
 			console.log("连接设备成功")
-			wx.showLoading({
-				title: '同步数据...',
-			});
+
 			console.log(res)
 			isConnect = 1;
 			findMe();
