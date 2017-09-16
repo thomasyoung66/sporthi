@@ -65,6 +65,12 @@ function objToBase64(str) {
 
 	return base64.encode(JSON.stringify(str));
 }
+function base64encode(str){
+	return base64.encode(str);
+}
+function base64decode(str) {
+	return base64.decode(str);
+}
 function convert(match, nosign) {
 	if (nosign) {
 		match.sign = '';
@@ -253,9 +259,41 @@ function calcOdo(step){
 	var height = wx.getStorageSync("height");
 	return Math.floor(height*0.415*step/100);
 }
-function toHourMinute(minutes) {
-	return (Math.floor(minutes / 60) + "." + (minutes % 60) + "");
+function toHourMinute(s) {
+	var t;
+	if (s==0){
+		return "00:00:00";
+	}
+	if (s > -1) {
+		var hour = Math.floor(s / 3600);
+		var min = Math.floor(s / 60) % 60;
+		var sec = s % 60;
+		if (hour < 10) {
+			t = '0' + hour + ":";
+		} else {
+			t = hour + ":";
+		}
+
+		if (min < 10) { 
+			t += "0"; 
+		}
+		t += min + ":";
+		if (sec < 10) { 
+			t += "0"; 
+		}
+		t+=sec%60;
+		//t += sec.toFixed(2);
+	}
+	return t;
 }
+function arrayBufferToString(dataView)
+{
+	var str = "";
+	for (var n = 0; n < dataView.byteLength; n++) {
+		str = str + sprintf("%c", dataView.getUint8(n));
+	}
+	return str;
+} 
 module.exports = {
 	formatTime: formatTime,
 	test: test,
@@ -273,5 +311,8 @@ module.exports = {
 	getWeekName: getWeekName,
 	calcCalorie:calcCalorie,
 	calcOdo:calcOdo,
-	toHourMinute: toHourMinute
+	toHourMinute: toHourMinute,
+	base64encode: base64encode,
+	base64decode: base64decode,
+	arrayBufferToString: arrayBufferToString
 }

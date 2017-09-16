@@ -33,6 +33,7 @@ Page({
 		bp_avg:"-/-",//
 		bp_last:"-/-",
 		power_ps:0,
+		power_text:0,
 		end:0
 	},
 	showDetail: function (data) {
@@ -65,6 +66,7 @@ Page({
 		wx.showToast({
 			title: '开始测试心率...',
 		});
+		ble.beginHeartBeatTest();
 	},
 	bpTest: function () {
 		console.log("bp test...");
@@ -101,18 +103,27 @@ Page({
 			});
 		}
 	},
+	showCurrStepInfo:function (step,time){
+		this.setData({
+			step_total: step,
+			step_ps: parseInt(step * 100 / this.data.step_dest),
+			step_dist: util.calcOdo(step),
+			step_cal: util.calcCalorie(step),
+			step_time:util.toHourMinute(time)
+		});
+	},
 	showHistoryData: function (pDate)
 	{
 		//show step data....
 		var stepData = wx.getStorageSync("step-" + pDate);
+		if (util.getDateOffset(0, "yyyy-MM-dd")==pDate){
+			stepData = wx.getStorageSync("today");
+			console.log("today....",stepData);
+		}
+		console.log(wx.getStorageInfoSync());
 		if (stepData != null) {
-			console.log("stepData.step===", stepData);
-			this.setData({
-				step_total: stepData.step,
-				step_ps: parseInt(stepData.step * 100 / this.data.step_dest),
-				step_dist: util.calcOdo(stepData.step),
-				step_cal:util.calcCalorie(stepData.step)
-			});
+			console.log("stepData===", stepData);
+			this.showCurrStepInfo(stepData.step, stepData.hasOwnProperty("time") ? stepData.time:0);
 		
 			var stepHour = new Array(stepData.h0, stepData.h1, stepData.h2, stepData.h3,
 				stepData.h4, stepData.h5, stepData.h6, stepData.h7,

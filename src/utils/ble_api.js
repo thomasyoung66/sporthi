@@ -33,9 +33,19 @@ function run(deviceId)
 	}
 	
 }
+function beginHeartBeatTest()
+{
+	switch (g_ble_type) {
+		case 0:
+			return ble_km.beginHeartBeatTest();
+		default:
+			break;
+	}	
+}
 module.exports = {
 	init:init,
 	getConnectState: getConnectState,
-	run:run
+	run:run,
+	beginHeartBeatTest: beginHeartBeatTest
 
 }

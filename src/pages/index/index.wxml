@@ -17,7 +17,10 @@
         <image bindtap="nextDateTap" class="lr_img" src="../../images/right_arrow_white.png" />
 
         <!--<image  style="" class="lr_img1" src="" />-->
-	    <progress style="width:30px;margin-right:10px" percent="{{power_ps}}" stroke-width="10" />
+	  <view class="power" >
+	    <progress style="width:30px;" percent="{{power_ps}}" stroke-width="10"  color="green"  />
+	    	{{power_text}}%
+	    </view>
 	<!--../../images/longsit_week.png-->
 
     </view>
