@@ -145,7 +145,7 @@
 			
                 </view>
 		    <view class="step_total_first">
-		      <button bindtap="heartBeatTest"  style="background:rgb(26,172,25);color:white">心率测试</button>
+		      <button bindtap="heartBeatTest"  style="background:rgb(26,172,25);color:white">{{hb_text}}</button>
 		    </view>
             </view>
 		<view class="step_comment">
@@ -193,7 +193,7 @@
                 </view>
 		 
 		    <view class="step_total_first">
-		      <button bindtap="bpTest"   style="background:rgb(26,172,25);color:white">血压测试</button>
+		      <button bindtap="bpTest"   style="background:rgb(26,172,25);color:white">{{bp_text}}</button>
 		    </view>
             </view>
 		<view class="step_comment">

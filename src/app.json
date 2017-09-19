@@ -27,7 +27,7 @@
                 "selectedIconPath": "images/home_select.png"
               },
               {
-                "text": "跑步",
+                "text": "排行",
                 "pagePath": "pages/run/run",
                 "iconPath": "images/run.png",
                 "selectedIconPath": "images/run_select.png"

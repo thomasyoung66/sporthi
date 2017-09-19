@@ -1,2 +1,33 @@
-<!--pages/run/run.wxml-->
-<text>pages/run/run.wxml</text>
+<!--index.wxml-->
+<view class="my-container">
+
+  <view style="width:100%">
+    <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
+      <view wx:for="{{items}}" url="">
+
+        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+          <view class="main-1">
+            {{index+1}}
+            <image class="img" src="{{item.avatar_url}}" />
+            <text class="title">{{item.nickname}}</text>
+          </view>
+          <view class="main-2">
+            <text>
+            </text>
+          </view>
+          <view class="right-row">
+            <text class="right-text">
+              {{item.total_step}}步
+
+            </text>
+            <!--
+            <image style="width:16px;height:24" class="img" src="../../images/right.png" />-->
+          </view>
+        </view>
+
+      </view>
+    </scroll-view>
+  </view>
+
+
+</view>

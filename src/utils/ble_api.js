@@ -42,10 +42,20 @@ function beginHeartBeatTest()
 			break;
 	}	
 }
+function endHeartBeatTest() {
+  switch (g_ble_type) {
+    case 0:
+      return ble_km.endHeartBeatTest();
+    default:
+      break;
+  }
+}
 module.exports = {
 	init:init,
 	getConnectState: getConnectState,
 	run:run,
-	beginHeartBeatTest: beginHeartBeatTest
+	beginHeartBeatTest: beginHeartBeatTest,
+  endHeartBeatTest: endHeartBeatTest
+  
 
 }

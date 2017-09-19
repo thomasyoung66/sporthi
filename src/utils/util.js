@@ -117,6 +117,11 @@ function getDataFrom1970(sec,fmt)
 
 	return d.Format(fmt);
 }
+function getDataFrom1900(sec, fmt) {
+  var d = new Date((new Date("1900/01/01 00:00:00").getTime() + sec * 1000));
+
+  return d.Format(fmt);
+}
 function getPrevDate(str,sec)
 {
 	var d = new Date((new Date(str.replace(/-/g,"/") + " 12:00:00").getTime() +sec* 3600 * 24 * 1000));	
@@ -294,6 +299,14 @@ function arrayBufferToString(dataView)
 	}
 	return str;
 } 
+function dumpArrayBuffer(dataView)
+{
+  var str = "";
+  for (var n = 0; n < dataView.byteLength; n++) {
+    str = str + " "+ dataView.getUint8(n);
+  }
+  console.log(str);
+}
 module.exports = {
 	formatTime: formatTime,
 	test: test,
@@ -304,6 +317,7 @@ module.exports = {
 	sprintf: sprintf,
 	getDate: getDate,
 	getDataFrom1970: getDataFrom1970,
+  getDataFrom1900: getDataFrom1900,
 	getDateOffset: getDateOffset,
 	objToBase64: objToBase64,
 	isValDate: isValDate,
@@ -314,5 +328,6 @@ module.exports = {
 	toHourMinute: toHourMinute,
 	base64encode: base64encode,
 	base64decode: base64decode,
-	arrayBufferToString: arrayBufferToString
+	arrayBufferToString: arrayBufferToString,
+  dumpArrayBuffer: dumpArrayBuffer
 }

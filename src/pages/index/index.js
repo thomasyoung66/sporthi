@@ -4,6 +4,15 @@ var util = require('../../utils/util.js');
 var ble = require('../../utils/ble_api.js');
 var Charts = require('../../utils/wxcharts.js');
 var debug_ui=false;
+var hb_times=0;
+var stepImage=null; //步数画图
+var sleepImage = null;//睡眠画图
+var  hbField=null;
+var  hbArrayData=null; //测量心率原始数据
+var  bpMaxArrayData = null;//高血压
+var  bpMinArrayData = null; //低血压
+
+
 
 var app = getApp()
 Page({
@@ -32,6 +41,8 @@ Page({
 		bp_min:"-/-",//最小血压
 		bp_avg:"-/-",//
 		bp_last:"-/-",
+    hb_text:"心率测试",
+    bp_text: "血压测试",
 		power_ps:0,
 		power_text:0,
 		end:0
@@ -63,10 +74,36 @@ Page({
 	},
 	heartBeatTest:function(){
 		console.log("heartBeat test...");
-		wx.showToast({
-			title: '开始测试心率...',
-		});
-		ble.beginHeartBeatTest();
+
+    hbField=null;
+    hbArrayData = null; //测量心率原始数据
+    bpMaxArrayData = null;//高血压
+    bpMinArrayData = null; //低血压
+
+    if (hb_times==0){
+      hb_times = 120;
+      ble.beginHeartBeatTest();
+      this.setData({
+        hb_last:"数据采集中..."
+      });
+      this.setData({
+        bp_last: "数据采集中..."
+      });
+      wx.showToast({
+        title: '开始测试心率...',
+      });
+    }
+	  else{
+      wx.showToast({
+        title: '停止测试心率...',
+      });
+      this.setData({
+        hb_text:"测量心率"
+      });
+      hb_times = 0;
+      ble.endHeartBeatTest();
+     
+    }
 	},
 	bpTest: function () {
 		console.log("bp test...");
@@ -102,6 +139,21 @@ Page({
 				isConnect: ble.getConnectState()
 			});
 		}
+    if (hb_times>0){
+      that.setData({
+        hb_text:hb_times
+      });
+      if (hb_times==1){
+        wx.showToast({
+          title: '停止测试心率...',
+        });
+        this.setData({
+          hb_text: "测量心率"
+        });
+        ble.endHeartBeatTest();
+      }
+      hb_times = hb_times-1;
+    }
 	},
 	showCurrStepInfo:function (step,time){
 		this.setData({
@@ -112,14 +164,94 @@ Page({
 			step_time:util.toHourMinute(time)
 		});
 	},
+  //显示动态心率
+  showDynHbBp:function (hb,maxBp,minBp){
+    if (hbField==null){
+      hbField=new Array();
+      for(var n=0;n<30;n++){
+        hbField.push(n);
+      }
+      hbArrayData=new Array();
+      bpMaxArrayData = new Array();
+      bpMinArrayData = new Array();
+
+    }
+
+    this.setData({
+      hb_last: hb,
+      bp_last: maxBp + "/" + minBp
+    });
+   
+    if (hbArrayData.length>30)
+      hbArrayData.shift();
+    hbArrayData.push(hb);
+    if (bpMaxArrayData.length>30)
+      bpMaxArrayData.shift();
+    bpMaxArrayData.push(maxBp);
+    if (bpMinArrayData.length>30)
+      bpMinArrayData.shift();
+    bpMinArrayData.push(minBp);
+
+
+    console.log(" main index===hb"+hb+" maxBp="+maxBp+" minBp="+minBp);
+    new Charts({
+      canvasId: 'heartrateCanvas',
+      type: 'column',
+      categories: hbField ,
+      series: [{
+        name: '时间段心率详细情况',
+        data: hbArrayData
+      }],
+      yAxis: {
+        format: function (val) {
+          return val + 'bpm';
+        }
+      },
+      width: 360,
+      height: 200,
+      dataLabel: false
+    });
+
+    new Charts({
+      canvasId: 'bpCanvas',
+      type: 'column',
+      categories: hbField,
+      series: [{
+        name: '低压(舒张压)',
+        data: bpMaxArrayData
+      }, {
+        name: '高压(收缩压)',
+        data: bpMinArrayData
+      }],
+      yAxis: {
+        format: function (val) {
+          return val + 'mmHg';
+        }
+      },
+      width: 360,
+      height: 200,
+      dataLabel: false
+    });
+    return;
+  },
 	showHistoryData: function (pDate)
 	{
 		//show step data....
 		var stepData = wx.getStorageSync("step-" + pDate);
+ 
 		if (util.getDateOffset(0, "yyyy-MM-dd")==pDate){
 			stepData = wx.getStorageSync("today");
 			console.log("today....",stepData);
 		}
+
+    if (stepData == null || stepData.hasOwnProperty("step") == false) {
+      console.log("显示历史数据:", stepData);
+      wx.showToast({
+        title: '读取历史数据' + pDate + '发生错误!'
+      });
+      return;
+    }
+    
 		console.log(wx.getStorageInfoSync());
 		if (stepData != null) {
 			console.log("stepData===", stepData);
@@ -134,8 +266,9 @@ Page({
 			this.drawStepCanvas(stepHour);
 		}
 		var sleepData = wx.getStorageSync("sleep-" + pDate);
-		console.log("------>>>>>>", sleepData);
-		if (sleepData == null || sleepData == "" || sleepData.deep<0){
+    console.log(pDate+"------>>>>>>", sleepData);
+		if (sleepData == null || sleepData == "" ){
+      console.log("睡眠是0");
 			this.drawSleepCanvas(new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 			this.setData({
 				sleep_total: 0,
@@ -145,11 +278,12 @@ Page({
 			});
 		}
 		else{
+      console.log("睡眠是有志");
 				/*item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
 				item.restless = dataViewStep.getUint16(n * 64 + 10, true);
 				item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;*/
 			this.setData({
-				sleep_total: util.toHourMinute(sleepData.deep + sleepData.restless),
+				sleep_total: util.toHourMinute((sleepData.endTime - sleepData.startTime)/60),
 				good_sleep_time: util.toHourMinute(sleepData.deep),
 				bad_sleep_time: util.toHourMinute(sleepData.restless),
 				sober_sleep_time: util.toHourMinute(sleepData.runMin)
@@ -160,14 +294,15 @@ Page({
 				sleepData.h12, sleepData.h13, sleepData.h14, sleepData.h15,
 				sleepData.h16, sleepData.h17, sleepData.h18, sleepData.h19,
 				sleepData.h20, sleepData.h21, sleepData.h22, sleepData.h23);
-			this.drawStepCanvas(sleepHour);
+      console.log("sleep array:", sleepHour);
+			this.drawSleepCanvas(sleepHour);
 		}
 		
 	},
 	prepDateTap:function(){
 		var pDate = util.getPrevDate(this.data.currDateShow,-1);
 		this.setData({
-			currDateShow: pDate,
+		  currDateShow: pDate,
 			currWeekShow: util.getWeekName(pDate)
 		});
 		this.showHistoryData(pDate);
@@ -212,7 +347,7 @@ Page({
 				name: '低压(舒张压)',
 				data: [0]
 			}, {
-					name: '高压(收缩压)',
+				name: '高压(收缩压)',
 				data: [0]
 			}],
 			yAxis: {
@@ -253,7 +388,13 @@ Page({
 		return;
 	},
 	drawStepCanvas:function(stepData){
-		new Charts({
+    if (stepImage!=null){
+      console.log("步数初始化....设置数据.", stepData);
+      stepImage.updateData(stepData);
+    }
+    else{
+      console.log("步数初始化.....");
+		  new Charts({
 			canvasId: 'setpCanvas',
 			type: 'column',
 			categories: ['0:00', '', '', '', 
@@ -276,10 +417,15 @@ Page({
 			height: 200,
 			dataLabel: false
 		});
+    }
 		return ;
 	},
 	drawSleepCanvas: function (sleepData) {
-		new Charts({
+    if (sleepImage != null) {
+      sleepImage.updateData(sleepData);
+    }
+    else {
+		  new Charts({
 			canvasId: 'sleepCanvas',
 			type: 'column',
 			categories: ['20:00', '', '', '',
@@ -301,6 +447,7 @@ Page({
 			height: 200,
 			dataLabel: false
 		});
+    }
 		return;
 	},
 	onLoad: function () {

@@ -197,15 +197,19 @@ let bufferStep;
 let dataViewStep;
 var stepDataJson = {};//
 var sleepDataJson = {};
+var readHistoryType=0;//0 运动计步  1：心率
+
 
 let bufferStepToday;
 let dataViewStepToday;
-function processStepToday(val)
+function processStepToday(dataView)
 {
-	let dataView = new DataView(val);
+//	let dataView = new DataView(val);
 
 	var total = dataView.getUint16(0, true);
 	var seq = dataView.getUint16(2, true) - 1;
+  console.log("total="+total+" seq="+seq);
+  
 	if (seq == 0) {
 		bufferStepToday = new ArrayBuffer(16 * total);
 		dataViewStepToday = new DataView(bufferStepToday);
@@ -248,35 +252,42 @@ function processStepToday(val)
 				item.h21 = dataViewStepToday.getUint16(n * 64 + 54, true);
 				item.h22 = dataViewStepToday.getUint16(n * 64 + 56, true);
 				item.h23 = dataViewStepToday.getUint16(n * 64 + 58, true);
-
+      
 				if (valate == 0x34567890) {
-					var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					stepDataJsonToday[pDate] = item;
-					console.log("^_^---step data=" + item.step);
-					wx.setStorageSync("step-" + pDate, JSON.stringify(item));
+		//			var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
+		//			stepDataJsonToday[pDate] = item;
+			//		console.log("today ^_^---step data=" + item.step);
+					wx.setStorageSync("today", item);
+          console.log("----设置当天->>>>>",item);
+          getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0,"yyyy-MM-dd"));
 				}
 				else if (valate == 0x45678901) {
-					console.log("^_^---sleep data=" + item.step);
-					var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					sleepDataJsonToday[pDate] = item;
-					wx.setStorageSync("sleep-" + pDate, JSON.stringify(item));
+				//	console.log("today ^_^---sleep data=" + item.step);
+			//		var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
+			//		sleepDataJsonToday[pDate] = item;
+          console.log("睡眠时间:",item);
+          wx.setStorageSync("today",item);
 
 				}
 				else {
 					console.log("unused data......^_^");
 				}
+        
 			}
 		}
-		console.log("run---run---" + JSON.stringify(stepDataJsonToday));
+	//	console.log("run---run---" + JSON.stringify(stepDataJsonToday));
 
 	}
 }
 function processStepHistory(val) {
+  //console.log("processStepHistory-----0");
 	let dataView = new DataView(val);
-
+  //console.log("processStepHistory-----1");
 	var total = dataView.getUint16(0, true);
+  //console.log("processStepHistory-----2");
 	var seq = dataView.getUint16(2, true) - 1;
 
+  //console.log(readHistoryType +" readHistoryType, total=" + total+" seq="+seq);
 	if (seq == 0) {
 		console.log("begin--------" + 16 * total);
 		bufferStep = new ArrayBuffer(16 * total);
@@ -296,65 +307,119 @@ function processStepHistory(val) {
 				var item = {};
 
 
-				var valate = dataViewStep.getUint32(n * 64 + 60, true);
-				item.h0 = dataViewStep.getUint16(n * 64 + 12, true);
-				item.h1 = dataViewStep.getUint16(n * 64 + 14, true);
-				item.h2 = dataViewStep.getUint16(n * 64 + 16, true);
-				item.h3 = dataViewStep.getUint16(n * 64 + 18, true);
-				item.h4 = dataViewStep.getUint16(n * 64 + 20, true);
-				item.h5 = dataViewStep.getUint16(n * 64 + 22, true);
-				item.h6 = dataViewStep.getUint16(n * 64 + 24, true);
-				item.h7 = dataViewStep.getUint16(n * 64 + 26, true);
-				item.h8 = dataViewStep.getUint16(n * 64 + 28, true);
-				item.h9 = dataViewStep.getUint16(n * 64 + 30, true);
-				item.h10 = dataViewStep.getUint16(n * 64 + 32, true);
-				item.h11 = dataViewStep.getUint16(n * 64 + 34, true);
-				item.h12 = dataViewStep.getUint16(n * 64 + 36, true);
-				item.h13 = dataViewStep.getUint16(n * 64 + 38, true);
-				item.h14 = dataViewStep.getUint16(n * 64 + 40, true);
-				item.h15 = dataViewStep.getUint16(n * 64 + 42, true);
-				item.h16 = dataViewStep.getUint16(n * 64 + 44, true);
-				item.h17 = dataViewStep.getUint16(n * 64 + 46, true);
-				item.h18 = dataViewStep.getUint16(n * 64 + 48, true);
-				item.h19 = dataViewStep.getUint16(n * 64 + 50, true);
-				item.h20 = dataViewStep.getUint16(n * 64 + 52, true);
-				item.h21 = dataViewStep.getUint16(n * 64 + 54, true);
-				item.h22 = dataViewStep.getUint16(n * 64 + 56, true);
-				item.h23 = dataViewStep.getUint16(n * 64 + 58, true);
+          var valate = dataViewStep.getUint32(n * 64 + 60, true);
+          item.h0 = dataViewStep.getUint16(n * 64 + 12, true);
+          item.h1 = dataViewStep.getUint16(n * 64 + 14, true);
+          item.h2 = dataViewStep.getUint16(n * 64 + 16, true);
+          item.h3 = dataViewStep.getUint16(n * 64 + 18, true);
+          item.h4 = dataViewStep.getUint16(n * 64 + 20, true);
+          item.h5 = dataViewStep.getUint16(n * 64 + 22, true);
+          item.h6 = dataViewStep.getUint16(n * 64 + 24, true);
+          item.h7 = dataViewStep.getUint16(n * 64 + 26, true);
+          item.h8 = dataViewStep.getUint16(n * 64 + 28, true);
+          item.h9 = dataViewStep.getUint16(n * 64 + 30, true);
+          item.h10 = dataViewStep.getUint16(n * 64 + 32, true);
+          item.h11 = dataViewStep.getUint16(n * 64 + 34, true);
+          item.h12 = dataViewStep.getUint16(n * 64 + 36, true);
+          item.h13 = dataViewStep.getUint16(n * 64 + 38, true);
+          item.h14 = dataViewStep.getUint16(n * 64 + 40, true);
+          item.h15 = dataViewStep.getUint16(n * 64 + 42, true);
+          item.h16 = dataViewStep.getUint16(n * 64 + 44, true);
+          item.h17 = dataViewStep.getUint16(n * 64 + 46, true);
+          item.h18 = dataViewStep.getUint16(n * 64 + 48, true);
+          item.h19 = dataViewStep.getUint16(n * 64 + 50, true);
+          item.h20 = dataViewStep.getUint16(n * 64 + 52, true);
+          item.h21 = dataViewStep.getUint16(n * 64 + 54, true);
+          item.h22 = dataViewStep.getUint16(n * 64 + 56, true);
+          item.h23 = dataViewStep.getUint16(n * 64 + 58, true);
+         // console.log(util.getDataFrom1970(runDate, "yyyy-MM-dd")+"=====valate===="+valate);
+          if (valate == 0x34567890) {//计步数据
+            item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
+            item.step = dataViewStep.getUint32(n * 64 + 8, true);
 
-				if (valate == 0x34567890) {
-					item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
-					item.step = dataViewStep.getUint32(n * 64 + 8, true);
+            var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
+            stepDataJson[pDate] = item;
 
-					var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					stepDataJson[pDate] = item;
+            console.log("^_^---step data=",item.step);
+            wx.setStorageSync("step-" + pDate, item);
+          }
+          else if (valate == 0x45678901) {//睡眠数据
+            item.startTime = dataViewStep.getUint32(n * 64 + 0, true);
+            item.endTime = dataViewStep.getUint32(n * 64 + 4, true);
+            item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
+            item.restless = dataViewStep.getUint16(n * 64 + 10, true);
+            item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;
+            
 
-					//console.log("^_^---step data=" + item.step);
-					wx.setStorageSync("step-" + pDate, item);
-				}
-				else if (valate == 0x45678901) {
-					item.startTime = dataViewStep.getUint32(n * 64 + 0, true);
-					item.endTime = dataViewStep.getUint32(n * 64 + 4, true);
-					item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
-					item.restless = dataViewStep.getUint16(n * 64 + 10, true);
-					item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;
+            //item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
+            //item.step = dataViewStep.getUint32(n * 64 + 8, true);
 
+            var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
+          
+            sleepDataJson[pDate] = item;
+            console.log(pDate+"^_^---sleep data=",item);
+            wx.setStorageSync("sleep-" + pDate, item);
+          }
+          else {
+            console.log("unused data......^_^");
+          }
+    
+			}//end if 
+		}//end for
 
-					//item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
-					//item.step = dataViewStep.getUint32(n * 64 + 8, true);
-
-					var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					//console.log("^_^---sleep data=" + item.step);
-					sleepDataJson[pDate] = item;
-					wx.setStorageSync("sleep-" + pDate, item);
-				}
-				else {
-					console.log("unused data......^_^");
-				}
-			}
-		}
 		showAndSaveStepData();
 	}
+}
+function processHeartHistory(val) {
+  return ;
+  let dataView = new DataView(val);
+
+  var total = dataView.getUint16(0, true);
+  var seq = dataView.getUint16(2, true) - 1;
+
+  console.log(readHistoryType + " readHistoryType, total=" + total + " seq=" + seq);
+
+  if (seq == 0) {
+    bufferStep = new ArrayBuffer(16 * total);
+    dataViewStep = new DataView(bufferStep);
+  }
+  for (var n = 4; n < 20; n++) {
+    dataViewStep.setUint8(seq * 16 + n - 4, dataView.getUint8(n));
+  }
+
+  if (seq == (total - 1)) {
+    var offset=0;
+    for (var offset=0; offset < (16 * total);) {
+      if (util.isValDate(dataViewStep.getUint32(offset, true))==false) {
+        offset = offset + 8 * count + 8;
+        continue;
+      }
+      var currDate = util.getDataFrom1970(dataViewStep.getUint32(offset,true),"yyyy-MM-dd");
+      var count = dataViewStep.getUint16(offset+4, true);
+      var val = dataViewStep.getUint16(offset + 6, true);
+      if (val != 0x9012){
+        offset = offset + 8 * count + 8;
+        continue;
+      }
+
+
+      for(var n=0;n<count;n++){
+        var seq=offset+8+n*8;
+        var hour=dataViewStep.getUint8(seq+0,true);
+        var min = dataViewStep.getUint8(seq + 1, true);
+        var hb = dataViewStep.getUint8(seq + 2, true);
+        var max_bp = dataViewStep.getUint8(seq + 3, true);
+        var min_bp = dataViewStep.getUint8(seq + 4, true);
+
+        console.log(currDate + " " + hour + ":" + min + " hb=" + hb + " max_bp=" + max_bp + " min_bp=" + min_bp + "  val=" + val + "---" + 0x9012);
+
+      }
+
+      offset =offset+8*count+8;
+     
+    }//end for
+    wx.hideLoading();
+  }
 }
 function bleCommNotifyRegister()
 {
@@ -362,7 +427,17 @@ function bleCommNotifyRegister()
 	wx.onBLECharacteristicValueChange(function (res) {
 		console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 		let dataView = new DataView(res.value);
-		if (res.characteristicId.indexOf("2A37") > 0) { //产品型号
+
+
+    if (res.characteristicId.indexOf("2A35") > 0) { //产品型号
+       var low=dataView.getUint16(1,true);
+       var high = dataView.getUint16(3, true);
+       var hb = dataView.getUint16(7, true);
+       console.log("低压:"+low+" 高压:"+high+" 心率:"+hb);
+       getApp().globalData.indexPage.showDynHbBp(hb,low,high);
+
+    }
+		else  if (res.characteristicId.indexOf("2A37") > 0) { //产品型号
 
 
 			console.log(`--666-(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
@@ -453,23 +528,29 @@ function bleCommNotifyRegister()
 			var h1 = wx.getStorageSync("step-" + util.getDateOffset(-1, "yyyy-MM-dd"));
 			var h2 = wx.getStorageSync("step-" + util.getDateOffset(-2, "yyyy-MM-dd"));
 
-			
-			if (h1 == null ) {
+     // syncStepHistory();
+     // 
+      if (h1 == null || h1.hasOwnProperty("step") == false ) {
 				syncStepHistory();
 			}
 			else {
+    //    syncHeartBeatHistory();
 				console.log("不需要同步历史数据");
 			}
 			console.log("syncStep=" + str);
 		}
 		else if (res.characteristicId.indexOf("FF13") > 0) {//读取当天的数据
-			console.log(ddd + `>>>yls-begin today>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
-			processStepToday(res.value);
+		//	console.log(ddd + `>>>yls-begin today>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
+    //  util.dumpArrayBuffer(dataView);
+      processStepToday(dataView);
 
 		}
 		else if (res.characteristicId.indexOf("FF21") > 0) {//读取历史数据
-			console.log(ddd + `>>>yls-begin history>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
-			processStepHistory(res.value);
+     // console.log(readHistoryType + `>>>yls-begin history>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
+      if (readHistoryType==0)
+		  	processStepHistory(res.value);
+      else
+        processHeartHistory(res.value);
 		}
 	});
 }
@@ -487,6 +568,36 @@ function initCharacteristic180A()
 		}
 	});
 }
+function syncTodayDate()
+{
+  //读取当前的数据
+  wx.notifyBLECharacteristicValueChanged({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF13"),
+    state: true,
+    success: function (res) {
+      // success
+      wx.readBLECharacteristicValue({
+        deviceId: g_deviceId,
+        serviceId: getServerId("FFC0"),
+        characteristicId: getCharacter("FF13"),
+        success: function (res) {
+          console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
+          total++;
+        },
+        fail: function (res) {
+          console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
+        }
+      });
+      console.log("-------succed----", res);
+    },
+    fail: function (res) {
+      console.log("-------failure----", res);
+      // fail
+    }
+  });
+}
 function syncRunStep()
 {
 	bleCommNotifyRegister();
@@ -503,6 +614,7 @@ function syncRunStep()
 			console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
 		}
 	});
+  syncTodayDate();
 }
 
 function showAndSaveStepData()
@@ -553,20 +665,13 @@ function endHeartBeatTest()
 }
 function beginH()
 {
-	/*
-	wx.onBLECharacteristicValueChange(function (res) {
-		console.log(`--666-(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
-		let dataView = new DataView(res.value);
-		var str="";
-		for(var n=0;n<dataView.byteLength;n++){
-			str=str+" "+dataView.getUint8(n);
-		}
-		console.log("notify data...."+str);
-	});*/
+
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
-		serviceId: getServerId("180D"),
-		characteristicId: getCharacter("2A37"),
+		serviceId: getServerId("1810"),
+		characteristicId: getCharacter("2A35"),
+  //  serviceId: getServerId("180D"),
+  // characteristicId: getCharacter("2A37"),
 		state: true,
 		success: function (res) {
 			console.log("181D/2A37 readPowerUsed-------succeed!----", res);
@@ -587,7 +692,7 @@ function beginH()
 				value: buffer,
 				success: function (res) {
 					console.log("sync write....", res);
-					setTimeout(endHeartBeatTest, 30 * 1000);
+			//		setTimeout(endHeartBeatTest, 120 * 1000);
 				},
 				fail: function (res) {
 					console.log("写入数据失败:", res);
@@ -601,7 +706,17 @@ function beginH()
 }
 function beginHeartBeatTest()
 {
-
+  wx.getBLEDeviceCharacteristics({
+    deviceId: g_deviceId,
+    serviceId: getServerId("1810"),
+    success: function (res) {
+      console.log("init 1810 succeed", res);
+  //    beginH();
+    },
+    fail: function (res) {
+      console.log('1810蓝牙返回错误:readBLECharacteristicValue:', res);
+    }
+  });
 	
 	wx.getBLEDeviceCharacteristics({
 		deviceId: g_deviceId,
@@ -618,11 +733,75 @@ function beginHeartBeatTest()
 
 
 }
+
+function syncHeartBeatHistory()
+{
+  wx.showLoading({
+    title: '同步心率血压数据...',
+  });  
+  readHistoryType = 1;
+  //读取当前的数据
+  wx.notifyBLECharacteristicValueChanged({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF13"),
+    state: true,
+    success: function (res) {
+      // success
+      console.log("-------succed----", res);
+    },
+    fail: function (res) {
+      console.log("-------failure----", res);
+      // fail
+    }
+  });
+
+  wx.notifyBLECharacteristicValueChanged({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF21"),
+    state: true,
+    success: function (res) {
+      let buffer = new ArrayBuffer(20);
+      let dataView = new DataView(buffer);
+      for (var n = 0; n < 20; n++) {
+        dataView.setUint8(n, 0x00);
+      }
+      dataView.setUint8(0, 0x01);
+      dataView.setUint8(1, 0x02);
+      dataView.setUint8(2, 0x22);
+
+
+      wx.writeBLECharacteristicValue({
+        deviceId: g_deviceId,
+        serviceId: getServerId("FFC0"),
+        characteristicId: getCharacter("FF12"),
+        value: buffer,
+        success: function (res) {
+          console.log("sync write....", res);
+        },
+        fail: function (res) {
+          console.log("写入数据失败:", res);
+        }
+      });
+    },
+    fail: function (res) {
+      console.log("-------failure----", res);
+      // fail
+    },
+    complete: function (res) {
+      //console.log("-------complete----", res);
+      // complete
+    }
+  });
+  return;
+}
 function syncStepHistory()
 {
 	wx.showLoading({
 		title: '同步历史数据...',
 	});
+  readHistoryType=0;
 	//读取当前的数据
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
@@ -810,5 +989,6 @@ module.exports = {
 	syncBle: syncBle,
 	openBleDevice: openBleDevice,
 	getConnectState: getConnectState,
-	beginHeartBeatTest: beginHeartBeatTest
+	beginHeartBeatTest: beginHeartBeatTest,
+  endHeartBeatTest: endHeartBeatTest
 }
