@@ -259,6 +259,21 @@ function processStepToday(dataView)
 			//		console.log("today ^_^---step data=" + item.step);
 					wx.setStorageSync("today", item);
           console.log("----设置当天->>>>>",item);
+          wx.request({
+            url: util.getUrl('ble.php?action=save_today_step_data'),
+            data: {
+              step_data: util.objToBase64(item),
+              run_date: util.getDateOffset(0,"yyyy-MM-dd"),
+              uid: wx.getStorageSync('serverId')
+            },
+            method: 'POST',
+            header: { 'content-type': 'application/x-www-form-urlencoded' },
+            success: function (res) {
+            
+              console.log("save----", res);
+
+            }
+          });
           getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0,"yyyy-MM-dd"));
 				}
 				else if (valate == 0x45678901) {
@@ -280,20 +295,15 @@ function processStepToday(dataView)
 	}
 }
 function processStepHistory(val) {
-  //console.log("processStepHistory-----0");
 	let dataView = new DataView(val);
-  //console.log("processStepHistory-----1");
 	var total = dataView.getUint16(0, true);
-  //console.log("processStepHistory-----2");
 	var seq = dataView.getUint16(2, true) - 1;
 
-  //console.log(readHistoryType +" readHistoryType, total=" + total+" seq="+seq);
 	if (seq == 0) {
 		console.log("begin--------" + 16 * total);
 		bufferStep = new ArrayBuffer(16 * total);
 		dataViewStep = new DataView(bufferStep);
 	}
-	//console.log(total + "-------seq------------" + seq);
 	for (var n = 4; n < 20; n++) {
 		dataViewStep.setUint8(seq * 16 + n - 4, dataView.getUint8(n));
 	}
@@ -305,8 +315,6 @@ function processStepHistory(val) {
 			var runDate = dataViewStep.getUint32(n * 64, true);
 			if (util.isValDate(runDate)) {
 				var item = {};
-
-
           var valate = dataViewStep.getUint32(n * 64 + 60, true);
           item.h0 = dataViewStep.getUint16(n * 64 + 12, true);
           item.h1 = dataViewStep.getUint16(n * 64 + 14, true);
@@ -496,7 +504,7 @@ function bleCommNotifyRegister()
 			getApp().globalData.indexPage.showCurrStepInfo(dataView.getUint32(10, true), 
 				dataView.getUint32(14, true));
 			todayData.step = dataView.getUint32(10, true);
-			todayData.h0=0;
+			todayData.h0 = 0;
 			todayData.h1 = 0;
 			todayData.h2 = 0;
 			todayData.h3 = 0;
