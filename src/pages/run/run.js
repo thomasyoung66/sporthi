@@ -41,9 +41,13 @@ Page({
    */
   onShow: function () {
     var that=this;
+     wx.setNavigationBarTitle({
+        title: '运动排行',
+      })
+
     wx.showLoading({
       title: '',
-    })
+    });
     wx.request({
       url: util.getUrl('ble.php?action=query_order'),
       data: {

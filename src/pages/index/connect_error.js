@@ -1,4 +1,4 @@
-// pages/run/run.js
+// pages/index/connect_error.js
 var util = require('../../utils/util.js');
 
 Page({
@@ -41,24 +41,10 @@ Page({
    */
   onShow: function () {
     var that=this;
-    wx.showLoading({
-      title: '',
+    wx.setNavigationBarTitle({
+      title: '连接指引',
     })
-    wx.request({
-      url: util.getUrl('ble.php?action=query_order'),
-      data: {
-      },
-      method: 'POST',
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-      success: function (res) {
-       that.setData({
-         items: res.data.items
-       })
-       wx.hideLoading();
-        console.log("save----", res.data);
 
-      }
-    });
     console.log("run  onShow....");
   },
 

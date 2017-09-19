@@ -1,6 +1,8 @@
 {
   "pages":[
     "pages/index/index",
+    "pages/index/connect_error",
+    "pages/index/hw_setting",
     "pages/run/run",
     "pages/my/my",
     "pages/my/my_device",
@@ -22,6 +24,8 @@
       "list": [
               {
                 "text": "首页",
+                    "navigationBarTitleText": "海斯波HiSport",
+                    "navigationBarTextStyle": "black",
                 "pagePath": "pages/index/index",
                 "iconPath": "images/home.png",
                 "selectedIconPath": "images/home_select.png"

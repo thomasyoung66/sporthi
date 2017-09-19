@@ -2,7 +2,7 @@
 <view class="section" style="background:#f8f8f8">
 
     <view class="main_header">
-        <image class="header_img" src="{{isConnect?'../../images/band.png':'../../images/disconnect.png'}}" />
+        <image bindtap="connect_action" class="header_img" src="{{isConnect?'../../images/band.png':'../../images/disconnect.png'}}" />
 
         <image bindtap="prepDateTap" class="lr_img" src="../../images/left_arrow_white.png" />
         <picker mode="date" value=" {{currDateShow}}" start="{{beginDate}}" end="{{endDate}}" bindchange="bindDateChange">

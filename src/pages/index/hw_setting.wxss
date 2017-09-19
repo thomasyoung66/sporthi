@@ -1,5 +1,5 @@
-/* pages/run/run.wxss */
-/**index.wxss**/
+/* pages/index/hw_setting.wxss */
+/**hw_setting.wxss**/
 .my-container{
     height: 100%;
     width:100%;
@@ -43,12 +43,12 @@
     //border-bottom: thick  1px #d9d9d9;
     
   border-bottom: solid 1px #f8f8f8;
-    height:60px;
+    height:48px;
 }
 
 .img {
-    width: 64rpx;
-    height: 64rpx;
+    width: 48rpx;
+    height: 48rpx;
     margin-right:10px;
     margin-left: 20rpx;
 }

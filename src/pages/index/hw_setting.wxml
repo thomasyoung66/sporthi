@@ -1,4 +1,4 @@
-<!--index.wxml-->
+<!--hw_setting.wxml-->
 <view class="my-container">
 
   <view style="width:100%">
@@ -7,9 +7,8 @@
 
         <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
           <view class="main-1">
-            {{index+1}}
-            <image class="img" src="{{item.avatar_url}}" />
-            <text class="title">{{item.nickname}}</text>
+           <image class="img" src="{{item.img}}" />
+            <text class="title">{{item.name}}</text>
           </view>
           <view class="main-2">
             <text>
@@ -17,11 +16,11 @@
           </view>
           <view class="right-row">
             <text class="right-text">
-              {{item.total_step}}步
+              {{item.keywords}}
 
             </text>
             
-            <image style="width:20px;height:20px" class="img" src="../../images/praise_no.png" />
+                <image style="width:16px;height:24" class="img" src="../../images/right.png" />
           </view>
         </view>
 

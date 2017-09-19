@@ -142,6 +142,11 @@ Page({
 			url: '../logs/logs'
 		})
 	},
+  onShow:function(){
+    wx.setNavigationBarTitle({
+      title: '我的',
+    })
+  },
 	onLoad: function () {
 		console.log('onLoad')
 		device_num=app.data.allDevice.length;

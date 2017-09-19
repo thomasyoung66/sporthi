@@ -429,6 +429,29 @@ function processHeartHistory(val) {
     wx.hideLoading();
   }
 }
+function uploadConfig()
+{
+  console.log("--------uploadConfig-----------");
+  wx.request({
+    url: util.getUrl('setting.php?action=save_all_setting'),
+    data: {
+      model:wx.getStorageSync("model"),
+      mac:wx.getStorageSync("mac"),
+      hw_version:wx.getStorageSync("hw_version"),
+      sw_version:wx.getStorageSync("sw_version"),
+      manufacturer:wx.getStorageSync("manufacturer"),
+      power:wx.getStorageSync("power"),
+      device_id:g_deviceId,
+      uid: wx.getStorageSync('serverId'),
+      config:util.objToBase64(wx.getStorageSync("config"))
+    },
+    method: 'POST',
+    header: { 'content-type': 'application/x-www-form-urlencoded' },
+    success: function (res) {
+      console.log("save----", res);
+    }
+  });
+}
 function bleCommNotifyRegister()
 {
 	     
@@ -484,6 +507,7 @@ function bleCommNotifyRegister()
 		}
 		else  if (res.characteristicId.indexOf("2A19") > 0) {//电量返回
 			console.log("power=" + dataView.getUint8(0, true));
+      wx.setStorageSync("power", dataView.getUint8(0, true));
 			getApp().globalData.indexPage.setData({
 				power_ps: parseInt(dataView.getUint8(0, true)),
 				power_text: parseInt(dataView.getUint8(0, true)),
@@ -538,6 +562,7 @@ function bleCommNotifyRegister()
 
      // syncStepHistory();
      // 
+      uploadConfig();
       if (h1 == null || h1.hasOwnProperty("step") == false ) {
 				syncStepHistory();
 			}

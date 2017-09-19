@@ -1,33 +1,17 @@
-<!--index.wxml-->
+<!--connect_error.wxml-->
 <view class="my-container">
 
-  <view style="width:100%">
-    <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
-      <view wx:for="{{items}}" url="">
-
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
-          <view class="main-1">
-            {{index+1}}
-            <image class="img" src="{{item.avatar_url}}" />
-            <text class="title">{{item.nickname}}</text>
-          </view>
-          <view class="main-2">
-            <text>
-            </text>
-          </view>
-          <view class="right-row">
-            <text class="right-text">
-              {{item.total_step}}步
-
-            </text>
-            
-            <image style="width:20px;height:20px" class="img" src="../../images/praise_no.png" />
-          </view>
-        </view>
-
-      </view>
-    </scroll-view>
+  <view class="cr_title" style="width:100%">
+      连接不上的可能原因:
   </view>
-
-
+  <view class="cr_content">
+    1:手环无电
+  </view>
+  <view class="cr_content">
+    2:手环离开手机太远,蓝牙信号低
+  </view>
+  <view class="cr_content">
+    3:如果总是出现手环不能连接，建议把手机的蓝牙打开关闭一下或者重新启动手机
+  </view>
+  
 </view>

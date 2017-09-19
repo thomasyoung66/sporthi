@@ -1,4 +1,4 @@
-// pages/run/run.js
+// pages/index/hw_setting.js
 var util = require('../../utils/util.js');
 
 Page({
@@ -9,15 +9,21 @@ Page({
 
   data: {
     items: [
-      /*
-      { "id": 1, "name": "连接设备", "keywords": "连接设备", "img": "../../images/band.png" },
-      { "id": 2, "name": "我的设备", "keywords": "个设备", "img": "../../images/user1.png" },
-      { "id": 3, "name": "个人信息", "keywords": "身高/体重等", "img": "../../images/setting_blue.png" },
+    
+      { "id": 1, "name": "提醒", "keywords": "连接设备", "img": "../../images/band.png" },
+      { "id": 2, "name": "闹钟", "keywords": "个设备", "img": "../../images/user1.png" },
+      { "id": 3, "name": "久坐", "keywords": "身高/体重等", "img": "../../images/setting_blue.png" },
 
-      { "id": 4, "name": "我的排名", "keywords": "无", "img": "../../images/rank.png" },
-      { "id": 5, "name": "运动目标", "keywords": "7000", "img": "../../images/target_big.png" },
+      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/rank.png" },
+      { "id": 5, "name": "寻找设备", "keywords": "7000", "img": "../../images/target_big.png" },
       { "id": 6, "name": "计量单位", "keywords": "公制", "img": "../../images/unit.png" },
-      { "id": 7, "name": "关于", "keywords": "", "img": "../../images/about_blue.png" }*/
+      { "id": 7, "name": "断开连接", "keywords": "", "img": "../../images/about_blue.png" },
+      { "id": 8, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png" },
+      { "id": 9, "name": "硬件版本", "keywords": "", "img": "../../images/about_blue.png" },
+      { "id": 10, "name": "设备信息", "keywords": "", "img": "../../images/about_blue.png" }
+
+
+
 
     ]
   },
@@ -34,6 +40,15 @@ Page({
    */
   onReady: function () {
     console.log("run onLoad....");
+    var myData = this.data.items;
+    for(var n=0;n<myData.length;n++){
+      if (myData[n].id==9)
+        myData[n].keywords="测试";
+    }
+    this.setData({
+      items: myData
+    });
+    
   },
 
   /**
@@ -41,24 +56,7 @@ Page({
    */
   onShow: function () {
     var that=this;
-    wx.showLoading({
-      title: '',
-    })
-    wx.request({
-      url: util.getUrl('ble.php?action=query_order'),
-      data: {
-      },
-      method: 'POST',
-      header: { 'content-type': 'application/x-www-form-urlencoded' },
-      success: function (res) {
-       that.setData({
-         items: res.data.items
-       })
-       wx.hideLoading();
-        console.log("save----", res.data);
-
-      }
-    });
+ 
     console.log("run  onShow....");
   },
 

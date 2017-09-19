@@ -56,6 +56,19 @@ Page({
 			url: '../logs/logs'
 		})
 	},
+  connect_action:function(){
+    console.log("ok....." + this.data.isConnect);
+    if (this.data.isConnect==1){
+      wx.navigateTo({
+        url: 'connect_error',
+      })
+    }
+    else{
+      wx.navigateTo({
+        url: 'hw_setting',
+      })  
+    }
+  },
 	getList: function () {
 		var that = this
 		wx.request({
