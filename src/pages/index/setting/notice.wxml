@@ -21,12 +21,23 @@
                   {{item.keywords}}
                 </view>
                 <view class="right-text">
-                  {{item.keywords1}}
+                 <view hidden='{{!item.type}}'>
+  <picker mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{multiIndex}}" range="{{multiArray}}">
+    <view class="picker">
+    {{item.val}}
+    <!--
+      当前选择：{{multiArray[0][multiIndex[0]]}}，{{multiArray[1][multiIndex[1]]}}，{{multiArray[2][multiIndex[2]]}}
+      -->
+    </view>
+  </picker> 
+
+</view>
+
                 </view>
               </view>
             </view>
             
-            <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
+            <switch id="{{item.id}}"  checked="{{item.val}}" bindchange="switch2Change" hidden='{{item.type}}'/>
           </view>
         </view>
 

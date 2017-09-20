@@ -12,8 +12,7 @@ Page({
     
       { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
       { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
-      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/long_sit.png", right: 0 },
-
+      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/reminder_sit.png", right: 0 },
       { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
       { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
       { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
@@ -33,17 +32,22 @@ Page({
     });
     if (event.currentTarget.dataset.id == 0) {
       wx.navigateTo({
-        url: 'ble_connect',
+        url: 'setting/notice',
       })
     }
     else if (event.currentTarget.dataset.id == 1) {
       wx.navigateTo({
-        url: 'my_device',
+        url: 'setting/alarm',
       })
     }
     else if (event.currentTarget.dataset.id == 2) {
       wx.navigateTo({
-        url: 'person',
+        url: 'setting/sit',
+      })
+    }
+    else if (event.currentTarget.dataset.id == 3) {
+      wx.navigateTo({
+        url: 'setting/hb',
       })
     }
     console.log("this is ok.." + event.currentTarget.dataset.id);

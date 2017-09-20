@@ -144,6 +144,33 @@ Page({
 		console.log("time=" + d);
 		return parseInt(parseInt(d) / 1000);
 	},
+  saveConfig: function(key,val)
+  {
+    var config = wx.getStorageSync("config");
+    config[key] = val;
+    wx.setStorageSync("config", config);
+    
+    console.log("--------uploadConfig-----------");
+    wx.request({
+      url: util.getUrl('setting.php?action=save_all_setting'),
+      data: {
+        model: wx.getStorageSync("model"),
+        mac: wx.getStorageSync("mac"),
+        hw_version: wx.getStorageSync("hw_version"),
+        sw_version: wx.getStorageSync("sw_version"),
+        manufacturer: wx.getStorageSync("manufacturer"),
+        power: wx.getStorageSync("power"),
+        device_id: app.data.currDeviceId,
+        uid: wx.getStorageSync('serverId'),
+        config: util.objToBase64(wx.getStorageSync("config"))
+      },
+      method: 'POST',
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      success: function (res) {
+        console.log("save----", res);
+      }
+    });
+  },
 	onTimer: function () {
 		var that = this;
 		if (ble.getConnectState() != that.data.isConnect) {

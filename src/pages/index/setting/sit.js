@@ -1,5 +1,5 @@
 // pages/index/hw_setting.js
-var util = require('../../utils/util.js');
+var util = require('../../../utils/util.js');
 
 Page({
 
@@ -86,7 +86,7 @@ Page({
   onShow: function () {
     var that=this;
     wx.setNavigationBarTitle({
-      title: '设备信息设置',
+      title: '久坐',
     })
     console.log("run  onShow....");
   },

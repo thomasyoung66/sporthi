@@ -1,5 +1,5 @@
 // pages/index/hw_setting.js
-var util = require('../../utils/util.js');
+var util = require('../../../utils/util.js');
 
 Page({
 
@@ -8,45 +8,43 @@ Page({
    */
 
   data: {
+    multiIndex: [0, 0, 0,0],
+    multiArray: [['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'], 
+      ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23',
+        '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47',
+        '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'],
+      ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'], ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23',
+        '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47',
+        '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59']
+        ],
+
     items: [
-    
-      { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
-      { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
-      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/long_sit.png", right: 0 },
-
-      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
-      { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
-      { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
-      { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
-      { "id": 8, "name": "硬件版本", "keywords": "", "img": "../../images/info.png", right: 1 },
-      { "id": 9, "name": "设备信息", "keywords": "", "img": "../../images/connect_ok.png", right: 1 }
-
-
-
+      { "id": "notice_onoff", "name": "免打扰", "img": "../../../images/do_not_disturb.png", "val": 0,"type":0 },
+      { "id": "notice_time", "name": "提醒时段", "img": "../../../images/reminder_time.png", "val": "9:00~23:00", "type": 1 },
+      { "id": "notice_phone", "name": "电话", "img": "../../../images/reminder_call.png", "val": 0, "type": 0 },
+      { "id": "notice_msg", "name": "短信", "img": "../../../images/reminder_sms.png", "val": 0, "type": 0 },
+      { "id": "notcie_wx", "name": "微信", "img": "../../../images/reminder_wechat.png", "val": 0, "type": 0 },
+      { "id": "notice_qq", "name": "QQ", "img": "../../../images/reminder_qq.png", "val": 0, "type": 0 },
+      { "id": "notice_facebook", "name": "Facebook", "img": "../../../images/reminder_facebook.png", "val": 1, "type": 0 },
+      { "id": "notice_twitter", "name": "Twitter", "img": "../../../images/reminder_twitter.png", "val": 1, "type": 0 },
+      { "id": "notice_whatsapp", "name": "Whatsapp", "img": "../../../images/reminder_whatapp.png", "val": 1,"type":0 }
 
     ]
   },
+  switch2Change:function(e){
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value == true ? 1 : 0);
+    return ;
+    console.log("-----",e);
+    var config=wx.getStorageSync("config");
+    config[e.target.id] = e.detail.value==true?1:0;
+    wx.setStorageSync("config", config);
+    console.log(e.target.id+'switch1 发生 change 事件，携带值为', e.detail.value);
+  },
+  bindMultiPickerChange: function (e) {
+    console.log('picker发送选择改变，携带值为', e.detail.value)
+  },
   showDetail: function (event) {
-    //  util.dump_obj(data.target);
-    wx.showToast({
-      title: 'select=' + event.currentTarget.dataset.id ,
-    });
-    if (event.currentTarget.dataset.id == 0) {
-      wx.navigateTo({
-        url: 'ble_connect',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 1) {
-      wx.navigateTo({
-        url: 'my_device',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 2) {
-      wx.navigateTo({
-        url: 'person',
-      })
-    }
-    console.log("this is ok.." + event.currentTarget.dataset.id);
+    return ;
   },
   /**
    * 生命周期函数--监听页面加载
@@ -62,16 +60,6 @@ Page({
     console.log("run onLoad....");
     var myData = this.data.items;
     for(var n=0;n<myData.length;n++){
-      if (myData[n].id == 7) {
-        myData[n].keywords = "" + wx.getStorageSync("hw_version");
-      }
-      if (myData[n].id == 8) {
-        myData[n].keywords = "" + wx.getStorageSync("sw_version");
-      }
-      if (myData[n].id==9){
-          myData[n].keywords = "mac:" + wx.getStorageSync("mac");
-          myData[n].keywords1 = "制造商:" + wx.getStorageSync("manufacturer") + " 型号:" + wx.getStorageSync("model");
-      }
       
     }
     this.setData({
@@ -86,8 +74,18 @@ Page({
   onShow: function () {
     var that=this;
     wx.setNavigationBarTitle({
-      title: '设备信息设置',
+      title: '提醒',
     })
+
+    var myData = this.data.items;
+    var config=wx.getStorageSync("config");
+    for (var n = 0; n < myData.length; n++) {
+      myData[n].val=config[myData[n].id];
+    }
+    console.log("设置数据...", myData);
+    this.setData({
+      items: myData
+    });
     console.log("run  onShow....");
   },
 

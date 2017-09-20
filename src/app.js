@@ -36,6 +36,23 @@ App({
 			console.log("---------"+a[n]);
 		}
 	},
+  initData:function(){
+    var obj=wx.getStorageSync("config");
+    console.log("config-----",obj);
+    if (obj == null || obj.hasOwnProperty("notice_onoff")==false){
+        var config=new Object();
+        config.notice_onoff=1;
+        config.notice_time = "9:00~23:00";
+        config.notice_phone = 1;
+        config.notice_msg = 1;
+        config.notcie_wx = 1;
+        config.notice_qq = 1;
+        config.notice_facebook = 1;
+        config.notice_twitter = 1;
+        config.notice_whatsapp = 1;
+        wx.setStorageSync("config", config);
+    }
+  },
 	onLaunch: function () {
 		//调用API从本地缓存中获取数据
 		var logs = wx.getStorageSync('logs') || []
@@ -47,6 +64,7 @@ App({
 		});
 		//this.get_open_id();
 		// this.getUserInfo(null);
+    this.initData();
 		this.myTest();
 
 	},
