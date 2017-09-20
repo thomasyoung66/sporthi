@@ -10,43 +10,46 @@ Page({
   data: {
     items: [
     
-      { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
-      { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
-      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/long_sit.png", right: 0 },
-
-      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
-      { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
-      { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
-      { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
-      { "id": 8, "name": "硬件版本", "keywords": "", "img": "../../images/info.png", right: 1 },
-      { "id": 9, "name": "设备信息", "keywords": "", "img": "../../images/connect_ok.png", right: 1 }
-
-
-
+      {
+        "id": "alarm1", "name": "1", "onoff":0, "val": "0:00", "img": "../../../images/alarm_clock.png", "right": 0,
+        "w0": 1, "w1": 1, "w2": 1, "w3": "1", "w4": 1, "w5": 1, "w6": 0},
+      {
+        "id": "alarm2", "name": "2", "onoff": 0, "val": "0:00", "img": "../../../images/alarm_clock.png", "right": 0,
+        "w0": 1, "w1": 1, "w2": 1, "w3": "1", "w4": 1, "w5": 1, "w6": 1
+       },
+      {
+        "id": "alarm3", "name": "3", "onoff": 0,"val": "0:00", "img": "../../../images/alarm_clock.png", "right": 0,
+        "w0": 1, "w1": 1, "w2": 1, "w3": "1", "w4": 1, "w5": 1, "w6": 1 },
 
     ]
   },
-  showDetail: function (event) {
-    //  util.dump_obj(data.target);
-    wx.showToast({
-      title: 'select=' + event.currentTarget.dataset.id ,
+  checkboxChange: function (e) {
+    console.log(e.target.id + '  >>>>checkbox发生change事件，携带value值为：', e.detail.value.join(","));
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value.join(","));
+    return ;
+  },
+  bindTimeChange: function (e) {
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value);
+    var tmp = this.data.items;
+    var id = "" + e.target.id;
+    for(var n=0;n<tmp.length;n++){
+      if (id.indexOf(tmp[n].id)>=0){
+        tmp[n].val = e.detail.value;
+        break;
+      }
+    }
+    this.setData({
+      items: tmp
     });
-    if (event.currentTarget.dataset.id == 0) {
-      wx.navigateTo({
-        url: 'ble_connect',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 1) {
-      wx.navigateTo({
-        url: 'my_device',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 2) {
-      wx.navigateTo({
-        url: 'person',
-      })
-    }
-    console.log("this is ok.." + event.currentTarget.dataset.id);
+  },
+  switch2Change: function (e) {
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value == true ? 1 : 0);
+    return;
+    console.log("-----", e);
+    var config = wx.getStorageSync("config");
+    config[e.target.id] = e.detail.value == true ? 1 : 0;
+    wx.setStorageSync("config", config);
+    console.log(e.target.id + 'switch1 发生 change 事件，携带值为', e.detail.value);
   },
   /**
    * 生命周期函数--监听页面加载
@@ -86,8 +89,25 @@ Page({
   onShow: function () {
     var that=this;
     wx.setNavigationBarTitle({
-      title: '闹钟',
-    })
+      title: '闹钟1',
+    });
+    var tmp=this.data.itmes;
+    var config=wx.getStorageSync("config");
+    for(var n=1;n<=3;n++){
+      console.log("config=",config);
+      tmp[n-1].val=config["alarm"+n+"time"];
+      tmp[n - 1].onoff = config["alarm" + n];
+
+    }
+    this.setData({
+      items:tmp
+    });
+    /*
+    { "id": "alarm3", "name": "3", "val": "0:00", "img": "../../../images/alarm_clock.png", "right": 0,
+        "w0": 1, "w1": 1, "w2": 1, "w3": "1", "w4": 1, "w5": 1, "w6": 1 }
+        */
+
+   
     console.log("run  onShow....");
   },
 

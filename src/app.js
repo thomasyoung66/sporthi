@@ -52,6 +52,20 @@ App({
         config.notice_whatsapp = 1;
         wx.setStorageSync("config", config);
     }
+    if (obj.hasOwnProperty("alarm1")==false){
+      var config = wx.getStorageSync("config");
+      config.alarm1=0;
+      config.alarm2=0;
+      config.alarm3=0;
+      config.alarm1time = "6:00";
+      config.alarm2time = "12:00";
+      config.alarm3time = "22:30";
+      config.alarm1week= "";
+      config.alarm2week = "";
+      config.alarm3week = "";
+
+      wx.setStorageSync("config", config);
+    }
   },
 	onLaunch: function () {
 		//调用API从本地缓存中获取数据

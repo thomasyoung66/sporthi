@@ -10,23 +10,54 @@
             <image class="img" src="{{item.img}}" />
             <text class="title">{{item.name}}</text>
           </view>
+          <checkbox-group id="{{item.id}}week" bindchange="checkboxChange">
           <view class="main-2">
-            <text>
-            </text>
+    
+            <view class="week">
+         
+            <checkbox value="1" checked="{{item.w1}}" bindchange="checkboxChange"/>
+            一
+            </view>
+            <view class="week"> 
+            <checkbox   value="2" checked="{{item.w2}}" bindchange="checkboxChange"/>
+              二
+            </view>
+            <view class="week">
+            <checkbox  value="3" checked="{{item.w3}}" bindchange="checkboxChange"/>
+              三
+            </view>
+            <view class="week">
+            <checkbox  value="4" checked="{{item.w4}}" bindchange="checkboxChange"/>
+              四
+            </view>
+            <view class="week">
+            <checkbox  value="5" checked="{{item.w5}}" bindchange="checkboxChange"/>
+              五
+            </view>
+            <view class="week">
+            <checkbox  value="6" checked="{{item.w6}}" bindchange="checkboxChange"/>
+              六
+            </view>
+            <view class="week">
+            <checkbox  value="0" checked="{{item.w0}}" bindchange="checkboxChange"/>
+              日
+            </view>
           </view>
+          </checkbox-group>
           <view class="right-row">
             <view class="right-row2">
               <view>
-                <view class="right-text">
-                  {{item.keywords}}
-                </view>
-                <view class="right-text">
-                  {{item.keywords1}}
-                </view>
+              <picker id="{{item.id}}time" mode="time" value="{{item.val}}" start="00:00" end="23:59" bindchange="bindTimeChange">
+                  <view class="picker">
+                      {{item.val}}
+                  </view>
+                </picker>
               </view>
             </view>
-            
+            <!--
             <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
+            -->
+             <switch id="{{item.id}}"  checked="{{item.onoff}}" bindchange="switch2Change" />
           </view>
         </view>
 
