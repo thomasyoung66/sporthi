@@ -29,12 +29,16 @@ App({
 		var di = this.getTimeDiff();
 		console.log("diff="+di);
 		console.log(util.getDateOffset(-3,"yyyy-MM-dd"));
-		return ;
-		var s="1234";
-		var a=s.split(";");
-		for(var n=0;n<a.length;n++){
-			console.log("---------"+a[n]);
-		}
+    console.log("我的..." + util.getBit(2, 1) + "--" + util.getBit(2,0));
+    var a = util.setBit(0,1);
+    a = util.setBit(a, 0);
+    console.log("aaaa==="+a);
+	//	return ;
+		var s=[1,2,3,4,5,6];
+    for(var n=0;n<s.length;n++){
+      //console.log("loop----"+s[n]);
+    }
+
 	},
   initData:function(){
     var obj=wx.getStorageSync("config");
@@ -80,6 +84,12 @@ App({
 		// this.getUserInfo(null);
     this.initData();
 		this.myTest();
+    var str = "9:00~12:00";
+    var arr=str.split(/:|~/);
+    //console.log("------"+str.split("\:\~"));
+    for(var n=0;n<arr.length;n++){
+      console.log("array-----"+arr[n]);
+    }
 
 	},
 	save_userinfo_server: function () {
@@ -109,9 +119,6 @@ App({
 				wx.setStorageSync('height', res.data.height);
 				wx.setStorageSync('weight', res.data.weight);
 				wx.setStorageSync('phone', res.data.phone);
-
-
-
 
 				that.data.allDevice = res.data.devices;
 				for(var n=0;n<res.data.devices.length;n++){

@@ -307,6 +307,53 @@ function dumpArrayBuffer(dataView)
   }
   console.log(str);
 }
+function safeGet(obj,key,def){
+  if (obj==null ||obj=="")
+    return def;
+  if (obj.hasOwnProperty(key)==false)
+    return def;
+
+  return obj[key];
+
+}
+function safe(key, def) {
+  if (key == null || key == "")
+    return def;
+  return key;
+}
+function fixWeekDate(w)
+{
+  var arr=new Array();
+  for(var n=0;n<7;n++){
+    arr[n]=0;
+  }
+  if (w==null || w==""||w.length==0){
+    return arr;
+  }
+
+  for(var n=0;n<w.length;n++){
+    arr[w[n]]=1;
+  }
+  return arr;
+}
+//获取某位的值
+function getBit(val, bit) {
+  /*1 return true; 0 return false*/
+  return ((val & (0x1 << bit)) >> bit) == 1;
+}
+//设置位
+function setBit(val, bit) {
+  return val | (0x1 << bit)
+}
+//清除位
+function clearBit(val, bit) {
+  var a = 255;
+  for (var i = 0; i <= bit; i++) {
+    a = a << 1;
+    if (i > 0) a++;
+  }
+  return val & a;
+}
 module.exports = {
 	formatTime: formatTime,
 	test: test,
@@ -329,5 +376,12 @@ module.exports = {
 	base64encode: base64encode,
 	base64decode: base64decode,
 	arrayBufferToString: arrayBufferToString,
-  dumpArrayBuffer: dumpArrayBuffer
+  dumpArrayBuffer: dumpArrayBuffer,
+  safeGet: safeGet,
+  safe:safe,
+  fixWeekDate: fixWeekDate,
+  getBit: getBit,
+  setBit: setBit,
+  clearBit: clearBit
+
 }

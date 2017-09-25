@@ -5,7 +5,7 @@
     <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
       <view wx:for="{{items}}" url="">
 
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+        <view class="main"  data-id="{{index}}" data-idIndex="{{index+1}}">
           <view class="main-1">
             <image class="img" src="{{item.img}}" />
             <text class="title">{{item.name}}</text>
@@ -15,18 +15,18 @@
             </text>
           </view>
           <view class="right-row">
-            <view class="right-row2">
-              <view>
-                <view class="right-text">
-                  {{item.keywords}}
-                </view>
-                <view class="right-text">
-                  {{item.keywords1}}
-                </view>
+            <view class="right-row2" hidden="{{index==0?1:0}}">
+              <view class="right-text">
+                {{item.keywords}}
               </view>
             </view>
-            
-            <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
+            <picker hidden="{{index==0?0:1}}" id="{{item.id}}" bindchange="bindPickerChange" value="{{pickIndex}}" range="{{array}}">
+              <view hidden="{{index==0?0:1}}" class="picker">
+                  {{item.keywords}}分钟
+              </view>
+            </picker>
+            <switch hidden="{{index==0?1:0}}" id="{{item.id}}" checked="{{item.onoff}}" bindchange="switch2Change" />
+            <image style="width:16px;height:24" class="img" hidden="{{index==0?0:1}}" src="../../images/right.png" />
           </view>
         </view>
 

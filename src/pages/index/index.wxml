@@ -1,234 +1,253 @@
 <!--index.wxml-->
-<view class="section" style="background:#f8f8f8">
+<view class="section" style="background:#f8f8f8" bindtouchstart="touchStart" bindtouchend="touchEnd">
 
-    <view class="main_header">
-        <image bindtap="connect_action" class="header_img" src="{{isConnect?'../../images/band.png':'../../images/disconnect.png'}}" />
+  <view class="main_header">
+    <image bindtap="connect_action" class="header_img" src="{{isConnect?'../../images/ic_device_bracelet.png':'../../images/disconnect.png'}}" />
 
-        <image bindtap="prepDateTap" class="lr_img" src="../../images/left_arrow_white.png" />
-        <picker mode="date" value=" {{currDateShow}}" start="{{beginDate}}" end="{{endDate}}" bindchange="bindDateChange">
-            <view class="picker main_title_text">
-                {{currDateShow}}
-            </view>
-		<view class="main_title_text">
-			{{currWeekShow}}
-		</view>
-        </picker>
+    <image bindtap="prepDateTap" class="lr_img" src="../../images/left_arrow_white.png" />
+    <picker mode="date" value=" {{currDateShow}}" start="{{beginDate}}" end="{{endDate}}" bindchange="bindDateChange">
+      <view class="picker main_title_text">
+        {{currDateShow}}
+      </view>
+      <view class="main_title_text">
+        {{currWeekShow}}
+      </view>
+    </picker>
 
-        <image bindtap="nextDateTap" class="lr_img" src="../../images/right_arrow_white.png" />
+    <image bindtap="nextDateTap" class="lr_img" src="../../images/right_arrow_white.png" />
 
-        <!--<image  style="" class="lr_img1" src="" />-->
-	  <view class="power" >
-	    <progress style="width:30px;" percent="{{power_ps}}" stroke-width="10"  color="green"  />
-	    	{{power_text}}%
-	    </view>
-	<!--../../images/longsit_week.png-->
+    <!--<image  style="" class="lr_img1" src="" />-->
 
+    <view class="power">
+      <progress style="width:30px;margin-top:15px;" percent="{{power_ps}}" stroke-width="10" color="green" /> 
+      {{power_text}}%
     </view>
 
-    <view class='unconnect' hidden="{{isConnect}}">
-        <text class="unconnect_text">设备未连接</text>
-    </view>
+    <!--../../images/longsit_week.png-->
 
-    <scroll-view class="scroll-view main_body" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+  </view>
 
-        <view class="step_frame">
-            <view class="step_total">
-                <view class="step_total_first">
-                    <image style="width:44px;height:38px" src="../../images/step_big.png" /> <text style="padding-left:10px">步数</text>
-                </view>
-                <view style="padding-right:30px">
-                    {{step_total}}
-                </view>
-            </view>
-		<view class="step_comment">
-			当日运动总数
-		</view>
-            <view class="view_white_line">
-            </view>
-            <view style="margin:10px 10px 10px 10px">
-                <progress percent="{{step_ps}}" stroke-width="15" />
+  <view class='unconnect' hidden="{{isConnect}}" bindtap='reConnect'>
+    <text class="unconnect_text">设备未连接</text>
+  </view>
 
-                <view class="step_ps_frame">
-                    <view calss="def_row_view">
-                        <image style="width:20px;height:26px" src="../../images/step_green.png" />
-                        <text>{{step_ps}}%</text>
-                    </view>
+  <scroll-view class="scroll-view {{isConnect==0?'':'main_body'}}" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
 
-                    <view class="def_row_view">
-                        <image style="width:26px;height:26px" src="../../images/target_small.png" />
-                        <text>{{step_dest}}</text>
-                    </view>
-
-                </view>
-		<view class="step_comment">
-			步数完成率/目标步数
-		</view>
-            <view class="view_white_line">
-            </view>
-                <!--开始卡路里-->
-                <view class="step_detail_frame">
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/distance_grey.png" /> {{step_dist}}米
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/kcal_grey.png" /> {{step_cal}}千卡
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/time_grey.png" /> {{step_time}}
-
-                    </view>
-                </view>
-		    	<view class="step_comment">
-			距离/卡路里/运动时间
-			</view>
-            <view class="view_white_line"/>
-                <!--结束卡路里-->
-                <view >
-                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
-                </view>
-            </view>
-
+    <view class="step_frame">
+      <view class="step_total" style="padding:10px">
+        <view class="step_total_first">
+          <image style="width:44px;height:38px" src="../../images/step_big.png" />
+          <text style="padding-left:10px">步数</text>
         </view>
-	<!--sleep-->
-	  <view style="margin:0px 0px 0px 0px">
-	  <view class="sleep_frame">
-		<view class="step_total">
-                <view class="step_total_first">
-                    <image style="width:44px;height:38px" src="../../images/sleep_big.png" /> <text style="padding-left:10px">睡眠</text>
-                </view>
-                <view style="padding-right:30px">
-                    {{sleep_total}}h
-                </view>
+        <view class="def_col_view_l" style="padding-right:20px">
+          <view style="">
+            {{step_total}}
+          </view>
+          当日步数
+        </view>
+      </view>
+      <view class="view_white_line">
+      </view>
+      <view style="margin:10px 20px 10px 20px">
+        <progress percent="{{step_ps}}" stroke-width="15" />
+
+        <view class="step_ps_frame">
+          <view class="def_col_view_l">
+            <view calss="def_row_view">
+              <image style="width:20px;height:26px" src="../../images/step_green.png" />
+              <text>{{step_ps}}%</text>
             </view>
-		<view class="step_comment">
-			当日睡眠情况
-		</view>
-		     <view class="view_white_line"/>
-		                <!--开始卡路里-->
-                <view class="step_detail_frame">
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/sleep_good.png" /> 
-				{{good_sleep_time}}h
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/sleep_bad.png" /> {{bad_sleep_time}}h
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/sleep_awake.png" /> {{sober_sleep_time}}h
-
-                    </view>
-                </view>
-		    	<view class="step_comment">
-			深睡/浅睡/清醒(单位:小时)
-			</view>
-            <view class="view_white_line"/>
-                <!--结束卡路里-->
-		      <view>
-                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
-                </view>
-	  </view>
-	    </view>
-	  <!--end sleep-->
-	  <!--rate-->
-	  	<view style="margin:0px 0px 0px 0px">
-	  <view class="sleep_frame">
-		<view class="step_total">
-                <view class="step_total_first">
-                    <image style="width:44px;height:38px" src="../../images/hrm_big.png" /> <text style="padding-left:10px">心率</text>
-                </view>
-                <view style="padding-right:10px" class="step_total_first">
-                    {{hb_last}}
-			
-                </view>
-		    <view class="step_total_first">
-		      <button bindtap="heartBeatTest"  style="background:rgb(26,172,25);color:white">{{hb_text}}</button>
-		    </view>
+            步数完成率
+          </view>
+          <view class="def_col_view_l">
+            <view class="def_row_view">
+              <image style="width:26px;height:26px" src="../../images/target_small.png" />
+              <text>{{step_dest}}</text>
             </view>
-		<view class="step_comment">
-			心率
-		</view>
-		 <view class="view_white_line"/>
-		                <!--开始卡路里-->
-	
-                <view class="step_detail_frame">
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_max.png" /> 
-				{{hb_max}}bpm
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_avg.png" /> {{hb_avg}}bpm
-
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/hrm_red_min.png" /> {{hb_min}}bpm
-
-                    </view>
-                </view>
-		    	<view class="step_comment">
-			最高/平均/最低(单位:次/分)
-			</view>
-            <view class="view_white_line"/>
-                <!--结束卡路里-->
-		      <view>
-                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" 
-			  canvas-id="heartrateCanvas"></canvas>
-                </view>
-	  </view>
-	  </view>
-
-	  	  <!--血压-->
-	  	<view style="margin:0px 0px 0px 0px">
-	  <view class="sleep_frame">
-		<view class="step_total">
-                <view class="step_total_first">
-                    <image style="width:44px;height:38px" src="../../images/bp_big.png" /> <text style="padding-left:10px">血压</text>
-                </view>
-                <view style="padding-right:10px" class="step_total_first">
-                    {{bp_last}}
-                </view>
-		 
-		    <view class="step_total_first">
-		      <button bindtap="bpTest"   style="background:rgb(26,172,25);color:white">{{bp_text}}</button>
-		    </view>
+            目标步数
+          </view>
+        </view>
+        <view class="view_white_line">
+        </view>
+        <!--开始卡路里-->
+        <view class="step_detail_frame">
+          <view class="def_col_view_l">
+            <view class="def_col_view">
+              <image style="width:32px;height:32px" src="../../images/distance_grey.png" /> {{step_dist}}米
             </view>
-		<view class="step_comment">
-			血压
-		</view>
-		    <view class="view_white_line"/>
-		                <!--血压-->
-	
-                <view class="step_detail_frame">
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/bp_max.png" /> 
-				{{bp_max}}
+            距离
+          </view>
+          <view class="def_col_view_l">
+            <view class="def_col_view">
+              <image style="width:32px;height:32px" src="../../images/kcal_grey.png" /> {{step_cal}}千卡
+            </view>
+            卡路里
+          </view>
+          <view class="def_col_view_l">
+            <view class="def_col_view">
+              <image style="width:32px;height:32px" src="../../images/time_grey.png" /> {{step_time}}
 
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/bp_avg.png" /> {{bp_avg}}
+            </view>
+            运动时间
+          </view>
+        </view>
+        <!--   <view class="step_comment">
+        
+        </view>-->
+        <view class="view_white_line" />
+        <!--结束卡路里-->
+        <view>
+          <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
+        </view>
+      </view>
 
-                    </view>
-                    <view class="def_col_view">
-                        <image style="width:32px;height:32px" src="../../images/bp_min.png" /> {{bp_min}}
+    </view>
+    <!--sleep-->
+    <view style="margin:0px 0px 0px 0px">
+      <view class="sleep_frame">
+        <view class="step_total">
+          <view class="step_total_first">
+            <image style="width:44px;height:38px" src="../../images/sleep_big.png" />
+            <text style="padding-left:10px">睡眠</text>
+          </view>
+          <view style="padding-right:30px">
+            {{sleep_total}}h
+          </view>
+        </view>
+        <view class="step_comment">
+          当日睡眠情况(单位:小时)
+        </view>
+        <view class="view_white_line" />
+        <!--开始卡路里-->
+        <view class="step_detail_frame">
+         <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/sleep_good.png" /> {{good_sleep_time}}h
+          </view>
+          深睡
+          </view>
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/sleep_bad.png" /> {{bad_sleep_time}}h
+          </view>
+          浅睡
+          </view>
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/sleep_awake.png" /> {{sober_sleep_time}}h
+          </view>
+          清醒
+          </view>
+        </view>
 
-                    </view>
-                </view>
-		    	<view class="step_comment">
-			最高/平均/最低(单位:毫米汞柱/mmHg)
-			</view>
-            <view class="view_white_line"/>
-            
-		      <view>
-                    <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" 
-			  canvas-id="bpCanvas"></canvas>
-                </view>
-	  </view>
-	  </view>
-	  <!--结束心率-->
-    </scroll-view>
+        <view class="view_white_line" />
+        <!--结束卡路里-->
+        <view>
+          <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+        </view>
+      </view>
+    </view>
+    <!--end sleep-->
+    <!--rate-->
+    <view style="margin:0px 0px 0px 0px">
+      <view class="sleep_frame">
+        <view class="step_total">
+          <view class="step_total_first">
+            <image style="width:44px;height:38px" src="../../images/hrm_big.png" />
+            <text style="padding-left:10px">心率</text>
+          </view>
+          <view style="padding-right:10px" class="step_total_first">
+            {{hb_last}}
+
+          </view>
+          <view class="step_total_first">
+            <button bindtap="heartBeatTest" style="background:rgb(26,172,25);color:white">{{hb_text}}</button>
+          </view>
+        </view>
+        <view class="step_comment">
+          心率(单位:次/分)
+        </view>
+        <view class="view_white_line" />
+        <!--开始卡路里-->
+
+        <view class="step_detail_frame">
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/hrm_red_max.png" /> {{hb_max}}bpm
+          </view>
+          最高
+          </view>
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/hrm_red_avg.png" /> {{hb_avg}}bpm
+          </view>
+          平均
+          </view>
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/hrm_red_min.png" /> {{hb_min}}bpm
+          </view>
+          最低
+          </view>
+        </view>
+        <view class="view_white_line" />
+        <!--结束卡路里-->
+        <view>
+          <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="heartrateCanvas"></canvas>
+        </view>
+      </view>
+    </view>
+
+    <!--血压-->
+    <view style="margin:0px 0px 0px 0px">
+      <view class="sleep_frame">
+        <view class="step_total">
+          <view class="step_total_first">
+            <image style="width:44px;height:38px" src="../../images/bp_big.png" />
+            <text style="padding-left:10px">血压</text>
+          </view>
+          <view style="padding-right:10px" class="step_total_first">
+            {{bp_last}}
+          </view>
+
+          <view class="step_total_first">
+            <button bindtap="bpTest" style="background:rgb(26,172,25);color:white">{{bp_text}}</button>
+          </view>
+        </view>
+        <view class="step_comment">
+          血压(单位:毫米汞柱/mmHg)
+        </view>
+        <view class="view_white_line" />
+        <!--血压-->
+
+        <view class="step_detail_frame">
+         <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/bp_max.png" /> {{bp_max}}
+          </view>
+          最高
+          </view>
+           <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/bp_avg.png" /> {{bp_avg}}
+          </view>
+          平均
+          </view>
+          <view class="def_col_view_l">
+          <view class="def_col_view">
+            <image style="width:32px;height:32px" src="../../images/bp_min.png" /> {{bp_min}}
+          </view>
+          最低
+          </view>
+        </view>
+        <view class="view_white_line" />
+
+        <view>
+          <canvas style="z-index:-99;width: 3600px; height: 200px;border:1px soild red" canvas-id="bpCanvas"></canvas>
+        </view>
+      </view>
+    </view>
+    <!--结束心率-->
+  </scroll-view>
 
 </view>

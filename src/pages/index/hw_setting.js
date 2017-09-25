@@ -13,7 +13,7 @@ Page({
       { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
       { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
       { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/reminder_sit.png", right: 0 },
-      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
+      { "id": 4, "name": "心率", "keywords": "心率参数", "img": "../../images/hrm_blue.png", right: 0 },
       { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
       { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
       { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
@@ -27,9 +27,7 @@ Page({
   },
   showDetail: function (event) {
     //  util.dump_obj(data.target);
-    wx.showToast({
-      title: 'select=' + event.currentTarget.dataset.id ,
-    });
+
     if (event.currentTarget.dataset.id == 0) {
       wx.navigateTo({
         url: 'setting/notice',
@@ -50,6 +48,14 @@ Page({
         url: 'setting/hb',
       })
     }
+    else if (event.currentTarget.dataset.id == 4) {
+      getApp().globalData.indexPage.findDevice(2);
+    }
+    else
+      wx.showToast({
+        title: 'select=' + event.currentTarget.dataset.id,
+      });
+    
     console.log("this is ok.." + event.currentTarget.dataset.id);
   },
   /**

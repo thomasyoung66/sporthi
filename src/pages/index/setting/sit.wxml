@@ -4,29 +4,48 @@
   <view style="width:100%">
     <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
       <view wx:for="{{items}}" url="">
-
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+        <view class="main" data-id="{{index}}" data-idIndex="{{index+1}}">
           <view class="main-1">
             <image class="img" src="{{item.img}}" />
             <text class="title">{{item.name}}</text>
           </view>
-          <view class="main-2">
-            <text>
-            </text>
-          </view>
-          <view class="right-row">
-            <view class="right-row2">
-              <view>
-                <view class="right-text">
-                  {{item.keywords}}
-                </view>
-                <view class="right-text">
-                  {{item.keywords1}}
-                </view>
+          <checkbox-group hidden="{{index==0?0:1}}" id="{{item.id}}week" bindchange="checkboxChange">
+            <view class="main-2">
+              <view class="week">
+                <checkbox value="1" checked="{{item.w1}}" bindchange="checkboxChange" /> 一
+              </view>
+              <view class="week">
+                <checkbox value="2" checked="{{item.w2}}" bindchange="checkboxChange" /> 二
+              </view>
+              <view class="week">
+                <checkbox value="3" checked="{{item.w3}}" bindchange="checkboxChange" /> 三
+              </view>
+              <view class="week">
+                <checkbox value="4" checked="{{item.w4}}" bindchange="checkboxChange" /> 四
+              </view>
+              <view class="week">
+                <checkbox value="5" checked="{{item.w5}}" bindchange="checkboxChange" /> 五
+              </view>
+              <view class="week">
+                <checkbox value="6" checked="{{item.w6}}" bindchange="checkboxChange" /> 六
+              </view>
+              <view class="week">
+                <checkbox value="0" checked="{{item.w0}}" bindchange="checkboxChange" /> 日
               </view>
             </view>
-            
-            <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
+          </checkbox-group>
+
+          <view class="right-row">
+            <view class="right-row2">
+              <view hidden="{{index==0?0:1}}" class="right-text">
+                <switch id="sit_onoff" checked="{{item.onoff}}" bindchange="switch2Change" />
+              </view>
+              <picker id="{{item.id}}" hidden="{{index==0?1:0}}" mode="multiSelector" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" value="{{item.index}}" range="{{multiArray}}">
+                <view hidden="{{index==0?1:0}}" class="picker">
+                      {{item.bh+":"+item.bm+"~"+item.eh+":"+item.em}}
+                </view>
+              </picker>
+            </view>
           </view>
         </view>
 

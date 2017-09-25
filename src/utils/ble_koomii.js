@@ -102,15 +102,9 @@ function set_time() {
 
 	set_times=0;
 	wx.writeBLECharacteristicValue({
-		// 这里的 deviceId 需要在上面的 getBluetoothDevices 或 onBluetoothDeviceFound 接口中获取
 		deviceId: g_deviceId,
-		// 这里的 serviceId 需要在上面的 getBLEDeviceServices 接口中获取
 		serviceId: getServerId("FFC0"),
 		characteristicId: getCharacter("FF15"),
-		//serviceId: g_services,
-		// 这里的 characteristicId 需要在上面的 getBLEDeviceCharacteristics 接口中获取
-		//  characteristicId: g_characteristics,
-		// 这里的value是ArrayBuffer类型
 		value: buffer,
 		success: function (res) {
 			
@@ -126,6 +120,372 @@ function set_time() {
 		}
 	})
 
+}
+function readAllConfig()
+{
+  wx.readBLECharacteristicValue({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF14"),
+    success: function (res) {
+      //读取当前的数据
+      wx.notifyBLECharacteristicValueChanged({
+        deviceId: g_deviceId,
+        serviceId: getServerId("FFC0"),
+        characteristicId: getCharacter("FF14"),
+        state: true,
+        success: function (res) {
+          // success
+          console.log("-------succed----", res);
+
+        },
+        fail: function (res) {
+          console.log("-------failure----", res);
+          // fail
+        }
+      });
+    }
+  });
+  return ;
+
+}
+function saveHwConfigPage1()
+{
+
+ // readAllConfig();
+ // return ;
+
+  let buffer = new ArrayBuffer(20)
+  let dataView = new DataView(buffer);
+  var config=wx.getStorageSync("config");
+  for(var n=0;n<20;n++){
+    dataView.setUint8(n,0x00);
+  }
+  /*
+  1Byte: bit0--单位制(0:公制；1:英制)
+      bit1: 2: 页序号0：0
+  1Byte: 身高（单位：50 - 250cm/ 20 - 100inch）
+  2Byte: 体重（单位：30 - 250Kg/ 60 - 500Pd）
+  2Byte: 步长（单位：20 - 200cm/ 5 - 100inch）
+  1Byte: 目标类型 1:卡路里（0 - 59999Kcal）
+  2:距离（PD199: 0 - 99, MG353:0 - 400km/ mile）
+  3:步数（0 - 99999）
+  4:时间（0 - 600Minute）
+  4Byte: 目标值
+  1Byte：年龄
+  1Byte：性别
+  2Byte：时区（单位分钟）
+  1Byte：心率自动检测间隔时间, 单位分钟: 0或10- 120(5倍数）
+    1Byte: 跑步目标类型（支持动态心率）
+    1:卡路里（0 - 59999Kcal）
+    2:距离（PD199:0 - 99, MG353:0 - 400km/ mile）
+    3:步数（0 - 99999）
+    4:时间（0 - 600Minute）
+    3Byte: 跑步目标值（支持动态心率）
+    */
+  dataView.setUint8(0,0);
+  dataView.setUint8(1, util.safe(wx.getStorageSync("height"),170));//身高
+  dataView.setUint16(2, util.safe(wx.getStorageSync("weight"), 70,true)); //体重
+  dataView.setUint16(4, 80,true);//步长
+  dataView.setUint8(6, 3);//目标类型
+  dataView.setUint32(7, util.safe(wx.getStorageSync("dest"), 70),true );//目标步数
+  dataView.setUint8(11, 30);//年龄
+  dataView.setUint8(12, util.safe(wx.getStorageSync("gender"), 1));//性别
+  dataView.setUint16(13,0,true);//
+  dataView.setUint8(15, util.safeGet(config,"hb_interal",60));
+  dataView.setUint8(16, 3);
+
+  console.log("write config1 begin....");
+  util.dumpArrayBuffer(dataView);
+  wx.writeBLECharacteristicValue({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF14"),
+    value: buffer,
+    success: function (res) {
+      console.log('写入数据 page1：writeBLECharacteristicValue success', res);
+     saveHwConfigPage2();
+   //   readAllConfig();
+    },
+    fail: function (res) {
+      console.log("写入数据失败 page1 :", res);
+    }
+  })
+}
+function saveHwConfigPage2() {
+
+  let buffer = new ArrayBuffer(20)
+  let dataView = new DataView(buffer);
+  var config = wx.getStorageSync("config");
+  for (var n = 0; n < 20; n++) {
+    dataView.setUint8(n, 0x00);
+  }
+  dataView.setUint8(0, 2);
+
+  dataView.setUint16(1, 1000,true); //自行车轮圈周长（900-2500mm）
+  dataView.setUint16(3, 120,true); //自行车曲柄长度（110.0-236.5mm）
+  var str = util.safeGet(config, "notice_time","9:00~23:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(5, arr[0]);//开始时
+  dataView.setUint8(6, arr[1]);//目标类型
+  dataView.setUint8(7, arr[2]);//目标类型
+  dataView.setUint8(8, arr[3]);//目标类型
+
+  dataView.setUint8(8, arr[3]);//目标类型
+  var onoff = util.safeGet(config, "notice_onoff", 0);
+  var b=0;
+  if (util.safeGet(config, "notice_msg", 0) == 1) { //短信
+    util.setBit(b, 0);
+  }
+  if (util.safeGet(config,"notice_phone",0)==1){ //电话
+    util.setBit(b,1);
+  }
+  if (onoff==0)
+    b=0;
+  dataView.setUint8(9, b);//目标类型
+
+  b=0;
+  dataView.setUint8(10, b);//目标类型
+  if (util.safeGet(config, "notcie_wx", 0) == 1)  //微信
+    util.setBit(b, 0);
+  if (util.safeGet(config, "notice_qq", 0) == 1)  //QQ
+    util.setBit(b, 1);
+  if (util.safeGet(config, "notice_wb", 0) == 1)  //weibo
+    util.setBit(b, 2);  
+  if (util.safeGet(config, "notice_facebook", 0) == 1)  //facebook
+    util.setBit(b, 3);  
+  if (util.safeGet(config, "notice_messenger", 0) == 1)  //messenger
+    util.setBit(b, 4);  
+  if (util.safeGet(config, "notice_skype", 0) == 1)  //skype
+    util.setBit(b, 5);  
+  if (util.safeGet(config, "notice_whatsapp", 0) == 1)  //whats app
+    util.setBit(b, 6);  
+  if (util.safeGet(config, "notice_viber", 0) == 1)  //viber
+    util.setBit(b, 7); 
+  if (onoff == 0)
+    b = 0;
+  dataView.setUint8(10, b);//目标类型
+
+  b=0;
+  if (util.safeGet(config, "notcie_vk", 0) == 1)  //vk
+    util.setBit(b, 0);
+  if (util.safeGet(config, "notice_linkin", 0) == 1)  //linked
+    util.setBit(b, 1);
+  if (util.safeGet(config, "notice_twitter", 0) == 1)  //twitter
+    util.setBit(b, 2);
+  if (util.safeGet(config, "notice_pinterest", 0) == 1)  //pinterest
+    util.setBit(b, 3);
+  if (util.safeGet(config, "notice_instagram", 0) == 1)  //instagram
+    util.setBit(b, 4);
+  if (util.safeGet(config, "notice_telegram", 0) == 1)  //telegram
+    util.setBit(b, 5);
+  if (util.safeGet(config, "notice_snapchat", 0) == 1)  //snapchat
+    util.setBit(b, 6);
+  if (util.safeGet(config, "notice_yandex", 0) == 1)  //yandex
+    util.setBit(b, 7); 
+  if (onoff == 0)
+    b = 0;
+  dataView.setUint8(11, b);//目标类型
+
+  console.log("write 页面2 config begin....");
+  util.dumpArrayBuffer(dataView);
+  wx.writeBLECharacteristicValue({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF14"),
+    value: buffer,
+    success: function (res) {
+      console.log('写入数据 page2：writeBLECharacteristicValue success', res);
+      saveHwConfigPage3();
+    },
+    fail: function (res) {
+      console.log("写入数据失败 page2 :", res);
+    }
+  });
+
+}
+function saveHwConfigPage3() {
+  
+  let buffer = new ArrayBuffer(20)
+  let dataView = new DataView(buffer);
+  var config = wx.getStorageSync("config");
+  for (var n = 0; n < 20; n++) {
+    dataView.setUint8(n, 0x00);
+  }
+  dataView.setUint8(0, 4);
+
+//闹钟1
+  var b=0;
+  if (util.safeGet(config,"alarm1",0)==1)
+    util.setBit(b,7);
+  var w = util.safeGet(config, "alarm1week", [0, 0, 0, 0, 0, 0, 0]);
+  if (w[0]==1)
+    util.setBit(b, 0);
+  if (w[1] == 1)
+    util.setBit(b, 1);
+  if (w[2] == 1)
+    util.setBit(b, 2);
+  if (w[3] == 1)
+    util.setBit(b, 3);
+  if (w[4] == 1)
+    util.setBit(b, 4);
+  if (w[5] == 1)
+    util.setBit(b, 5);
+  if (w[6] == 1)
+    util.setBit(b, 6);
+    
+  dataView.setUint8(1, b); //1闹钟1
+  
+  var str = util.safeGet(config, "alarm1time", "06:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(2, arr[0]); //1闹钟1
+  dataView.setUint8(3, arr[1]); //1闹钟1
+  dataView.setUint8(4, 0); //1闹钟1
+
+  //闹钟2
+  var w = util.safeGet(config, "alarm2week", [0, 0, 0, 0, 0, 0, 0]);
+  b=0;
+  if (w[0] == 1)
+    util.setBit(b, 0);
+  if (w[1] == 1)
+    util.setBit(b, 1);
+  if (w[2] == 1)
+    util.setBit(b, 2);
+  if (w[3] == 1)
+    util.setBit(b, 3);
+  if (w[4] == 1)
+    util.setBit(b, 4);
+  if (w[5] == 1)
+    util.setBit(b, 5);
+  if (w[6] == 1)
+    util.setBit(b, 6);
+
+  dataView.setUint8(5, b); //1闹钟1
+
+  var str = util.safeGet(config, "alarm2time", "06:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(6, arr[0]); //1闹钟1
+  dataView.setUint8(7, arr[1]); //1闹钟1
+  dataView.setUint8(8, 0); //1闹钟1
+
+  //闹钟3
+  var w = util.safeGet(config, "alarm3week", [0, 0, 0, 0, 0, 0, 0]);
+  b = 0;
+  if (w[0] == 1)
+    util.setBit(b, 0);
+  if (w[1] == 1)
+    util.setBit(b, 1);
+  if (w[2] == 1)
+    util.setBit(b, 2);
+  if (w[3] == 1)
+    util.setBit(b, 3);
+  if (w[4] == 1)
+    util.setBit(b, 4);
+  if (w[5] == 1)
+    util.setBit(b, 5);
+  if (w[6] == 1)
+    util.setBit(b, 6);
+
+  dataView.setUint8(9, b); //1闹钟1
+
+  var str = util.safeGet(config, "alarm2time", "06:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(10, arr[0]); //1闹钟1
+  dataView.setUint8(11, arr[1]); //1闹钟1
+  dataView.setUint8(12, 0); //1闹钟1
+
+  dataView.setUint8(13, 1); //中文
+  console.log("write 页面3 config begin....");
+  util.dumpArrayBuffer(dataView);
+
+  wx.writeBLECharacteristicValue({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF14"),
+    value: buffer,
+    success: function (res) {
+      console.log('写入数据 page3：writeBLECharacteristicValue success', res);
+      saveHwConfigPage4();
+    },
+    fail: function (res) {
+      console.log("写入数据失败 page3 :", res);
+    }
+  });
+
+
+}
+function saveHwConfigPage4() {
+  let buffer = new ArrayBuffer(20)
+  let dataView = new DataView(buffer);
+  var config = wx.getStorageSync("config");
+  for (var n = 0; n < 20; n++) {
+    dataView.setUint8(n, 0x00);
+  }
+  dataView.setUint8(0, 6);
+
+  //闹钟1
+  var b = 0;
+  if (util.safeGet(config, "sit_onoff", 0) == 1)
+    util.setBit(b, 7);
+  var w = util.safeGet(config, "sit_week", [0, 0, 0, 0, 0, 0, 0]);
+  if (w[0] == 1)
+    util.setBit(b, 0);
+  if (w[1] == 1)
+    util.setBit(b, 1);
+  if (w[2] == 1)
+    util.setBit(b, 2);
+  if (w[3] == 1)
+    util.setBit(b, 3);
+  if (w[4] == 1)
+    util.setBit(b, 4);
+  if (w[5] == 1)
+    util.setBit(b, 5);
+  if (w[6] == 1)
+    util.setBit(b, 6);
+
+  dataView.setUint8(1, b); //1闹钟1
+
+  var str = util.safeGet(config, "sit_morning", "09:02~12:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(2, arr[0]); 
+  dataView.setUint8(3, arr[3]); 
+
+  var str = util.safeGet(config, "sit_afternoon", "14:00~20:00");
+  var arr = str.split(/:|~/);
+  dataView.setUint8(4, arr[0]); 
+  dataView.setUint8(5, arr[2]); 
+
+  dataView.setUint8(6, 0);
+  dataView.setUint8(7, 0);
+  dataView.setUint8(8, 0);
+
+  b=0;
+  if (util.safeGet(config, "hb_warn", 0)==1)
+    util.setBit(b,0);
+  if (util.safeGet(config, "bp_warn", 0) == 1)
+    util.setBit(b, 1);
+
+  dataView.setUint8(9, b);
+  dataView.setUint8(10, 120);
+  dataView.setUint8(11, 90);
+  dataView.setUint8(12, 140);
+
+  console.log("write 页面4 config begin....");
+  util.dumpArrayBuffer(dataView);
+
+  wx.writeBLECharacteristicValue({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    characteristicId: getCharacter("FF14"),
+    value: buffer,
+    success: function (res) {
+      console.log('写入数据 page4：writeBLECharacteristicValue success', res);
+      readAllConfig();
+    },
+    fail: function (res) {
+      console.log("写入数据失败 page4 :", res);
+    }
+  });
 }
 function readMacAddr()
 {
@@ -165,7 +525,40 @@ function readMacAddr()
 		success: function (res) {
 		}
 	});
+  
 
+}
+function saveAllConfig()
+{
+  wx.getBLEDeviceCharacteristics({
+    deviceId: g_deviceId,
+    serviceId: getServerId("FFC0"),
+    success: function (res) {
+      //读取当前的数据
+      saveHwConfigPage1();
+      return ;
+      wx.notifyBLECharacteristicValueChanged({
+        deviceId: g_deviceId,
+        serviceId: getServerId("FFC0"),
+        characteristicId: getCharacter("FF14"),
+        state: true,
+        success: function (res) {
+          saveHwConfigPage1();
+        },
+        fail: function (res) {
+          console.log("-------failure----", res);
+          // fail
+        }
+      });
+    },
+    fail: function (res) {
+      console.log('180A蓝牙返回错误:readBLECharacteristicValue:', res);
+    }
+  });
+
+ // saveHwConfigPage2();
+ // saveHwConfigPage3();
+ // saveHwConfigPage4();
 }
 function readPowerUsed()
 {
@@ -309,7 +702,7 @@ function processStepHistory(val) {
 	}
 
 	if (seq == (total - 1)) {
-
+    wx.setStorageSync("sync_flag", util.getDateOffset(0, "yyyy-MM-dd"));
 		for (var n = 0; n < (16 * total) / 64; n++) {
 
 			var runDate = dataViewStep.getUint32(n * 64, true);
@@ -348,7 +741,7 @@ function processStepHistory(val) {
             var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
             stepDataJson[pDate] = item;
 
-            console.log("^_^---step data=",item.step);
+            console.log(pDate+"---^_^---step data=",item.step);
             wx.setStorageSync("step-" + pDate, item);
           }
           else if (valate == 0x45678901) {//睡眠数据
@@ -456,11 +849,117 @@ function bleCommNotifyRegister()
 {
 	     
 	wx.onBLECharacteristicValueChange(function (res) {
-		console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
+//		console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 		let dataView = new DataView(res.value);
 
+    if (res.characteristicId.indexOf("FF14") > 0) { //系统参数
+      console.log("系统参数..."+dataView.getInt8(0));
+      if (dataView.getInt8(0)==0){
+        /*
+        1Byte: bit0--单位制(0:公制；1:英制)
+       bit1:2: 页序号0：0
+      1Byte: 身高（单位：50-250cm/20-100inch）
+2Byte: 体重（单位：30-250Kg/60-500Pd）
+2Byte: 步长（单位：20-200cm/5-100inch）
+1Byte: 目标类型 1:卡路里（0-59999Kcal）
+                2:距离（PD199:0-99,MG353:0-400km/mile）
+                3:步数（0-99999）
+                4:时间（0-600Minute）
+4Byte: 目标值
+1Byte：年龄
+1Byte：性别
+2Byte：时区（单位分钟）
+1Byte：心率自动检测间隔时间,单位分钟: 0或10-120(5倍数）
+1Byte: 跑步目标类型（支持动态心率）
+       1:卡路里（0-59999Kcal）
+       2:距离（PD199:0-99,MG353:0-400km/mile）
+       3:步数（0-99999）
+       4:时间（0-600Minute）
+        3Byte: 跑步目标值（支持动态心率）*/
+        util.dumpArrayBuffer(dataView);
+        
+        
+        console.log("信息: 身高:" + dataView.getUint8(1)+" 体重="+dataView.getUint16(2,true)
+          + " 步长" + dataView.getUint16(4,true) + " 目标类型=" + dataView.getUint8(6) + " 目标值=" + dataView.getUint32(7,true)+" 年龄="
+          + dataView.getUint8(11) + " 性别=" + dataView.getUint8(12) + " 市区=" + dataView.getUint16(13, true) +" 心率自动检测间隔时间="+
+          dataView.getUint8(15) + "跑步目标类型（支持动态心率）=" + dataView.getUint8(16));
+          
+      }
+      else if (dataView.getInt8(0) == 2) {
+        /*
+"参数第2页：1/2
+1Byte: bit0--单位制(0:公制；1:英制)
+       bit1:2: 页序号1：0
+2Byte: 自行车轮圈周长（900-2500mm）
+2Byte: 自行车曲柄长度（110.0-236.5mm）
+4Byte：提醒时间段
+       1Byte：开始时间的小时值
+       1Byte：开始时间的分钟值
+       1Byte：结束时间的小时值
+       1Byte：结束时间的分钟值
+1Byte：提醒开关1
+       bit0：短信
+       bit1：电话
+       其他保留"
+1Byte：提醒开关2
+       bit0：REMINDER_WeChat = 0, //0:微信
+       bit1：REMINDER_QQ,         //1:QQ
+       bit2：REMINDER_Weibo,      //2:微博
+       bit3：REMINDER_Facebook,   //3:fb 
+       bit4：REMINDER_Messenger,  //4:messenger
+       bit5：REMINDER_Skype,      //5:skype
+       bit6：REMINDER_WhatsApp,   //6:whats app
+       bit7：REMINDER_Viber,      //7:viber
+1Byte：提醒开关3
+       bit0：REMINDER_VK,         //0:vk
+       bit1：REMINDER_LinkedIn,   //1:linked in
+       bit2：REMINDER_Twitter,    //2:twitter
+       bit3：REMINDER_Pinterest,  //3:pinterest
+       bit4：REMINDER_Instagram,  //4:instagram
+       bit5：REMINDER_Telegram,   //5:telegram
+       bit6：REMINDER_Snapchat,   //6:snapchat
+       bit7：REMINDER_Yandex,     //7:yandex
+8Byte：保留
+*/
+        console.log("自行车轮圈周长=" + dataView.getUint16(1, true)
+          + "自行车曲柄长度" + dataView.getUint16(3, true) + " 提醒时间段=" + dataView.getUint32(5, true) + " 提醒开关1=" + dataView.getUint8(9) + " 提醒开关2="+ dataView.getUint8(10) + " 提醒开关3=" + dataView.getUint8(10));
 
-    if (res.characteristicId.indexOf("2A35") > 0) { //产品型号
+      }
+      else if (dataView.getInt8(0) == 4) {
+        /*
+1Byte: bit0--单位制(0:公制；1:英制)
+       bit1:2: 页序号0：1
+4Byte：闹钟1开关和时间段
+       1Byte：bit7为开关标志，bit0-6==星期天-六
+       1Byte：闹钟1的小时值
+       1Byte：闹钟1的分钟值
+       1Byte：保留
+4Byte：闹钟2开关和时间段
+       1Byte：bit7为开关标志，bit0-6==星期天-六
+       1Byte：闹钟1的小时值
+       1Byte：闹钟1的分钟值
+       1Byte：保留
+4Byte：闹钟3开关和时间段
+       1Byte：bit7为开关标志，bit0-6==星期天-六
+       1Byte：闹钟1的小时值
+       1Byte：闹钟1的分钟值
+       1Byte：保留
+1Byte：多国语言的国家代码
+       0-ENGLISH,1-CN,2-TW,3-JAPANESE,4-KOREAN,
+       5-FRENCH,6-GERMAN,7-ITALIAN,8-DUTCH,
+       9-PORTUGUESE,10-SPANISH,11-SWEDISH,12-CZECH,
+       13-DANISH,14-POLISH,15-RUSSIAN,16-TURKISH,
+       17-BULGARIAN,18-HUNGARIAN,19-ROMANIAN,
+       20-SLOVENIAN,21-GREEK,
+      6Byte：保留"
+*/
+        console.log("自行车轮圈周长=" + dataView.getUint16(1, true)
+          + "自行车曲柄长度" + dataView.getUint16(3, true) + " 提醒时间段=" + dataView.getUint32(5, true) + " 提醒开关1=" + dataView.getUint8(9, true) + " 提醒开关2=" + dataView.getUint8(10, true) + " 提醒开关3=" + dataView.getUint8(10, true));
+
+      }
+      util.dumpArrayBuffer(dataView);
+    }
+    else if (res.characteristicId.indexOf("2A35") > 0) { //产品型号
        var low=dataView.getUint16(1,true);
        var high = dataView.getUint16(3, true);
        var hb = dataView.getUint16(7, true);
@@ -564,7 +1063,19 @@ function bleCommNotifyRegister()
      // 
       uploadConfig();
       if (h1 == null || h1.hasOwnProperty("step") == false ) {
-				syncStepHistory();
+        console.log("-----save^_^-----",h1);
+        var syncFlag=wx.getStorageSync("sync_flag");
+        console.log("syncFlag=", syncFlag);  
+        if (syncFlag==null || syncFlag==""){
+           syncStepHistory();
+        }
+        else{
+          if (syncFlag != util.getDateOffset(0, "yyyy-MM-dd")){
+              syncStepHistory();
+          } 
+        }
+			//	syncStepHistory();
+      
 			}
 			else {
     //    syncHeartBeatHistory();
@@ -902,7 +1413,7 @@ function beginService() {
 			g_services = res.services[1].uuid;
 			for (var n = 0; n < res.services.length; n++) {
 				g_services = "" + res.services[n].uuid;
-				console.log("service uuid=" + g_services);
+			//	console.log("service uuid=" + g_services);
 				if (g_services.indexOf("FFC0") > 0)
 					break;
 			}
@@ -959,6 +1470,41 @@ function findCharacteristics() {
 	})
 }
 
+function findDevice(val)
+{
+  wx.getBLEDeviceCharacteristics({
+    deviceId: g_deviceId,
+    serviceId: getServerId("1802"),
+    success: function (res) {
+      let buffer = new ArrayBuffer(1);
+      let dataView = new DataView(buffer);
+     // for (var n = 0; n < 20; n++) {
+      //  dataView.setUint8(n, 0x00);
+      //}
+      dataView.setUint8(0, val);
+
+      wx.writeBLECharacteristicValue({
+        deviceId: g_deviceId,
+        serviceId: getServerId("1802"),
+        characteristicId: getCharacter("2A06"),
+        value: buffer,
+        success: function (res) {
+          console.log("sync write....", res);
+          wx.showToast({
+            title: '正在查找设备...',
+          });
+        },
+        fail: function (res) {
+          console.log("写入数据失败:", res);
+        }
+      });
+    },
+    fail: function (res) {
+      console.log('1802蓝牙返回错误:readBLECharacteristicValue:', res);
+    }
+  });
+ 
+}
 
 function loadBleDevice(serviceId) {
 	wx.showLoading({
@@ -989,16 +1535,34 @@ function loadBleDevice(serviceId) {
 				icon: 'success',
 				duration: 1000
 			})
+      getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
 			console.log("连接设备失败")
 			isConnect = 0;
 			console.log(res)
 		}
 	});
+  wx.onBLEConnectionStateChange(function (res) {
+    // 该方法回调中可以用于处理连接意外断开等异常情况
+    console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+    if (res.connected==false){
+      isConnect=0;
+      getApp().globalData.indexPage.setData({
+        isConnect:0
+      });
+    }
+    else{
+      isConnect = 1;
+      getApp().globalData.indexPage.setData({
+        isConnect: 1
+      }); 
+    }
+  })
 }
 function openBleDevice() {
 	wx.openBluetoothAdapter({
 		success: function (res) {
 			console.log("初始化蓝牙适配器成功")
+
 			wx.onBluetoothAdapterStateChange(function (res) {
 				console.log("蓝牙适配器状态变化", res)
 			})
@@ -1023,5 +1587,8 @@ module.exports = {
 	openBleDevice: openBleDevice,
 	getConnectState: getConnectState,
 	beginHeartBeatTest: beginHeartBeatTest,
-  endHeartBeatTest: endHeartBeatTest
+  endHeartBeatTest: endHeartBeatTest,
+  findDevice: findDevice,
+  saveAllConfig: saveAllConfig
+
 }

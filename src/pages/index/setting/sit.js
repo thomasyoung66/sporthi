@@ -2,51 +2,23 @@
 var util = require('../../../utils/util.js');
 
 Page({
-
-  /**
-   * 页面的初始数据
-   */
-
   data: {
+    multiIndex: [0, 0, 0, 0],
+    multiArray: [['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+    ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23',
+      '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47',
+      '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59'],
+    ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'], ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23',
+      '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47',
+      '48', '49', '50', '51', '52', '53', '54', '55', '56', '57', '58', '59']
+    ],
     items: [
-    
-      { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
-      { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
-      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/long_sit.png", right: 0 },
 
-      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
-      { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
-      { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
-      { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
-      { "id": 8, "name": "硬件版本", "keywords": "", "img": "../../images/info.png", right: 1 },
-      { "id": 9, "name": "设备信息", "keywords": "", "img": "../../images/connect_ok.png", right: 1 }
-
-
-
+      { "id": "sit_week", "name": "", "keywords": "设备提醒开关", "img": "../../../images/longsit_week.png", "w0": 1, "w1": 1, "w2": 1, "w3": 0, "w4": 1, "w5": 1, "w6": 1,"index":[1,1,1,1]},
+      { "id": "sit_morning", "name": "上午", "keywords": "9:00~12:00", "img": "../../../images/longsit_morning.png", "bh": "09", "bm": "00", "eh": "12", "em": "00", "index": [1, 1, 1, 1] },
+      { "id": "sit_afternoon", "name": "下午", "keywords": "13:00~18:00", "img": "../../../images/longsit_afternoon.png", "bh": "14", "bm": "00", "eh": "18", "em": "00", "index": [1, 1, 1, 1]  },
 
     ]
-  },
-  showDetail: function (event) {
-    //  util.dump_obj(data.target);
-    wx.showToast({
-      title: 'select=' + event.currentTarget.dataset.id ,
-    });
-    if (event.currentTarget.dataset.id == 0) {
-      wx.navigateTo({
-        url: 'ble_connect',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 1) {
-      wx.navigateTo({
-        url: 'my_device',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 2) {
-      wx.navigateTo({
-        url: 'person',
-      })
-    }
-    console.log("this is ok.." + event.currentTarget.dataset.id);
   },
   /**
    * 生命周期函数--监听页面加载
@@ -60,34 +32,74 @@ Page({
    */
   onReady: function () {
     console.log("run onLoad....");
+  },
+  checkboxChange: function (e) {
+    console.log(e.target.id + '  >>>>checkbox发生change事件，携带value值为：', e.detail.value.join(","));
+    getApp().globalData.indexPage.saveConfig("sit_week", util.fixWeekDate(e.detail.value));
+    return;
+  },
+  switch2Change: function (e) {
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value == true ? 1 : 0);
+    return;
+  },
+  bindMultiPickerChange: function (e) {
+    console.log(e.target.id+'-----picker发送选择改变，携带值为', e.detail.value);
     var myData = this.data.items;
-    for(var n=0;n<myData.length;n++){
-      if (myData[n].id == 7) {
-        myData[n].keywords = "" + wx.getStorageSync("hw_version");
-      }
-      if (myData[n].id == 8) {
-        myData[n].keywords = "" + wx.getStorageSync("sw_version");
-      }
-      if (myData[n].id==9){
-          myData[n].keywords = "mac:" + wx.getStorageSync("mac");
-          myData[n].keywords1 = "制造商:" + wx.getStorageSync("manufacturer") + " 型号:" + wx.getStorageSync("model");
-      }
-      
+    var v = e.detail.value;
+    if (e.target.id =="sit_morning"){
+      myData[1].bh = util.sprintf("%02d",v[0]);
+      myData[1].bm = util.sprintf("%02d",v[1]);
+      myData[1].eh = util.sprintf("%02d",v[2]);
+      myData[1].em = util.sprintf("%02d",v[3]);
     }
+    if (e.target.id == "sit_afternoon") {
+      myData[2].bh = util.sprintf("%02d",v[0]);
+      myData[2].bm = util.sprintf("%02d",v[1]);
+      myData[2].eh = util.sprintf("%02d",v[2]);
+      myData[2].em = util.sprintf("%02d",v[3]);
+    }
+    getApp().globalData.indexPage.saveConfig(e.target.id, util.sprintf("%02d:%02d~%02d:%02d", v[0], v[1], v[2], v[3]));
     this.setData({
       items: myData
     });
-    
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow: function () {
-    var that=this;
+    var that = this;
     wx.setNavigationBarTitle({
-      title: '久坐',
+      title: '久坐'
     })
+    var config=wx.getStorageSync("config");
+    var myData = this.data.items;
+    var weekString=""+util.safeGet(config,"sit_week","1,1,1,1,1,1,0");
+    console.log("13:00~18:00===",config);
+    var w = weekString.split(',');
+    myData[0].w0 = w[0];
+    myData[0].w1 = w[1];
+    myData[0].w2 = w[2];
+    myData[0].w3 = w[3];
+    myData[0].w4 = w[4];
+    myData[0].w5 = w[5];
+    myData[0].w6 = w[6];
+    myData[1].keywords = util.safeGet(config,"sit_morning","9:00~12:00");
+    myData[2].keywords = util.safeGet(config, "sit_afternoon", "14:00~18:00");
+    myData[1].index = myData[1].keywords.split(/:|~/);
+    myData[2].index = myData[2].keywords.split(/:|~/);
+    var tmp = myData[1].keywords.split(/:|~/);
+    myData[1].bh=tmp[0];
+    myData[1].bm = tmp[1];
+    myData[1].eh = tmp[2];
+    myData[1].em = tmp[3];
+    console.log("begin====", tmp);
+    var tmp = myData[2].keywords.split(/:|~/);
+    myData[2].bh = tmp[0];
+    myData[2].bm = tmp[1];
+    myData[2].eh = tmp[2];
+    myData[2].em = tmp[3];
+    console.log("end====", tmp);
+
+    this.setData({
+      items: myData
+    });
     console.log("run  onShow....");
   },
 
@@ -95,7 +107,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-  
+
   },
 
   /**
@@ -109,20 +121,20 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-  
+
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-  
+
   },
 
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-  
+
   }
 })

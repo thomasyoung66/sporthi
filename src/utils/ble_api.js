@@ -50,12 +50,31 @@ function endHeartBeatTest() {
       break;
   }
 }
+function findDevice(val)
+{
+  switch (g_ble_type) {
+    case 0:
+      return ble_km.findDevice(val);
+    default:
+      break;
+  }
+}
+function saveAllConfig()
+{
+  switch (g_ble_type) {
+    case 0:
+      return ble_km.saveAllConfig();
+    default:
+      break;
+  } 
+}
 module.exports = {
 	init:init,
 	getConnectState: getConnectState,
 	run:run,
 	beginHeartBeatTest: beginHeartBeatTest,
-  endHeartBeatTest: endHeartBeatTest
-  
+  endHeartBeatTest: endHeartBeatTest,
+  findDevice:findDevice,
+  saveAllConfig: saveAllConfig
 
 }

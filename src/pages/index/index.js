@@ -12,6 +12,12 @@ var  hbArrayData=null; //测量心率原始数据
 var  bpMaxArrayData = null;//高血压
 var  bpMinArrayData = null; //低血压
 
+//左右滑动
+var time = 0;
+var touchDot = 0;//触摸时的原点
+var interval = "";
+var flag_hd = true;
+
 
 
 var app = getApp()
@@ -56,9 +62,43 @@ Page({
 			url: '../logs/logs'
 		})
 	},
+  // 触摸开始事件
+  touchStart: function (e) {
+    touchDot = e.touches[0].pageX; // 获取触摸时的原点
+    // 使用js计时器记录时间    
+    interval = setInterval(function () {
+      time++;
+    }, 100);
+  },
+  // 触摸结束事件
+  touchEnd: function (e) {
+    var touchMove = e.changedTouches[0].pageX;
+    // 向左滑动   
+    if (touchMove - touchDot <= -80 && time < 10 && flag_hd == true) {
+      flag_hd = false;
+      //执行切换页面的方法
+      console.log("向右滑动");
+      this.nextDateTap();
+      
+      //return 
+
+    }
+    // 向右滑动   
+    if (touchMove - touchDot >= 80 && time < 10 && flag_hd == true) {
+      flag_hd = false;
+      //执行切换页面的方法
+      console.log("向左滑动");
+      this.prepDateTap();
+      //return ;
+ 
+    }
+    clearInterval(interval); // 清除setInterval
+    time = 0;
+    flag_hd=true;
+  },
   connect_action:function(){
     console.log("ok....." + this.data.isConnect);
-    if (this.data.isConnect==1){
+    if (this.data.isConnect==0){
       wx.navigateTo({
         url: 'connect_error',
       })
@@ -85,6 +125,9 @@ Page({
 	addTap: function () {
 		//alert("add....");
 	},
+  findDevice:function(val){
+    ble.findDevice(val);
+  },
 	heartBeatTest:function(){
 		console.log("heartBeat test...");
 
@@ -134,6 +177,9 @@ Page({
 	 * 生命周期函数--监听页面显示
 	 */
 	onShow: function () {
+    flag_hd = true;    //重新进入页面之后，可以再次执行滑动切换页面代码
+    clearInterval(interval); // 清除setInterval
+    time = 0;
 		console.log("on--show....");
 	},
 
@@ -170,6 +216,7 @@ Page({
         console.log("save----", res);
       }
     });
+    ble.saveAllConfig();
   },
 	onTimer: function () {
 		var that = this;
@@ -490,6 +537,15 @@ Page({
     }
 		return;
 	},
+  reConnect:function(){
+    if (app.data.currDeviceId.length>0)
+      ble.run(app.data.currDeviceId);
+    else{
+      wx.showToast({
+        title: '还没有绑定设备!请先绑定设备...',
+      })
+    }
+  },
 	onLoad: function () {
 		console.log('onLoad');
 		getApp().get_open_id();

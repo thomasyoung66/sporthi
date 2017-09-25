@@ -6,47 +6,18 @@ Page({
   /**
    * 页面的初始数据
    */
-
+  array: [],
+  pickIndex: 0,
   data: {
     items: [
-    
-      { "id": 1, "name": "提醒", "keywords": "设备提醒开关", "img": "../../images/band.png",right:0 },
-      { "id": 2, "name": "闹钟", "keywords": "设置闹钟", "img": "../../images/clock_big.png", right: 0 },
-      { "id": 3, "name": "久坐", "keywords": "久坐设置", "img": "../../images/long_sit.png", right: 0 },
-
-      { "id": 4, "name": "心率", "keywords": "无", "img": "../../images/hrm_blue.png", right: 0 },
-      { "id": 5, "name": "寻找设备", "keywords": "", "img": "../../images/find_big.png", right: 0 },
-      { "id": 6, "name": "断开连接", "keywords": "", "img": "../../images/disconnect_blue.png", right: 0 },
-      { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
-      { "id": 8, "name": "硬件版本", "keywords": "", "img": "../../images/info.png", right: 1 },
-      { "id": 9, "name": "设备信息", "keywords": "", "img": "../../images/connect_ok.png", right: 1 }
-
-
-
-
+      { "id": "hb_interal", "name": "心率检查间隔", "keywords": "60", "img": "../../../images/hrm_timer.png", "onoff": 1 },
+      { "id": "hb_warn", "name": "心率报警", "keywords": "120次/分", "img": "../../../images/hrm_alarm.png", "onoff": 1 },
+      { "id": "bp_warn", "name": "血压报警", "keywords": "140/90毫米汞柱", "img": "../../../images/bp_alarm.png", "onoff": 1 }
     ]
   },
-  showDetail: function (event) {
-    //  util.dump_obj(data.target);
-    wx.showToast({
-      title: 'select=' + event.currentTarget.dataset.id ,
-    });
-    if (event.currentTarget.dataset.id == 0) {
-      wx.navigateTo({
-        url: 'ble_connect',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 1) {
-      wx.navigateTo({
-        url: 'my_device',
-      })
-    }
-    else if (event.currentTarget.dataset.id == 2) {
-      wx.navigateTo({
-        url: 'person',
-      })
-    }
-    console.log("this is ok.." + event.currentTarget.dataset.id);
+  switch2Change: function (e) {
+    getApp().globalData.indexPage.saveConfig(e.target.id, e.detail.value == true ? 1 : 0);
+    return;
   },
   /**
    * 生命周期函数--监听页面加载
@@ -54,40 +25,55 @@ Page({
   onLoad: function (options) {
     console.log("run onLoad....");
   },
+  bindPickerChange: function (e) {
 
+    var myData = this.data.items;
+    myData[0].keywords = parseInt(e.detail.value) + 10;
+    this.setData({
+      items: myData
+    });
+    getApp().globalData.indexPage.saveConfig(e.target.id, parseInt(e.detail.value) + 10);
+    console.log(e.target.id + '-----picker发送选择改变，携带值为', e.detail.value);
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
     console.log("run onLoad....");
-    var myData = this.data.items;
-    for(var n=0;n<myData.length;n++){
-      if (myData[n].id == 7) {
-        myData[n].keywords = "" + wx.getStorageSync("hw_version");
-      }
-      if (myData[n].id == 8) {
-        myData[n].keywords = "" + wx.getStorageSync("sw_version");
-      }
-      if (myData[n].id==9){
-          myData[n].keywords = "mac:" + wx.getStorageSync("mac");
-          myData[n].keywords1 = "制造商:" + wx.getStorageSync("manufacturer") + " 型号:" + wx.getStorageSync("model");
-      }
-      
-    }
-    this.setData({
-      items: myData
-    });
-    
+
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    var that=this;
+    var that = this;
     wx.setNavigationBarTitle({
       title: '心率',
     })
+    var tmp = new Array();
+    for (var n = 10; n <= 120; n++) {
+      tmp.push(n);
+    }
+    var myData = this.data.items;
+    var config = wx.getStorageSync("config");
+    for (var n = 0; n < myData.length; n++) {
+      if (n == 0) {
+        myData[n].keywords = util.safeGet(config, myData[n].id, "60");
+      }
+      else {
+        console.log(myData[n].id + "-----开关值-----" + util.safeGet(config, myData[n].id, 1), config);
+        myData[n].onoff = util.safeGet(config, myData[n].id, 1);
+      }
+    }
+
+    this.setData({
+      array: tmp,
+      items: myData
+    });
+    this.setData({
+      pickIndex: util.safeGet(config, myData[0].id, "60") - 10
+    });
     console.log("run  onShow....");
   },
 
@@ -95,7 +81,7 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-  
+
   },
 
   /**
@@ -109,20 +95,20 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-  
+
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-  
+
   },
 
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-  
+
   }
 })

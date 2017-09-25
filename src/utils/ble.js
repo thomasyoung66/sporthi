@@ -154,6 +154,10 @@ function getBLEDeviceCharacteristics () {
     }
   })
 }  
+function findDevice(val)
+{
+  
+}
 
 module.exports = {
   openBluetooth: openBluetooth,
@@ -170,5 +174,6 @@ module.exports = {
   closeBLEConnection: closeBLEConnection,
   onBLEConnectionStateChanged: onBLEConnectionStateChanged,
   getBLEDeviceServices: getBLEDeviceServices,
-  getBLEDeviceCharacteristics: getBLEDeviceCharacteristics
+  getBLEDeviceCharacteristics: getBLEDeviceCharacteristics,
+  findDevice: findDevice
 }

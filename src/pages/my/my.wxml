@@ -26,7 +26,7 @@
                  </view>
                 <view class="right-row">
 		    	<view class="section" hidden="{{index==4?false:true}}">
-				<picker bindchange="bindDestPickerChange" value="" range="{{destArray}}">
+				<picker bindchange="bindDestPickerChange" value="{{indexDest}}" range="{{destArray}}">
 				<view class="picker right-text">
 				{{currDest}}
 				</view>

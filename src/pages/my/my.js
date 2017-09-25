@@ -9,6 +9,7 @@ Page({
 		userInfo: {},
 		currUtil:"公制",
 		currDest:7000,
+    indexDest:0,
 		utilArray:[
 			"公制", 
 			"英制"
@@ -104,6 +105,7 @@ Page({
 		getApp().globalData.indexPage.setData({
 			step_dest: that.data.destArray[e.detail.value]
 		});
+    wx.setStorageSync("dest", that.data.destArray[e.detail.value] );
 		wx.request({
 			url: util.getUrl('ble.php?action=save_dest'),
 			data: {
@@ -146,6 +148,15 @@ Page({
     wx.setNavigationBarTitle({
       title: '我的',
     })
+    var dest=wx.getStorageSync("dest");
+    for (var n = 0; n < this.data.destArray.length;n++){
+      if (this.data.destArray[n]==dest){
+        this.setData({
+          indexDest:n
+        });
+        break;
+      }
+    }
   },
 	onLoad: function () {
 		console.log('onLoad')

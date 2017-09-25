@@ -5,7 +5,7 @@
     <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
       <view wx:for="{{items}}" url="">
 
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+        <view class="main"  data-id="{{index}}" data-idIndex="{{index+1}}">
           <view class="main-1">
             <image class="img" src="{{item.img}}" />
             <text class="title">{{item.name}}</text>
@@ -15,31 +15,31 @@
     
             <view class="week">
          
-            <checkbox value="1" checked="{{item.w1}}" bindchange="checkboxChange"/>
+            <checkbox value="1" checked="{{item.w1}}" />
             一
             </view>
             <view class="week"> 
-            <checkbox   value="2" checked="{{item.w2}}" bindchange="checkboxChange"/>
+            <checkbox   value="2" checked="{{item.w2}}" />
               二
             </view>
             <view class="week">
-            <checkbox  value="3" checked="{{item.w3}}" bindchange="checkboxChange"/>
+            <checkbox  value="3" checked="{{item.w3}}"/>
               三
             </view>
             <view class="week">
-            <checkbox  value="4" checked="{{item.w4}}" bindchange="checkboxChange"/>
+            <checkbox  value="4" checked="{{item.w4}}"/>
               四
             </view>
             <view class="week">
-            <checkbox  value="5" checked="{{item.w5}}" bindchange="checkboxChange"/>
+            <checkbox  value="5" checked="{{item.w5}}"/>
               五
             </view>
             <view class="week">
-            <checkbox  value="6" checked="{{item.w6}}" bindchange="checkboxChange"/>
+            <checkbox  value="6" checked="{{item.w6}}"/>
               六
             </view>
             <view class="week">
-            <checkbox  value="0" checked="{{item.w0}}" bindchange="checkboxChange"/>
+            <checkbox  value="0" checked="{{item.w0}}"/>
               日
             </view>
           </view>
