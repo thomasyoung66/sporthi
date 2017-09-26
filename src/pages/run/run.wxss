@@ -7,7 +7,19 @@
     border:1px solid #ff0000; 
     */
 }
-
+.def_col {
+  display: flex;
+  flex-direction: column;
+  justify-content:flex-start;
+  align-items:flex-start;
+}
+.def_col_view {
+  display: flex;
+  flex-direction: column;
+  justify-content:center;
+  align-items: center;
+  font-size: 12px;
+}
 .my-userinfo {
   display: flex;
   flex-direction: column;
@@ -60,16 +72,9 @@
     height:60px;
 }
 .main-2 {
-    /*
-  display: flex;
-  flex-direction: column;
-  justify-content:  space-between; 
-  margin-right: 20px;
-   */
     display: flex;
     flex-direction: row ;
-  
-    align-items: center;
+      align-items: center;
   
     height:60px;
      margin-right: 20px;
@@ -80,15 +85,15 @@
     flex-direction: column;
     justify-content: space-between;
     margin-left:10px;
-    
-    /*
-    margin-right: 20rpx;
-    margin: 20rpx;
-    */
+
 }
 
 .title {
     font-size: 32rpx;
+    color: #000;
+}
+.title1 {
+    font-size: 20rpx;
     color: #000;
 }
 .right-row{
@@ -99,7 +104,6 @@
 
 }
 .right-text{
-
     font-size: 20rpx;
     margin-right: 10px;
     color: #000;

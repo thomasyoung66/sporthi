@@ -9,7 +9,10 @@
           <view class="main-1">
             {{index+1}}
             <image class="img" src="{{item.avatar_url}}" />
+            <view class="def_col">
             <text class="title">{{item.nickname}}</text>
+            <text class="title1">{{item.city}}</text>
+            </view>
           </view>
           <view class="main-2">
             <text>
@@ -18,10 +21,11 @@
           <view class="right-row">
             <text class="right-text">
               {{item.total_step}}步
-
             </text>
-            
-            <image style="width:20px;height:20px" class="img" src="../../images/praise_no.png" />
+            <view id="{{item.hid}}" class="def_col_view" bindtap='praise_action'>
+            {{item.praises}}
+            <image id="{{item.hid}}"  style="width:20px;height:20px" class="img" src="{{item.pf==1?'../../images/praise_ok.png':'../../images/praise_no.png'}}" />
+            </view>
           </view>
         </view>
 

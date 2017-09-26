@@ -35,16 +35,8 @@ Page({
   onReady: function () {
     console.log("run onLoad....");
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
+  refreshData:function(){
     var that=this;
-     wx.setNavigationBarTitle({
-        title: '运动排行',
-      })
-
     wx.showLoading({
       title: '',
     });
@@ -55,17 +47,43 @@ Page({
       method: 'POST',
       header: { 'content-type': 'application/x-www-form-urlencoded' },
       success: function (res) {
-       that.setData({
-         items: res.data.items
-       })
-       wx.hideLoading();
+        that.setData({
+          items: res.data.items
+        })
+        wx.hideLoading();
         console.log("save----", res.data);
 
       }
     });
+  },
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+    var that=this;
+     wx.setNavigationBarTitle({
+        title: '运动排行',
+      })
+     that.refreshData();
+
     console.log("run  onShow....");
   },
-
+  praise_action:function(e){
+    console.log("-----",e);
+    var that=this;
+    wx.request({
+      url: util.getUrl('ble.php?action=praise'),
+      data: {
+        uid: wx.getStorageSync('serverId'),
+        id:e.target.id
+      },
+      method: 'POST',
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      success: function (res) {
+        that.refreshData();
+      }
+    });
+  },
   /**
    * 生命周期函数--监听页面隐藏
    */
