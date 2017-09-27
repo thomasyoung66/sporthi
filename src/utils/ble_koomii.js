@@ -871,11 +871,8 @@ function uploadConfig() {
 		}
 	});
 
+	syncTodayDate();
 //	isNeedSyncHistory=true;
-	if (isNeedSyncHistory == true) {
-		isNeedSyncHistory = false;
-		syncStepHistory();
-	}
 
 }
 function bleCommNotifyRegister() {
@@ -1125,6 +1122,10 @@ function bleCommNotifyRegister() {
 			//	console.log(ddd + `>>>yls-begin today>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
 			//  util.dumpArrayBuffer(dataView);
 			processStepToday(dataView);
+			if (isNeedSyncHistory == true) {
+				isNeedSyncHistory = false;
+				syncStepHistory();
+			}
 
 		}
 		else if (res.characteristicId.indexOf("FF21") > 0) {//读取历史数据
@@ -1150,33 +1151,36 @@ function initCharacteristic180A() {
 	});
 }
 function syncTodayDate() {
-	//读取当前的数据
-	wx.notifyBLECharacteristicValueChanged({
+
+	wx.readBLECharacteristicValue({
 		deviceId: g_deviceId,
 		serviceId: getServerId("FFC0"),
 		characteristicId: getCharacter("FF13"),
-		state: true,
 		success: function (res) {
-			// success
-			wx.readBLECharacteristicValue({
+			wx.notifyBLECharacteristicValueChanged({
 				deviceId: g_deviceId,
 				serviceId: getServerId("FFC0"),
 				characteristicId: getCharacter("FF13"),
+				state: true,
 				success: function (res) {
-					console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
-					total++;
+					// success
+
+					console.log("-------succed----", res);
 				},
 				fail: function (res) {
-					console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
+					console.log("-------failure----", res);
+					// fail
 				}
 			});
-			console.log("-------succed----", res);
+			console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
+			total++;
 		},
 		fail: function (res) {
-			console.log("-------failure----", res);
-			// fail
+			console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
 		}
 	});
+	//读取当前的数据
+
 }
 function syncRunStep() {
 	bleCommNotifyRegister();
@@ -1193,7 +1197,7 @@ function syncRunStep() {
 			console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
 		}
 	});
-	syncTodayDate();
+	//syncTodayDate();
 }
 
 function showAndSaveStepData() {

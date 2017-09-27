@@ -99,7 +99,7 @@
         <!--结束卡路里-->
         <view>
 
-           <canvas  binderror="canvasIdErrorCallback"  class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
+           <canvas  bindtap="canvasTap"  class="canvas_style" style="width: {{canvasWidth}}px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
         </view>
       </view>
 
@@ -146,7 +146,7 @@
         <!--结束卡路里-->
         <view>
 
-          <canvas  binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+          <canvas   class="canvas_style" style="width: {{canvasWidth}}px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -196,7 +196,7 @@
         <view class="view_white_line" />
         <!--结束卡路里-->
         <view>
-          <canvas binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="heartrateCanvas"></canvas>
+          <canvas class="canvas_style" style="width: {{canvasWidth}}px; height: 200px;border:1px soild red" canvas-id="heartrateCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -246,7 +246,7 @@
         <view class="view_white_line" />
 
         <view>
-          <canvas  binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="bpCanvas"></canvas>
+          <canvas  class="canvas_style" style="width: {{canvasWidth}}px; height: 200px;border:1px soild red" canvas-id="bpCanvas"></canvas>
         </view>
       </view>
     </view>

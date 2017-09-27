@@ -1,38 +1,6 @@
-<!--hw_setting.wxml-->
 <view class="my-container">
 
-  <view style="width:100%">
-    <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
-      <view wx:for="{{items}}" url="">
-
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
-          <view class="main-1">
-            <image class="img" src="{{item.img}}" />
-            <text class="title">{{item.name}}</text>
-          </view>
-          <view class="main-2">
-            <text>
-            </text>
-          </view>
-          <view class="right-row">
-            <view class="right-row2">
-              <view>
-                <view class="right-text">
-                  {{item.keywords}}
-                </view>
-                <view class="right-text">
-                  {{item.keywords1}}
-                </view>
-              </view>
-            </view>
-            
-            <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
-          </view>
-        </view>
-
-      </view>
-    </scroll-view>
-  </view>
-
-
+    <view style="width:100%">
+        <canvas binderror="canvasIdErrorCallback" class="canvas_style" style="margin-top:20px;width: 400px; height: 240px;border:1px soild red" canvas-id="setpCanvas"></canvas>
+    </view>
 </view>

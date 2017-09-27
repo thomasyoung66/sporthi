@@ -12,6 +12,7 @@ var hbArrayData = null; //测量心率原始数据
 var bpMaxArrayData = null;//高血压
 var bpMinArrayData = null; //低血压
 
+var canvasWidth=util.isAndroid()?340:360;
 //左右滑动
 var time = 0;
 var touchDot = 0;//触摸时的原点
@@ -51,12 +52,17 @@ Page({
 		bp_text: "血压测试",
 		power_ps: 0,
 		power_text: 0,
+		canvasWidth: canvasWidth,
 		end: 0
 	},
 	showDetail: function (data) {
 		console.log("this is ok.." + data);
 	},
 	canvasTap: function (e) {
+
+		wx.navigateTo({
+			url: 'step_history?uid=' + wx.getStorageSync('serverId')
+		})
 		/*
 		wx.showToast({
 			title: '正在处理.....',
@@ -318,7 +324,7 @@ Page({
 					return val + 'bpm';
 				}
 			},
-			width: 360,
+			width: canvasWidth,
 			height: 200,
 			dataLabel: false
 		});
@@ -339,7 +345,7 @@ Page({
 					return val + 'mmHg';
 				}
 			},
-			width: 360,
+			width: canvasWidth,
 			height: 200,
 			dataLabel: false
 		});
@@ -466,7 +472,7 @@ Page({
 					return val + 'mmHg';
 				}
 			},
-			width: 360,
+			width: canvasWidth,
 			height: 200,
 			dataLabel: false
 		});
@@ -492,7 +498,7 @@ Page({
 					return val + 'bpm';
 				}
 			},
-			width: 360,
+			width: canvasWidth,
 			height: 200,
 			dataLabel: false
 		});
@@ -526,7 +532,7 @@ Page({
 						return val + '步';
 					}
 				},
-				width: 360,
+				width: canvasWidth,
 				height: 200,
 
 				dataLabel: false
@@ -558,7 +564,7 @@ Page({
 						return val + '次';
 					}
 				},
-				width: 360,
+				width: canvasWidth,
 				height: 200,
 				dataLabel: false
 			});
