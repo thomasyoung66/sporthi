@@ -28,8 +28,9 @@
   </view>
 
   <view class='unconnect' hidden="{{isConnect}}" bindtap='reConnect'>
-    <text class="unconnect_text">设备未连接</text>
+    <text class="unconnect_text">设备未连接(点击重连)</text>
   </view>
+
 
   <scroll-view class="scroll-view {{isConnect==0?'':'main_body'}}" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
 
@@ -96,8 +97,9 @@
         </view>-->
         <view class="view_white_line" />
         <!--结束卡路里-->
-        <view style="z-index:10">
-           <canvas  class="canvas_style" style="width: 3600px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
+        <view>
+
+           <canvas  binderror="canvasIdErrorCallback"  class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="setpCanvas"></canvas>
         </view>
       </view>
 
@@ -143,7 +145,8 @@
         <view class="view_white_line" />
         <!--结束卡路里-->
         <view>
-          <canvas class="canvas_style" style="width: 3600px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+
+          <canvas  binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -193,7 +196,7 @@
         <view class="view_white_line" />
         <!--结束卡路里-->
         <view>
-          <canvas class="canvas_style" style="width: 3600px; height: 200px;border:1px soild red" canvas-id="heartrateCanvas"></canvas>
+          <canvas binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="heartrateCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -243,7 +246,7 @@
         <view class="view_white_line" />
 
         <view>
-          <canvas  class="canvas_style" style="width: 3600px; height: 200px;border:1px soild red" canvas-id="bpCanvas"></canvas>
+          <canvas  binderror="canvasIdErrorCallback" class="canvas_style" style="width: 360px; height: 200px;border:1px soild red" canvas-id="bpCanvas"></canvas>
         </view>
       </view>
     </view>
