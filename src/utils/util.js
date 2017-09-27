@@ -17,12 +17,12 @@ function formatNumber(n) {
 	n = n.toString()
 	return n[1] ? n : '0' + n
 }
-function getWeekName(str){
+function getWeekName(str) {
 	var arys1 = new Array();
-	arys1 =str.split('-'); 
+	arys1 = str.split('-');
 	var ssdate = new Date(arys1[0], parseInt(arys1[1] - 1), arys1[2]);
 	var week1 = String(ssdate.getDay()).replace("0", "日").replace("1", "一").replace("2", "二").replace("3", "三").replace("4", "四").replace("5", "五").replace("6", "六");
-	return  "星期" + week1; 
+	return "星期" + week1;
 }
 function alert(str) {
 	wx.showModal({
@@ -58,14 +58,17 @@ function getTimeDiff() {
 	return Math.floor(d / 1000);
 }
 function getUrl(url) {
-	return "https://apps.movnow.com/a/sporthi_web/api/" + url;
+	if (url.charAt(0) == "/")
+		return "https://apps.movnow.com/a/sporthi_web/api" + url;
+	else
+		return "https://apps.movnow.com/a/sporthi_web/api/" + url;
 }
 function objToBase64(str) {
 
 
 	return base64.encode(JSON.stringify(str));
 }
-function base64encode(str){
+function base64encode(str) {
 	return base64.encode(str);
 }
 function base64decode(str) {
@@ -108,35 +111,33 @@ Date.prototype.Format = function (fmt) { //author: meizz
 		if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
 	return fmt;
 }
-function getDate(fmt){
+function getDate(fmt) {
 
 }
-function getDataFrom1970(sec,fmt)
-{
+function getDataFrom1970(sec, fmt) {
 	var d = new Date((new Date("1970/01/01 00:00:00").getTime() + sec * 1000));
 
 	return d.Format(fmt);
 }
 function getDataFrom1900(sec, fmt) {
-  var d = new Date((new Date("1900/01/01 00:00:00").getTime() + sec * 1000));
-
-  return d.Format(fmt);
-}
-function getPrevDate(str,sec)
-{
-	var d = new Date((new Date(str.replace(/-/g,"/") + " 12:00:00").getTime() +sec* 3600 * 24 * 1000));	
-	return d.Format("yyyy-MM-dd");
-}
-function getDateOffset(sec, fmt) {
-	var d = new Date((new Date().getTime() + parseInt(sec)*3600*24 * 1000));
+	var d = new Date((new Date("1900/01/01 00:00:00").getTime() + sec * 1000));
 
 	return d.Format(fmt);
 }
-function isValDate(sec){
+function getPrevDate(str, sec) {
+	var d = new Date((new Date(str.replace(/-/g, "/") + " 12:00:00").getTime() + sec * 3600 * 24 * 1000));
+	return d.Format("yyyy-MM-dd");
+}
+function getDateOffset(sec, fmt) {
+	var d = new Date((new Date().getTime() + parseInt(sec) * 3600 * 24 * 1000));
+
+	return d.Format(fmt);
+}
+function isValDate(sec) {
 	var d = new Date((new Date("1970/01/01 00:00:00").getTime() + sec * 1000));
 	var begin = new Date((new Date().getTime() + parseInt(-30) * 3600 * 24 * 1000));
 	var end = new Date((new Date().getTime() + parseInt(1) * 3600 * 24 * 1000));
-	if (d.getTime()>begin.getTime() && d.getTime()<end.getTime())
+	if (d.getTime() > begin.getTime() && d.getTime() < end.getTime())
 		return true;
 	else
 		return false;
@@ -201,7 +202,7 @@ function sprintf() {
 	var i = null;
 
 	for (i = 0; i < matches.length; i++) {
-		var substitution ="";
+		var substitution = "";
 		if (matches[i].code == '%') {
 			substitution = '%'
 		}
@@ -253,20 +254,19 @@ odo = (steps * stride(cm))/100;
 stride = height(cm)*0.415;(male)
 stride = height(vm)*0.415;(female)
 */
-function calcCalorie(step)
-{
-	var height=wx.getStorageSync("height");
+function calcCalorie(step) {
+	var height = wx.getStorageSync("height");
 	var weight = wx.getStorageSync("weight");
 
 	return parseInt((weight * height * step * 6.92) / 1000000);
 }
-function calcOdo(step){
+function calcOdo(step) {
 	var height = wx.getStorageSync("height");
-	return Math.floor(height*0.415*step/100);
+	return Math.floor(height * 0.415 * step / 100);
 }
 function toHourMinute(s) {
 	var t;
-	if (s==0){
+	if (s == 0) {
 		return "00:00:00";
 	}
 	if (s > -1) {
@@ -279,80 +279,120 @@ function toHourMinute(s) {
 			t = hour + ":";
 		}
 
-		if (min < 10) { 
-			t += "0"; 
+		if (min < 10) {
+			t += "0";
 		}
 		t += min + ":";
-		if (sec < 10) { 
-			t += "0"; 
+		if (sec < 10) {
+			t += "0";
 		}
-		t+=sec%60;
+		t += sec % 60;
 		//t += sec.toFixed(2);
 	}
 	return t;
 }
-function arrayBufferToString(dataView)
-{
+function arrayBufferToString(dataView) {
 	var str = "";
 	for (var n = 0; n < dataView.byteLength; n++) {
 		str = str + sprintf("%c", dataView.getUint8(n));
 	}
 	return str;
-} 
-function dumpArrayBuffer(dataView)
-{
-  var str = "";
-  for (var n = 0; n < dataView.byteLength; n++) {
-    str = str + " "+ dataView.getUint8(n);
-  }
-  console.log(str);
 }
-function safeGet(obj,key,def){
-  if (obj==null ||obj=="")
-    return def;
-  if (obj.hasOwnProperty(key)==false)
-    return def;
+function dumpArrayBuffer(dataView) {
+	var str = "";
+	for (var n = 0; n < dataView.byteLength; n++) {
+		str = str + " " + dataView.getUint8(n);
+	}
+	console.log(str);
+}
+function safeGet(obj, key, def) {
+	if (obj == null || obj == "")
+		return def;
+	if (obj.hasOwnProperty(key) == false)
+		return def;
 
-  return obj[key];
+	return obj[key];
 
 }
 function safe(key, def) {
-  if (key == null || key == "")
-    return def;
-  return key;
+	if (key == null || key == "")
+		return def;
+	return key;
 }
-function fixWeekDate(w)
-{
-  var arr=new Array();
-  for(var n=0;n<7;n++){
-    arr[n]=0;
-  }
-  if (w==null || w==""||w.length==0){
-    return arr;
-  }
+function fixWeekDate(w) {
+	var arr = new Array();
+	for (var n = 0; n < 7; n++) {
+		arr[n] = 0;
+	}
+	if (w == null || w == "" || w.length == 0) {
+		return arr;
+	}
 
-  for(var n=0;n<w.length;n++){
-    arr[w[n]]=1;
-  }
-  return arr;
+	for (var n = 0; n < w.length; n++) {
+		arr[w[n]] = 1;
+	}
+	return arr;
 }
 //获取某位的值
 function getBit(val, bit) {
-  /*1 return true; 0 return false*/
-  return ((val & (0x1 << bit)) >> bit) == 1;
+	/*1 return true; 0 return false*/
+	return ((val & (0x1 << bit)) >> bit) == 1;
 }
 //设置位
 function setBit(val, bit) {
-  return val | (0x1 << bit)
+	return val | (0x1 << bit)
 }
 //清除位
 function clearBit(val, bit) {
-  var a = 255;
-  for (var i = 0; i <= bit; i++) {
-    a = a << 1;
-    if (i > 0) a++;
-  }
-  return val & a;
+	var a = 255;
+	for (var i = 0; i <= bit; i++) {
+		a = a << 1;
+		if (i > 0) a++;
+	}
+	return val & a;
+}
+function isAndroid() {
+	return wx.getSystemInfoSync().platform == "android" ? true : false;
+}
+
+function min(arr) {
+	if (arr == null || arr == "" || arr.length == 0) {
+		return 0;
+	}
+	var min = arr[0];
+	var len = arr.length;
+	for (var i = 1; i < len; i++) {
+		if (arr[i] < min) {
+			min = arr[i];
+		}
+	}
+	return min;
+}
+function avg(arr)
+{
+	if (arr == null || arr == "" || arr.length == 0) {
+		return 0;
+	}
+	var len = arr.length;
+	var sum=0;
+	for (var i = 0; i < len; i++) {
+			sum = sum+arr[i];
+	}
+	return parseInt(sum/len);
+}
+//最大值
+ function max(arr) {
+	 if (arr==null || arr=="" ||arr.length==0){
+		 return 0;
+	 }
+	var max = arr[0];
+	var len = arr.length;
+	for (var i = 1; i < len; i++) {
+		if (arr[i] > max) {
+			max = arr[i];
+		}
+	}
+	return max;
 }
 module.exports = {
 	formatTime: formatTime,
@@ -364,24 +404,28 @@ module.exports = {
 	sprintf: sprintf,
 	getDate: getDate,
 	getDataFrom1970: getDataFrom1970,
-  getDataFrom1900: getDataFrom1900,
+	getDataFrom1900: getDataFrom1900,
 	getDateOffset: getDateOffset,
 	objToBase64: objToBase64,
 	isValDate: isValDate,
 	getPrevDate: getPrevDate,
 	getWeekName: getWeekName,
-	calcCalorie:calcCalorie,
-	calcOdo:calcOdo,
+	calcCalorie: calcCalorie,
+	calcOdo: calcOdo,
 	toHourMinute: toHourMinute,
 	base64encode: base64encode,
 	base64decode: base64decode,
 	arrayBufferToString: arrayBufferToString,
-  dumpArrayBuffer: dumpArrayBuffer,
-  safeGet: safeGet,
-  safe:safe,
-  fixWeekDate: fixWeekDate,
-  getBit: getBit,
-  setBit: setBit,
-  clearBit: clearBit
+	dumpArrayBuffer: dumpArrayBuffer,
+	safeGet: safeGet,
+	safe: safe,
+	fixWeekDate: fixWeekDate,
+	getBit: getBit,
+	setBit: setBit,
+	clearBit: clearBit,
+	isAndroid: isAndroid,
+	min:min,
+	max:max,
+	avg:avg
 
 }

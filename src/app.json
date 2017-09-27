@@ -1,52 +1,52 @@
 {
-  "pages":[
-    "pages/index/index",
-    "pages/index/connect_error",
-    "pages/index/hw_setting",
-    "pages/index/setting/notice",
-    "pages/index/setting/alarm",
-    "pages/index/setting/sit",
-    "pages/index/setting/hb",
-    "pages/run/run",
-    "pages/my/my",
-    "pages/my/my_device",
-    "pages/my/person",
-    "pages/my/ble_connect",
-    "pages/logs/logs"
-  ],
-  "window":{
-    "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "海斯波HiSport",
-    "navigationBarTextStyle":"black"
-  },
-  "tabBar": {
-      "color": "#ccc",
-      "selectedColor": "#35495e",
-      "borderStyle": "white",
-      "backgroundColor": "#f9f9f9",
-      "list": [
-              {
-                "text": "首页",
-                    "navigationBarTitleText": "海斯波HiSport",
-                    "navigationBarTextStyle": "black",
-                "pagePath": "pages/index/index",
-                "iconPath": "images/home.png",
-                "selectedIconPath": "images/home_select.png"
-              },
-              {
-                "text": "排行",
-                "pagePath": "pages/run/run",
-                "iconPath": "images/run.png",
-                "selectedIconPath": "images/run_select.png"
-              },
-              {
-                "text": "我的",
-                "pagePath": "pages/my/my",
-                "iconPath": "images/my.png",
-                "selectedIconPath": "images/my_select.png"
-              }
-      ]
-
-  }
+	"pages": [
+		"pages/index/index",
+		"pages/index/connect_error",
+		"pages/index/hw_setting",
+		"pages/index/setting/notice",
+		"pages/index/setting/alarm",
+		"pages/index/setting/sit",
+		"pages/index/setting/hb",
+		"pages/run/run",
+		"pages/my/my",
+		"pages/my/my_device",
+		"pages/my/person",
+		"pages/my/ble_connect",
+		"pages/logs/logs"
+	],
+	"window": {
+		"backgroundTextStyle": "light",
+		"navigationBarBackgroundColor": "#fff",
+		"navigationBarTitleText": "海斯波HiSport",
+		"navigationBarTextStyle": "black"
+	},
+	"tabBar": {
+		"color": "#ccc",
+		"selectedColor": "#35495e",
+		"borderStyle": "white",
+		"backgroundColor": "#f9f9f9",
+		"list": [
+			{
+				"text": "首页",
+				"navigationBarTitleText": "海斯波HiSport",
+				"navigationBarTextStyle": "black",
+				"pagePath": "pages/index/index",
+				"iconPath": "images/home.png",
+				"selectedIconPath": "images/home_select.png"
+			},
+			{
+				"text": "排行",
+				"pagePath": "pages/run/run",
+				"iconPath": "images/run.png",
+				"selectedIconPath": "images/run_select.png"
+			},
+			{
+				"text": "我的",
+				"pagePath": "pages/my/my",
+				"select":true,
+				"iconPath": "images/my.png",
+				"selectedIconPath": "images/my_select.png"
+			}
+		]
+	}
 }

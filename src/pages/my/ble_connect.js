@@ -107,7 +107,7 @@ Page({
 						*/
 					})
 					
-					setTimeout(that.searchbluetooth,1000);
+					setTimeout(that.searchbluetooth,500);
 				
 				},
 				fail: function (res) {
@@ -169,6 +169,9 @@ Page({
 		wx.navigateTo({
 		  url: '../index/index',
 		});*/
+
+		
+
 		console.log("begin search ble....."+that.data.searchingstatus);
 		temp = []
 
@@ -297,6 +300,7 @@ Page({
 						connectedDeviceId: serviceId
 					})
 					//ssss
+					getApp().setCurrDevice(serviceId);
 					wx.setStorage({
 						key: 'curr_device_id',
 						data: serviceId
@@ -311,6 +315,9 @@ Page({
 							console.log("启用notify")
 						}
 					})
+
+					getApp().globalData.backToIndex = 1;
+					wx.navigateBack();
 				},
 				fail: function (res) {
 					wx.hideLoading()

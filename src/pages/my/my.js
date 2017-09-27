@@ -2,7 +2,7 @@
 //获取应用实例
 var util = require('../../utils/util.js');
 var app = getApp()
-var device_num=1;
+var device_num=0;
 Page({
 	data: {
 		motto: '我的',
@@ -145,10 +145,18 @@ Page({
 		})
 	},
   onShow:function(){
+	  if (getApp().globalData.backToIndex ==1){
+		  getApp().globalData.backToIndex=0;
+			wx.switchTab({
+				url: '../index/index',
+			})
+		  return ;
+	  }
     wx.setNavigationBarTitle({
       title: '我的',
     })
     var dest=wx.getStorageSync("dest");
+    console.log("dest-----"+dest);
     for (var n = 0; n < this.data.destArray.length;n++){
       if (this.data.destArray[n]==dest){
         this.setData({
@@ -160,7 +168,7 @@ Page({
   },
 	onLoad: function () {
 		console.log('onLoad')
-		device_num=app.data.allDevice.length;
+    device_num = app.data.allDevice==null?0:app.data.allDevice.length;
 		var that = this
 		//调用应用实例的方法获取全局数据
 		app.getUserInfo(function (userInfo) {

@@ -3,13 +3,23 @@
 <view class="container">
     <view class="section">
         <view class="content">
-            <text>蓝牙初始化:</text>
+            <text>蓝牙初始化状态:</text>
             <text>{{isbluetoothready?"ok":"尚未初始化"}}</text>
         </view>
         <view class="switch">
             <switch checked="{{isbluetoothready}}" bindchange="switchBlueTooth" />
         </view>
     </view>
+	<view class="wx_note">
+		温馨提示:
+		<view class="">
+			1:如果蓝牙已经配对成功，则不被搜索到，需要在系统->蓝牙中手工取消配对后才能继续...
+		</view>
+		<view class="">
+			2:如果长时间找不到设备，建议重新关闭然后打开蓝牙,如果还不行，建议重新启动手机!
+		</view>
+	</view>
+
     <view class="section" hidden="{{!isbluetoothready}}">
         <button type="default" size="{{primarySize}}" loading="{{searchingstatus}}" plain="{{plain}}" disabled="{{disabled}}" bindtap="searchbluetooth"> {{searchingstatus?"搜索中":"搜索蓝牙"}} </button>
     </view>
