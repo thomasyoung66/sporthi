@@ -62,6 +62,15 @@ function saveAllConfig() {
 			break;
 	}
 }
+function disConnect()
+{
+	switch (g_ble_type) {
+		case 0:
+			return ble_km.disConnect();
+		default:
+			break;
+	}	
+}
 module.exports = {
 	init: init,
 	getConnectState: getConnectState,
@@ -69,6 +78,7 @@ module.exports = {
 	beginHeartBeatTest: beginHeartBeatTest,
 	endHeartBeatTest: endHeartBeatTest,
 	findDevice: findDevice,
-	saveAllConfig: saveAllConfig
+	saveAllConfig: saveAllConfig,
+	disConnect: disConnect
 
 }
