@@ -5,7 +5,7 @@
 }
 
 .canvas_style{
- z-index:99999;
+ z-index:99;
 }
 .main_header {
   display: flex;
@@ -16,8 +16,8 @@
   top: 0px;
   width: 100%;
   align-items: center;
-  background: rgb(44, 210, 168);
-  z-index: 99990;
+  background: rgba(44, 210, 168,255);
+	z-index: 999;
 }
 
 .power {

@@ -38,6 +38,10 @@ Page({
 		console.log("参数...", options);
 		var that=this;
 		console.log("run onLoad...." + options.uid);
+		wx.setNavigationBarTitle({
+			title: options.name + ' 历史运动数据'
+		});
+
 		wx.showLoading({
 			title: '正在请求数据...'
 		});
@@ -59,17 +63,10 @@ Page({
 
 	onReady: function () {
 		console.log("run onLoad....");
-
-
 	},
 
 	onShow: function (opt) {
 		var that = this;
-
-		wx.setNavigationBarTitle({
-			title: '历史运动数据'
-		});
-
 		console.log("run  onShow....");
 	},
 

@@ -19,10 +19,6 @@ Page({
       { "id": 7, "name": "软件版本", "keywords": "", "img": "../../images/about_blue.png", right: 1 },
       { "id": 8, "name": "硬件版本", "keywords": "", "img": "../../images/info.png", right: 1 },
       { "id": 9, "name": "设备信息", "keywords": "", "img": "../../images/connect_ok.png", right: 1 }
-
-
-
-
     ]
   },
   showDetail: function (event) {
@@ -51,11 +47,15 @@ Page({
     else if (event.currentTarget.dataset.id == 4) {
       getApp().globalData.indexPage.findDevice(2);
     }
+	else if (event.currentTarget.dataset.id == 5) {//断开连接
+		getApp().globalData.indexPage.disConnect();
+	}
+	/*
     else
       wx.showToast({
         title: 'select=' + event.currentTarget.dataset.id,
       });
-    
+    */
     console.log("this is ok.." + event.currentTarget.dataset.id);
   },
   /**

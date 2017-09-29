@@ -12,7 +12,7 @@
   margin: 10px;
 }
 .cr_content{
-  margin: 30px;
+  margin: 5px 5px 0px 30px;
 }
 
 /*for list end*/

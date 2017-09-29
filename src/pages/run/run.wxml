@@ -5,7 +5,7 @@
     <scroll-view scroll-y="true" bindscrolltolower="lower" style="height1:{{windowHeight}};" lower-threshold="200">
       <view wx:for="{{items}}" url="">
 
-        <view class="main" bindtap="showDetail" data-id="{{index}}" data-idIndex="{{index+1}}">
+        <view class="main" bindtap="showDetail" data-id="{{item.uid}}" data-name="{{item.nickname}}" data-idIndex="{{index+1}}">
           <view class="main-1">
             {{index+1}}
             <image class="img" src="{{item.avatar_url}}" />

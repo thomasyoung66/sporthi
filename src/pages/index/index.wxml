@@ -1,6 +1,6 @@
 <!--index.wxml-->
-<view class="section" style="background:#f8f8f8" bindtouchstart="touchStart" bindtouchend="touchEnd">
-
+<view class="section" style="background:#f8f8f8" >
+<!--bindtouchstart="touchStart" bindtouchend="touchEnd" -->
   <view class="main_header">
     <image bindtap="connect_action" class="header_img" src="{{isConnect?'../../images/ic_device_bracelet.png':'../../images/disconnect.png'}}" />
 
@@ -28,7 +28,7 @@
   </view>
 
   <view class='unconnect' hidden="{{isConnect}}" bindtap='reConnect'>
-    <text class="unconnect_text">设备未连接(点击重连)</text>
+    <text class="unconnect_text" bindtap='reConnect'>设备未连接(点击重连)</text>
   </view>
 
 

@@ -12,7 +12,8 @@ var hbArrayData = null; //测量心率原始数据
 var bpMaxArrayData = null;//高血压
 var bpMinArrayData = null; //低血压
 
-var canvasWidth=util.isAndroid()?340:360;
+var canvasWidth=util.isAndroid()?340:380;
+//var canvasWidth = 380;
 //左右滑动
 var time = 0;
 var touchDot = 0;//触摸时的原点
@@ -52,7 +53,7 @@ Page({
 		bp_text: "血压测试",
 		power_ps: 0,
 		power_text: 0,
-		canvasWidth: canvasWidth,
+		canvasWidth: 360,
 		end: 0
 	},
 	showDetail: function (data) {
@@ -142,6 +143,24 @@ Page({
 	findDevice: function (val) {
 		ble.findDevice(val);
 	},
+	disConnect: function () {
+		wx.closeBLEConnection({
+			deviceId: app.data.currDeviceId,
+			success: function (res) {
+				wx.showToast({
+					title: '关闭蓝牙成功!',
+				});
+				console.log(res)
+			},
+			fail:function(res){
+				wx.showToast({
+					title: '关闭蓝牙失败!',
+				});
+			}
+		});
+		return ;
+		ble.disConnect();
+	},
 	heartBeatTest: function () {
 		console.log("heartBeat test...");
 		if (this.data.isConnect == 0) {
@@ -169,6 +188,7 @@ Page({
 			});
 		}
 		else {
+			hb_times = 0;
 			wx.showToast({
 				title: '停止测试心率...',
 			});
@@ -178,7 +198,7 @@ Page({
 				bp_last: '',
 				hb_last: ''
 			});
-			hb_times = 0;
+			
 			ble.endHeartBeatTest();
 
 		}
@@ -572,8 +592,15 @@ Page({
 		return;
 	},
 	reConnect: function () {
-		if (app.data.currDeviceId.length > 0)
+		wx.showToast({
+			title: '开始连接设备...',
+		})
+		if (app.data.currDeviceId.length > 0){
+			wx.showLoading({
+				title: '正在连接设备...',
+			})
 			ble.run(app.data.currDeviceId);
+		}
 		else {
 			wx.showToast({
 				title: '还没有绑定设备!请先绑定设备...',

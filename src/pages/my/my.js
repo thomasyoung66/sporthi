@@ -68,7 +68,7 @@ Page({
 			{ "id": 4, "name": "我的排名", "keywords": "无", "img": "../../images/rank.png" },
 			{ "id": 5, "name": "运动目标", "keywords": "7000", "img": "../../images/target_big.png" },
 			{ "id": 6, "name": "计量单位", "keywords": "公制", "img": "../../images/unit.png" },
-			{ "id": 7, "name": "关于", "keywords": "", "img": "../../images/about_blue.png" }
+			{ "id": 7, "name": "关于", "keywords": "软件版本:v1.0.3.0930", "img": "../../images/about_blue.png" }
 
 		]
 	},

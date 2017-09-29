@@ -1,6 +1,8 @@
 {
 	"pages": [
 		"pages/index/index",
+		"pages/index/test",
+		
 		"pages/index/connect_error",
 		"pages/index/hw_setting",
 		"pages/index/step_history",
