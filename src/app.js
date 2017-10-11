@@ -12,7 +12,8 @@ App({
 		indexPage: null,
 		needReconnect:0,
 		backToIndex:0,
-		uid: null
+		uid: null,
+		currDevice:null
 	},
 	getTimeDiff: function () {
 		var begin = new Date().getTime();
@@ -107,6 +108,20 @@ App({
 		}
 
 	},
+	setAllDevice:function(devices){
+		wx.setStorageSync('devices', devices == null ? "" : devices);
+		this.data.allDevice =devices;
+		for (var n = 0; n < devices.length; n++) {
+			console.log("loop....", devices[n]);
+
+			if (devices[n].selected == 1) {
+				console.log("当前设备...", devices[n].device_id);
+				that.data.currDeviceId =devices[n].device_id;
+				wx.setStorageSync('curr_devices', devices[n]);
+				break;
+			}
+		}
+	},
 	save_userinfo_server: function () {
 		// user
 		var that = this;
@@ -114,7 +129,7 @@ App({
 		console.log("data===" + util.objToBase64(wx.getStorageSync("user")));
 		console.log("data===" + util.objToBase64(wx.getStorageSync("userInfo")));
 		wx.request({
-			url: util.getUrl('wx/login.php?action=save_userinfo'),
+			url: util.getUrl('login.php?action=save_userinfo'),
 			data: {
 				user: util.objToBase64(wx.getStorageSync("user")),
 				userInfo: util.objToBase64(wx.getStorageSync("userInfo"))
@@ -139,10 +154,13 @@ App({
 				if (res.data.devices == null)
 					return;
 				for (var n = 0; n < res.data.devices.length; n++) {
-					console.log("loop...." + res.data.devices[n]);
-
-					if (res.data.devices[n].select == 1) {
-						that.data.currDeviceId = res.data.devices[n].deviceId;
+					console.log("loop....", res.data.devices[n]);
+					                       
+					if (res.data.devices[n].selected == 1) {
+						console.log("当前设备...", res.data.devices[n].device_id);
+						that.data.currDeviceId = res.data.devices[n].device_id;
+						wx.setStorageSync('curr_devices', res.data.devices[n]);
+						break;
 					}
 				}
 			}

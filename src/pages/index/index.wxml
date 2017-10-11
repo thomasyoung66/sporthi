@@ -1,8 +1,15 @@
 <!--index.wxml-->
-<view class="section" style="background:#f8f8f8" >
+
+<view class="section1" style="background:#f8f8f8" >
+<!--
+<view class="main_header11">
+111111111111111
+222222222222222
+</view>-->
+<view>
 <!--bindtouchstart="touchStart" bindtouchend="touchEnd" -->
   <view class="main_header">
-    <image bindtap="connect_action" class="header_img" src="{{isConnect?'../../images/ic_device_bracelet.png':'../../images/disconnect.png'}}" />
+    <image bindtap="connect_action" class="header_img" src="{{brand_icon}}" />
 
     <image bindtap="prepDateTap" class="lr_img" src="../../images/left_arrow_white.png" />
     <picker mode="date" value=" {{currDateShow}}" start="{{beginDate}}" end="{{endDate}}" bindchange="bindDateChange">
@@ -144,9 +151,9 @@
 
         <view class="view_white_line" />
         <!--结束卡路里-->
-        <view>
+        <view class="def_row_view_center">
 
-          <canvas   class="canvas_style" style="width: {{canvasWidth}}px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+          <canvas   class="canvas_style" style="width: 200px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -252,5 +259,5 @@
     </view>
     <!--结束心率-->
   </scroll-view>
-
+</view>
 </view>

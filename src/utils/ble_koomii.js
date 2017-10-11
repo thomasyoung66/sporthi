@@ -659,32 +659,33 @@ function processStepToday(dataView) {
 				var item = {};
 				item.time = dataViewStepToday.getUint32(n * 64 + 4, true);
 				item.step = dataViewStepToday.getUint32(n * 64 + 8, true);
-				
+				item.detail=new Array();
+				item.type=24;
 				var valate = dataViewStepToday.getUint32(n * 64 + 60, true);
-				item.h0 = dataViewStepToday.getUint16(n * 64 + 12, true);
-				item.h1 = dataViewStepToday.getUint16(n * 64 + 14, true);
-				item.h2 = dataViewStepToday.getUint16(n * 64 + 16, true);
-				item.h3 = dataViewStepToday.getUint16(n * 64 + 18, true);
-				item.h4 = dataViewStepToday.getUint16(n * 64 + 20, true);
-				item.h5 = dataViewStepToday.getUint16(n * 64 + 22, true);
-				item.h6 = dataViewStepToday.getUint16(n * 64 + 24, true);
-				item.h7 = dataViewStepToday.getUint16(n * 64 + 26, true);
-				item.h8 = dataViewStepToday.getUint16(n * 64 + 28, true);
-				item.h9 = dataViewStepToday.getUint16(n * 64 + 30, true);
-				item.h10 = dataViewStepToday.getUint16(n * 64 + 32, true);
-				item.h11 = dataViewStepToday.getUint16(n * 64 + 34, true);
-				item.h12 = dataViewStepToday.getUint16(n * 64 + 36, true);
-				item.h13 = dataViewStepToday.getUint16(n * 64 + 38, true);
-				item.h14 = dataViewStepToday.getUint16(n * 64 + 40, true);
-				item.h15 = dataViewStepToday.getUint16(n * 64 + 42, true);
-				item.h16 = dataViewStepToday.getUint16(n * 64 + 44, true);
-				item.h17 = dataViewStepToday.getUint16(n * 64 + 46, true);
-				item.h18 = dataViewStepToday.getUint16(n * 64 + 48, true);
-				item.h19 = dataViewStepToday.getUint16(n * 64 + 50, true);
-				item.h20 = dataViewStepToday.getUint16(n * 64 + 52, true);
-				item.h21 = dataViewStepToday.getUint16(n * 64 + 54, true);
-				item.h22 = dataViewStepToday.getUint16(n * 64 + 56, true);
-				item.h23 = dataViewStepToday.getUint16(n * 64 + 58, true);
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 12, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 14, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 16, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 18, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 20, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 22, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 24, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 26, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 28, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 30, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 32, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 34, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 36, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 38, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 40, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 42, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 44, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 46, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 48, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 50, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 52, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 54, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 56, true));
+				item.detail.push(dataViewStepToday.getUint16(n * 64 + 58, true));
 
 				if (valate == 0x34567890) {
 					//			var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
@@ -749,30 +750,31 @@ function processStepHistory(val) {
 			if (util.isValDate(runDate)) {
 				var item = {};
 				var valate = dataViewStep.getUint32(n * 64 + 60, true);
-				item.h0 = dataViewStep.getUint16(n * 64 + 12, true);
-				item.h1 = dataViewStep.getUint16(n * 64 + 14, true);
-				item.h2 = dataViewStep.getUint16(n * 64 + 16, true);
-				item.h3 = dataViewStep.getUint16(n * 64 + 18, true);
-				item.h4 = dataViewStep.getUint16(n * 64 + 20, true);
-				item.h5 = dataViewStep.getUint16(n * 64 + 22, true);
-				item.h6 = dataViewStep.getUint16(n * 64 + 24, true);
-				item.h7 = dataViewStep.getUint16(n * 64 + 26, true);
-				item.h8 = dataViewStep.getUint16(n * 64 + 28, true);
-				item.h9 = dataViewStep.getUint16(n * 64 + 30, true);
-				item.h10 = dataViewStep.getUint16(n * 64 + 32, true);
-				item.h11 = dataViewStep.getUint16(n * 64 + 34, true);
-				item.h12 = dataViewStep.getUint16(n * 64 + 36, true);
-				item.h13 = dataViewStep.getUint16(n * 64 + 38, true);
-				item.h14 = dataViewStep.getUint16(n * 64 + 40, true);
-				item.h15 = dataViewStep.getUint16(n * 64 + 42, true);
-				item.h16 = dataViewStep.getUint16(n * 64 + 44, true);
-				item.h17 = dataViewStep.getUint16(n * 64 + 46, true);
-				item.h18 = dataViewStep.getUint16(n * 64 + 48, true);
-				item.h19 = dataViewStep.getUint16(n * 64 + 50, true);
-				item.h20 = dataViewStep.getUint16(n * 64 + 52, true);
-				item.h21 = dataViewStep.getUint16(n * 64 + 54, true);
-				item.h22 = dataViewStep.getUint16(n * 64 + 56, true);
-				item.h23 = dataViewStep.getUint16(n * 64 + 58, true);
+				item.detail=new Array();
+				item.detail.push(dataViewStep.getUint16(n * 64 + 12, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 14, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 16, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 18, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 20, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 22, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 24, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 26, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 28, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 30, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 32, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 34, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 36, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 38, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 40, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 42, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 44, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 46, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 48, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 50, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 52, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 54, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 56, true));
+				item.detail.push(dataViewStep.getUint16(n * 64 + 58, true));
 				// console.log(util.getDataFrom1970(runDate, "yyyy-MM-dd")+"=====valate===="+valate);
 				if (valate == 0x34567890) {//计步数据
 					item.time = dataViewStep.getUint32(n * 64 + 4, true);
@@ -1541,7 +1543,7 @@ function beginService() {
 				if (g_services.indexOf("FFC0") > 0)
 					break;
 			}
-			console.log("global uuid=" + g_services);
+			console.log("koomii global uuid=" + g_services);
 			setTimeout(function () {
 				g_services = serverId180A;
 				wx.getBLEDeviceCharacteristics({
@@ -1670,15 +1672,11 @@ function loadBleDevice(serviceId) {
 		console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
 		if (res.connected == false) {
 			isConnect = 0;
-			getApp().globalData.indexPage.setData({
-				isConnect: 0
-			});
+			getApp().globalData.indexPage.setConnectStatus(0);
 		}
 		else {
 			isConnect = 1;
-			getApp().globalData.indexPage.setData({
-				isConnect: 1
-			});
+			getApp().globalData.indexPage.setConnectStatus(1);
 		}
 	})
 }

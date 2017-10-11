@@ -7,6 +7,15 @@
 .canvas_style{
  z-index:99;
 }
+.main_header11 {
+  height: 60px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  align-items: center;
+  background: rgba(44, 210, 168,255);
+  z-index: 2;
+}
 .main_header {
   display: flex;
   flex-direction: row;
@@ -125,7 +134,12 @@
   justify-content: flex-start;
   align-items: center;
 }
-
+.def_row_view_center {
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+}
 .def_col_view {
   display: flex;
   flex-direction: column;

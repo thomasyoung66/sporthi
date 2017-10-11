@@ -27,17 +27,15 @@
         <view class="section" hidden="{{!isbluetoothready}}">
             <view wx:for="{{devices}}" bindtap="connectAsk" data-id="{{item.deviceId}}" class="main {{deviceconnected?'deviceconnected':''}}">
                 <view class="main-1">
-                    <image class="img" src="../../images/band.png" />
+                    <image class="img" src="../../images/{{item.img}}" />
                     <view class="main_1col">
                         <text class="title" style="font-size:14px">{{item.name}}</text>
                         <text class="title" style="font-size:10px">品牌:{{item.brand}} 运营商:{{item.corp}}</text>
-
                     </view>
                 </view>
                 <view class="main-2">
-
                     <text>
-                  </text>
+                 	</text>
                 </view>
                 <view class="right-row">
                     <text class="right-text">信号:{{item.RSSI}}</text>

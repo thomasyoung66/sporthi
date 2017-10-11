@@ -266,28 +266,16 @@ function calcOdo(step) {
 }
 function toHourMinute(s) {
 	var t;
-	if (s == 0) {
-		return "00:00:00";
+	if (s == 0||s==null) {
+		return "00:00";
 	}
+	else
+		s=s*60;
 	if (s > -1) {
 		var hour = Math.floor(s / 3600);
 		var min = Math.floor(s / 60) % 60;
 		var sec = s % 60;
-		if (hour < 10) {
-			t = '0' + hour + ":";
-		} else {
-			t = hour + ":";
-		}
-
-		if (min < 10) {
-			t += "0";
-		}
-		t += min + ":";
-		if (sec < 10) {
-			t += "0";
-		}
-		t += sec % 60;
-		//t += sec.toFixed(2);
+		return sprintf("%02d:%02d", hour,min);
 	}
 	return t;
 }
@@ -298,12 +286,15 @@ function arrayBufferToString(dataView) {
 	}
 	return str;
 }
-function dumpArrayBuffer(dataView) {
+function dumpArrayBuffer(dataView,title) {
 	var str = "";
 	for (var n = 0; n < dataView.byteLength; n++) {
 		str = str + " " + dataView.getUint8(n);
 	}
-	console.log(str);
+	if (title==undefined)
+		console.log(str);
+	else
+		console.log(title+":"+str);
 }
 function safeGet(obj, key, def) {
 	if (obj == null || obj == "")

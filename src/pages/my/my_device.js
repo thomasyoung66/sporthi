@@ -21,8 +21,61 @@ Page({
 			devices: app.data.allDevice
 		});
 	},
+	activeDevice:function (e){
+		var that=this;
+		wx.showModal({
+			title: '系统提问',
+			content: '是否将当前设备设置为选中状态?',
+			confirmText: "是",
+			cancelText: "否",
+			success: function (res) {
+				wx.request({
+					url: util.getUrl('ble.php?action=active_device'),
+					data: {
+						uid: wx.getStorageSync('serverId'),
+						deviceId: e.target.id
+					},
+					method: 'POST',
+					header: { 'content-type': 'application/x-www-form-urlencoded' },
+					success: function (res) {
+						console.log("save----", res);
+						getApp().setAllDevice(res.data.devices);
+						that.setData({
+							devices: app.data.allDevice
+						});
+					}
+				});
+			}
+		});
 
-
+	},
+	unBindDevice:function(e){
+		var that = this;
+		wx.showModal({
+			title: '系统提问',
+			content: '是否删除当前设备?',
+			confirmText: "是",
+			cancelText: "否",
+			success: function (res) {
+				wx.request({
+					url: util.getUrl('ble.php?action=delete_device'),
+					data: {
+						uid: wx.getStorageSync('serverId'),
+						deviceId: e.target.id
+					},
+					method: 'POST',
+					header: { 'content-type': 'application/x-www-form-urlencoded' },
+					success: function (res) {
+						console.log("save----", res);
+						getApp().setAllDevice(res.data.devices);
+						that.setData({
+							devices: app.data.allDevice
+						});
+					}
+				});
+			}
+		});
+	},
 
 	/**
 	 * 生命周期函数--监听页面初次渲染完成
@@ -37,7 +90,9 @@ Page({
 	 * 生命周期函数--监听页面显示
 	 */
 	onShow: function () {
-
+		wx.setNavigationBarTitle({
+			title: '我的设备列表',
+		})
 	},
 
 	/**

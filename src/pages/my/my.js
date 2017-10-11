@@ -2,16 +2,16 @@
 //获取应用实例
 var util = require('../../utils/util.js');
 var app = getApp()
-var device_num=0;
+var device_num = 0;
 Page({
 	data: {
 		motto: '我的',
 		userInfo: {},
-		currUtil:"公制",
-		currDest:7000,
-    indexDest:0,
-		utilArray:[
-			"公制", 
+		currUtil: "公制",
+		currDest: 7000,
+		indexDest: 0,
+		utilArray: [
+			"公制",
 			"英制"
 		],
 		destArray: [
@@ -62,9 +62,9 @@ Page({
 		],
 		items: [
 			{ "id": 1, "name": "连接设备", "keywords": "连接设备", "img": "../../images/band.png" },
-			{ "id": 2, "name": "我的设备", "keywords": device_num+"个设备", "img": "../../images/user1.png" },
-			{ "id": 3, "name": "个人信息", "keywords":"身高/体重等", "img": "../../images/setting_blue.png" },
-			
+			{ "id": 2, "name": "我的设备", "keywords": device_num + "个设备", "img": "../../images/user1.png" },
+			{ "id": 3, "name": "个人信息", "keywords": "身高/体重等", "img": "../../images/setting_blue.png" },
+
 			{ "id": 4, "name": "我的排名", "keywords": "无", "img": "../../images/rank.png" },
 			{ "id": 5, "name": "运动目标", "keywords": "7000", "img": "../../images/target_big.png" },
 			{ "id": 6, "name": "计量单位", "keywords": "公制", "img": "../../images/unit.png" },
@@ -73,7 +73,7 @@ Page({
 		]
 	},
 	bindUtilPickerChange: function (e) {
-		var that=this;
+		var that = this;
 		this.setData({
 			currUtil: that.data.utilArray[e.detail.value]
 		});
@@ -83,7 +83,7 @@ Page({
 		wx.request({
 			url: util.getUrl('ble.php?action=save_util'),
 			data: {
-				util:e.detail.value,
+				util: e.detail.value,
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
@@ -93,7 +93,7 @@ Page({
 			}
 		});
 	},
-	bindDestPickerChange:function(e){
+	bindDestPickerChange: function (e) {
 		var that = this;
 		this.setData({
 			currDest: that.data.destArray[e.detail.value]
@@ -105,7 +105,7 @@ Page({
 		getApp().globalData.indexPage.setData({
 			step_dest: that.data.destArray[e.detail.value]
 		});
-    wx.setStorageSync("dest", that.data.destArray[e.detail.value] );
+		wx.setStorageSync("dest", that.data.destArray[e.detail.value]);
 		wx.request({
 			url: util.getUrl('ble.php?action=save_dest'),
 			data: {
@@ -144,31 +144,36 @@ Page({
 			url: '../logs/logs'
 		})
 	},
-  onShow:function(){
-	  if (getApp().globalData.backToIndex ==1){
-		  getApp().globalData.backToIndex=0;
+	onShow: function () {
+		if (getApp().globalData.backToIndex == 1) {
+			getApp().globalData.backToIndex = 0;
 			wx.switchTab({
 				url: '../index/index',
 			})
-		  return ;
-	  }
-    wx.setNavigationBarTitle({
-      title: '我的',
-    })
-    var dest=wx.getStorageSync("dest");
-    console.log("dest-----"+dest);
-    for (var n = 0; n < this.data.destArray.length;n++){
-      if (this.data.destArray[n]==dest){
-        this.setData({
-          indexDest:n
-        });
-        break;
-      }
-    }
-  },
+			return;
+		}
+		wx.setNavigationBarTitle({
+			title: '我的',
+		})
+		var dest = wx.getStorageSync("dest");
+		console.log("dest-----" + dest);
+		for (var n = 0; n < this.data.destArray.length; n++) {
+			if (this.data.destArray[n] == dest) {
+				this.setData({
+					indexDest: n
+				});
+				break;
+			}
+		}
+	},
 	onLoad: function () {
-		console.log('onLoad')
-    device_num = app.data.allDevice==null?0:app.data.allDevice.length;
+		console.log('onLoad.....', app.data.allDevice);
+		device_num = app.data.allDevice == null ? 0 : app.data.allDevice.length;
+		var tmp=this.data.items;
+		tmp[1].keywords=device_num+"个设备";
+		this.setData({
+			items:tmp
+		});
 		var that = this
 		//调用应用实例的方法获取全局数据
 		app.getUserInfo(function (userInfo) {

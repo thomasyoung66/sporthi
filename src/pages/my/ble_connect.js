@@ -1,7 +1,7 @@
 
 var util = require('../../utils/util.js');
 var app = getApp()
-var temp = []
+var temp = new Array();
 var serviceId = "00002A00-0000-1000-8000-00805F9B34FB"
 var characteristicId = "00002A00-0000-1000-8000-00805F9B34FB"
 var ble_curr_id = 0;
@@ -69,44 +69,55 @@ Page({
 					console.log("device match rule=", rule);
 
 					wx.onBluetoothDeviceFound(function (devices) {
-						console.log('begin-发现新蓝牙设备')
-						console.log(devices);
+						
+						console.log('begin-发现新蓝牙设备',devices);
 						var item = devices["devices"][0];
 						if (item.name==""){
 							return ;
 						}
+						console.log("发现一个...."+item.name);
 						for (var n = 0; n < rule.length;n++){
 							var arr = rule[n].sid.split(";");
 							for(var p=0;p<arr.length;p++){
-								console.log(arr[p]+"-----match----"+item.name);
-								if (arr[p]==item.name.substr(0,arr[p].length)){
+								console.log(arr[p]+"-----match----"+item.name+"-rule-",rule);
+								if (arr[p] == item.name.substr(0, arr[p].length) || arr[p]== item.localName.substr(0, arr[p].length)){
 								
 									item.brand = rule[n].brand;
 									item.corp = rule[n].corp;
+									item.parser = rule[n].parser;
+									item.heart = rule[n].heart;
+									item.img = rule[n].icon;
+									//console.log("图片....." + item.img);
+									if (rule[n].sidfield=="localName"){
+										item.name = item.localName;
+									}
 
 									if (item.name != '') {//name 
-										temp.push(item)
-										that.setData({
-											devices: temp
-										});
+										var find=false;
+									//	console.log("个数" + temp.length+" obj=",item);
+										if (temp.length>0){
+									//		console.log("-------", temp);
+										}
+										//	console.log("过滤id编号:"+temp[n].deviceId +'-------'+ item.deviceId);
+										for(var n1=0;n1<temp.length;n1++){
+									//		console.log("-------", temp);
+											if (temp[n1].deviceId == item.deviceId){
+												find=true;
+												break;
+											}
+										}
+										if (find==false){
+											temp.push(item)
+											that.setData({
+												devices: temp
+											});
+										}
 									}
 									break;
 								}
 							}
 						}
-
-
-						/*
-						console.log('begin-发现新蓝牙设备')
-						console.log(devices)
-						console.log(JSON.stringify(devices));
-					      
-						console.log('设备id' + item.deviceId)
-						console.log('设备name' + item.name)
-						console.log('end-发现新蓝牙设备')
-						*/
 					})
-					
 					setTimeout(that.searchbluetooth,500);
 				
 				},
@@ -126,7 +137,7 @@ Page({
 			})
 
 		} else {
-			temp = []
+			temp = new Array();
 			//先关闭设备连接
 			wx.closeBLEConnection({
 				deviceId: that.data.connectedDeviceId,
@@ -173,7 +184,7 @@ Page({
 		
 
 		console.log("begin search ble....."+that.data.searchingstatus);
-		temp = []
+		temp = new Array();
 
 		if (!that.data.searchingstatus) {
 			var that = this
@@ -254,6 +265,7 @@ Page({
 			wx.showLoading({
 				title: '连接蓝牙设备中...',
 			})
+			console.log(serviceId+" 链接中....");
 			wx.createBLEConnection({
 				deviceId: serviceId,
 				success: function (res) {
@@ -281,7 +293,10 @@ Page({
 							deviceId: serviceId,
 							brand:item.brand,
 							name:item.name,
-							corp: item.corp
+							corp:item.corp,
+							heart:item.heart,
+							img:item.img,
+							parser:item.parser
 						},
 						method: 'POST',
 						header: { 'content-type': 'application/x-www-form-urlencoded' },
