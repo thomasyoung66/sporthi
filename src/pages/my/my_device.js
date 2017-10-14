@@ -43,6 +43,14 @@ Page({
 						that.setData({
 							devices: app.data.allDevice
 						});
+						/*
+						wx.closeBLEConnection({
+							success: function (res) {
+								console.log(res)
+							}
+						})*/
+						getApp().globalData.backToIndex = 1;
+						wx.navigateBack();
 					}
 				});
 			}

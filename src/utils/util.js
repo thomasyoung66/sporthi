@@ -135,7 +135,7 @@ function getDateOffset(sec, fmt) {
 }
 function isValDate(sec) {
 	var d = new Date((new Date("1970/01/01 00:00:00").getTime() + sec * 1000));
-	var begin = new Date((new Date().getTime() + parseInt(-30) * 3600 * 24 * 1000));
+	var begin = new Date((new Date().getTime() + parseInt(-60) * 3600 * 24 * 1000));
 	var end = new Date((new Date().getTime() + parseInt(1) * 3600 * 24 * 1000));
 	if (d.getTime() > begin.getTime() && d.getTime() < end.getTime())
 		return true;
@@ -367,7 +367,7 @@ function avg(arr)
 	var len = arr.length;
 	var sum=0;
 	for (var i = 0; i < len; i++) {
-			sum = sum+arr[i];
+		sum = sum +parseInt(arr[i]);
 	}
 	return parseInt(sum/len);
 }

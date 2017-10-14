@@ -13,7 +13,8 @@ App({
 		needReconnect:0,
 		backToIndex:0,
 		uid: null,
-		currDevice:null
+		currDevice:null,
+		isIphone:false
 	},
 	getTimeDiff: function () {
 		var begin = new Date().getTime();
@@ -33,9 +34,47 @@ App({
 		that.data.currDeviceId=dev;
 		this.globalData.needReconnect=1;
 	},
+	getDeviceHisData:function(date,dataType){
+		var that = this;
+		
+		var obj = wx.getStorageSync(that.data.currDeviceId);
+		console.log(date+"----"+dataType +"---",obj);	
+		if (obj==null || obj==''){
+			return null;
+		}
+			
+		if (obj.hasOwnProperty(dataType) == false) {
+			return null;
+		}
+		if (obj[dataType].hasOwnProperty(date) == false) {
+			return null;
+		}
+	
+		return obj[dataType][date];
+	},
+	setDeviceHisData: function (date, dataType,data) {
+		var that = this;
+	
+		var obj = wx.getStorageSync(that.data.currDeviceId);
+		if (obj == null || obj == '')
+			obj = new Object();
+		if (obj.hasOwnProperty(dataType)==false){
+			obj[dataType]=new Object();
+		}
+		if (obj[dataType].hasOwnProperty(date) == false) {
+			obj[dataType][date] = new Object();
+		}
+	
+		obj[dataType][date]=data;
+		wx.setStorageSync(that.data.currDeviceId, obj);
+	//	console.log("保存数据后:", wx.getStorageSync(that.data.currDeviceId));
+	},
 	myTest: function () {
+	
 		var di = this.getTimeDiff();
 		console.log("diff=" + di);
+
+		console.log("dddd",wx.getStorageSync("ddddddd"));
 		console.log(util.getDateOffset(-3, "yyyy-MM-dd"));
 		console.log("我的..." + util.getBit(2, 1) + "--" + util.getBit(2, 0));
 		var a = util.setBit(0, 1);
@@ -53,6 +92,7 @@ App({
 	initData: function () {
 		var obj = wx.getStorageSync("config");
 		console.log("config-----", obj);
+		this.globalData.isIphone=wx.getSystemInfoSync().platform=="ios"?true:false;
 		if (obj == null || obj.hasOwnProperty("notice_onoff") == false) {
 			var config = new Object();
 			config.notice_onoff = 1;
@@ -100,24 +140,23 @@ App({
 		this.initData();
 		this.myTest();
 		return;
-		var str = "9:00~12:00";
-		var arr = str.split(/:|~/);
-		//console.log("------"+str.split("\:\~"));
-		for (var n = 0; n < arr.length; n++) {
-			console.log("array-----" + arr[n]);
-		}
+
 
 	},
+	setDeviceId:function(id){
+		this.data.currDeviceId=id;
+	},
 	setAllDevice:function(devices){
+		var that=this;
 		wx.setStorageSync('devices', devices == null ? "" : devices);
 		this.data.allDevice =devices;
 		for (var n = 0; n < devices.length; n++) {
-			console.log("loop....", devices[n]);
+	//		console.log("loop....", devices[n]);
 
 			if (devices[n].selected == 1) {
-				console.log("当前设备...", devices[n].device_id);
 				that.data.currDeviceId =devices[n].device_id;
 				wx.setStorageSync('curr_devices', devices[n]);
+				this.setCurrDevice(devices[n].device_id);
 				break;
 			}
 		}

@@ -17,7 +17,8 @@ var currDay=0;
 var isConnect = 0;
 var isNeedSyncHistory = false;
 var util = require('util.js');
-
+var currSyncDay=0;//当天同步的天数
+var maxSyncDays=7;//最大同步的天数
 var board_serverId = "00001800-0000-1000-8000-00805F9B34FB";
 
 var syncDataType="step";
@@ -348,40 +349,10 @@ let dataViewStepToday;
 var currDate;
 var currTotal=0;
 var currNumber=0;
-function processSleepToday(dataView) {
-//	console.log("处理睡眠数据....");
-	/*
-	if (dataView.getUint8(3) == 0) {//没有睡眠数据可以同步
-		if (loadHistorying == false) {
-			
-			var syncFlag = wx.getStorageSync("sync_flag");
-			console.log("syncFlag=", syncFlag);
-			if (syncFlag == null || syncFlag == "") {
-				syncStepHistory();
-			}
-			else {
-				if (syncFlag != util.getDateOffset(0, "yyyy-MM-dd")) {
-					syncStepHistory();
-				}
-			}
-		}
-		else {
-		
-			wx.setStorageSync("sync_flag", util.getDateOffset(0, "yyyy-MM-dd"));
-		}
-		syncTodayHb();
-		return ;
-	}*/
-//	console.log("睡眠》》》》序列号：" + dataView.getUint8(2));
-	if (dataView.getUint8(2) == 1) {
-		/*
-		console.log("包长度:" + "---" + dataView.getUint16(3));
-		console.log("包序号:" + dataView.getUint16(5));
+function procSleep(dataView) {
 
-		console.log("间隔:" + dataView.getUint8(13));
-		console.log("条数:" + dataView.getUint8(14));
-		console.log("标志:" + dataView.getUint8(15));
-		*/
+	if (dataView.getUint8(2) == 1) {
+
 		var seq = dataView.getUint16(5);
 		currNumber = dataView.getUint8(14);
 		currDate = util.sprintf("%d-%02d-%02d", dataView.getUint8(10) + 2000, dataView.getUint8(11), dataView.getUint8(12));
@@ -434,28 +405,38 @@ function processSleepToday(dataView) {
 		item.deep=deep;
 		item.shallow = shallow;
 
-		wx.setStorageSync("today_sleep", item);
-		console.log("debug...........3");
+
+		getApp().setDeviceHisData(currDate, "sleep", item);
+
 		console.log("----设置当天->>>>>", item);
 		wx.request({
 			url: util.getUrl('ble.php?action=save_today_sleep_data'),
 			data: {
 				step_data: util.objToBase64(item),
 				run_date: currDate,
+				device_id: getApp().data.currDeviceId,
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
 			header: { 'content-type': 'application/x-www-form-urlencoded' },
 			success: function (res) {
-				console.log("save--processStepToday--", res);
+				console.log("save--procStep--", res);
 			}
 		});
-		getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+
+		currSyncDay++;
+		if (currSyncDay >= maxSyncDays) {
+			currSyncDay = 0;
+			syncHb(0);
+		}
+		else {
+			syncSleep(currSyncDay);
+		}
+		//getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
 		if (supportHb==false){
 			wx.hideLoading();
 		}
-		syncTodayHb();
-	//	syncTodaySleep();
+
 		return;
 
 		//util.dumpArrayBuffer(dataViewStepToday);
@@ -470,13 +451,14 @@ function processSleepToday(dataView) {
 
 }
 
-function processHbAll(dataView) {
+function procHb(dataView) {
 	console.log("处理心率数据....");
 	if (dataView.getUint8(2) == 1) {
 		var seq = dataView.getUint16(5);
 		currNumber = dataView.getUint8(14);
+		
 		currDate = util.sprintf("%d-%02d-%02d", dataView.getUint8(10) + 2000, dataView.getUint8(11), dataView.getUint8(12));
-		console.log("心率>>>>>日期:" + currDate + " 条数:" + currNumber);
+		console.log(currSyncDay+" 心率>>>>>日期:" + currDate + " 条数:" + currNumber);
 		currTotal = 0;
 		bufferStepToday = new ArrayBuffer(1024);
 		dataViewStepToday = new DataView(bufferStepToday);
@@ -491,9 +473,6 @@ function processHbAll(dataView) {
 
 		if (currNumber == 0)
 			currNumber = currTotal + len;
-		console.log("debug...........总共的数据量=" + currNumber);
-
-	//	util.dumpArrayBuffer(dataViewStepToday,"ok....");
 	    var hb=[];
 		var col=[];
 		var val=[];
@@ -506,26 +485,19 @@ function processHbAll(dataView) {
 				col.push(util.toHourMinute(beginTime));
 				val.push(dur);
 			}
+		}
 
-		}
-		if (currDate == util.getDateOffset(0, "yyyy-MM-dd")){
-			getApp().globalData.indexPage.drawHistoryHeartRateCanvas(col,val);
-		}
-		else{
-			getApp().globalData.indexPage.drawHistoryHeartRateCanvas([],[]);
-		}
-		
 		if (hb.length>0){
 			var item = {};
 			item.date = currDate;
 			item.detail = hb.join(";");
-
-			wx.setStorageSync("hb-" + currDate, item);
+			getApp().setDeviceHisData(currDate, "hb", item);
 			wx.request({
 				url: util.getUrl('ble.php?action=save_hb_data'),
 				data: {
 					hb_data: util.objToBase64(item),
 					run_date: currDate,
+					device_id: getApp().data.currDeviceId,
 					uid: wx.getStorageSync('serverId')
 				},
 				method: 'POST',
@@ -535,15 +507,16 @@ function processHbAll(dataView) {
 				}
 			});
 		}
-		console.log(currDay+"--同步的天数情况--"+allDays);
-		if (currDay==allDays){
-			syncTodayBp();
-		}
-	//	getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
-		wx.hideLoading();
-		return;
 
-		//util.dumpArrayBuffer(dataViewStepToday);
+		currSyncDay++;
+		if (currSyncDay >= maxSyncDays) {
+			currSyncDay = 0;
+			syncBp(0);
+		}
+		else {
+			syncHb(currSyncDay);
+		}
+		return;
 	}
 	else {
 		for (var n = 0; n < 17; n++) {
@@ -554,7 +527,7 @@ function processHbAll(dataView) {
 	}
 
 }
-function processBpAll(dataView) {
+function procBp(dataView) {
 	console.log("处理血压数据....");
 	if (dataView.getUint8(2) == 1) {
 		var seq = dataView.getUint16(5);
@@ -584,36 +557,47 @@ function processBpAll(dataView) {
 		for (var n = 0; n < currNumber; n++) {
 			var high = dataViewStepToday.getUint8(2 * n);
 			var low = dataViewStepToday.getUint8(2 * n + 1);
-		//	if (beginTime > 0)
-				console.log(high + "---" + n + "----loop-----" + low);
+			if(high>50 && low>50){
+				detail.push(high+":"+low);
+				console.log(high + "/" + low + "---" + n + "----loop-----");
+			}
+		
 		}
-		return;
+
 		var item = {};
 		item.time = 0;
 		item.type = 48;
+		item.total=detail.length;
 		item.sleep = total;
-		item.detail = detail;
-		item.deep = deep;
-		item.shallow = shallow;
+		item.detail = detail.join(";");
 
-		wx.setStorageSync("today_sleep", item);
-		console.log("debug...........3");
-		console.log("----设置当天->>>>>", item);
+		getApp().setDeviceHisData(currDate, "bp", item);
 		wx.request({
-			url: util.getUrl('ble.php?action=save_today_sleep_data'),
+			url: util.getUrl('ble.php?action=save_bp_data'),
 			data: {
-				step_data: util.objToBase64(item),
+				bp_data: util.objToBase64(item),
 				run_date: currDate,
+				device_id: getApp().data.currDeviceId,
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
 			header: { 'content-type': 'application/x-www-form-urlencoded' },
 			success: function (res) {
-				console.log("save--processStepToday--", res);
+				console.log("save--procStep--", res);
 			}
 		});
-		getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
-		wx.hideLoading();
+
+		currSyncDay++;
+		if (currSyncDay >= maxSyncDays) {
+			currSyncDay = 0;
+			getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+			wx.hideLoading();
+			console.warn("整个过程完成=finihed");
+		}
+		else {
+			syncBp(currSyncDay);
+		}
+
 		return;
 
 		//util.dumpArrayBuffer(dataViewStepToday);
@@ -627,12 +611,12 @@ function processBpAll(dataView) {
 	}
 
 }
-function processStepToday(dataView) {
+function procStep(dataView) {
 	//	let dataView = new DataView(val);
 
-	console.log("》》》》序列号："+dataView.getUint8(2));
 	if (dataView.getUint8(2) == 1) {
-		console.log("包长度:" +  "---" + dataView.getUint16(3));
+		
+		console.log(currSyncDay+" 包长度:" +  "---" + dataView.getUint16(3));
 		console.log("包序号:" + dataView.getUint16(5));
 	
 		console.log("间隔:" + dataView.getUint8(13));
@@ -641,7 +625,7 @@ function processStepToday(dataView) {
 		var seq = dataView.getUint16(5);
 		currNumber = dataView.getUint8(14);
 		currDate = util.sprintf("%d-%02d-%02d", dataView.getUint8(10) + 2000, dataView.getUint8(11), dataView.getUint8(12));
-		console.log("日期:"+currDate);
+		console.log("发现跑步日期:"+currDate+"seq="+currSyncDay);
 		currTotal = 0;
 		bufferStepToday = new ArrayBuffer(1024);
 		dataViewStepToday = new DataView(bufferStepToday);
@@ -654,7 +638,7 @@ function processStepToday(dataView) {
 		for (var n = 0; n < len; n++) {
 			dataViewStepToday.setUint8(currTotal+n, dataView.getUint8(3 + n));
 		}
-		console.log("debug...........1");
+
 		var detail=new Array();
 		var total=0;
 		for (var n = 0; n < currNumber;n++){
@@ -665,31 +649,40 @@ function processStepToday(dataView) {
 			total=total+step;
 			//console.log(currTotal+"---"+n+"----loop-----");
 		}
-		console.log("debug...........2");
+
 		var item = {};
 		item.time = 0;
 		item.type= 48;
 		item.step = total;
 		item.detail=detail;
-		wx.setStorageSync("today", item);
-		console.log("debug...........3");
-		console.log("----设置当天->>>>>", item);
+		console.log(currDate+" 同步完成:", item);
+		getApp().setDeviceHisData(currDate, "step", item);
+
+		
 		wx.request({
 			url: util.getUrl('ble.php?action=save_today_step_data'),
 			data: {
 				step_data: util.objToBase64(item),
 				run_date: currDate,
+				device_id: getApp().data.currDeviceId,
 				uid: wx.getStorageSync('serverId')
 			},
 			method: 'POST',
 			header: { 'content-type': 'application/x-www-form-urlencoded' },
 			success: function (res) {
-				console.log("save--processStepToday--", res);
+				console.log("save--procStep--", res);
 			}
 		});
-		getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
-	
-		syncTodaySleep();
+
+		currSyncDay++;
+		if (currSyncDay>=maxSyncDays){
+			currSyncDay = 0;
+			syncSleep(0);
+		}
+		else{
+			syncStep(currSyncDay);
+		}
+
 		return ;
 	
 		//util.dumpArrayBuffer(dataViewStepToday);
@@ -703,90 +696,7 @@ function processStepToday(dataView) {
 	}
 
 	return 0;
-	if (seq == 0) {
-		bufferStepToday = new ArrayBuffer(16 * total);
-		dataViewStepToday = new DataView(bufferStepToday);
-	}
 
-	for (var n = 4; n < 20; n++) {
-		dataViewStepToday.setUint8(seq * 16 + n - 4, dataView.getUint8(n));
-	}
-	if (seq == (total - 1)) {
-
-		for (var n = 0; n < (16 * total) / 64; n++) {
-
-			var runDate = dataViewStepToday.getUint32(n * 64, true);
-			if (util.isValDate(runDate)) {
-				var item = {};
-				item.time = dataViewStepToday.getUint32(n * 64 + 4, true);
-				item.step = dataViewStepToday.getUint32(n * 64 + 8, true);
-				
-				var valate = dataViewStepToday.getUint32(n * 64 + 60, true);
-				item.h0 = dataViewStepToday.getUint16(n * 64 + 12, true);
-				item.h1 = dataViewStepToday.getUint16(n * 64 + 14, true);
-				item.h2 = dataViewStepToday.getUint16(n * 64 + 16, true);
-				item.h3 = dataViewStepToday.getUint16(n * 64 + 18, true);
-				item.h4 = dataViewStepToday.getUint16(n * 64 + 20, true);
-				item.h5 = dataViewStepToday.getUint16(n * 64 + 22, true);
-				item.h6 = dataViewStepToday.getUint16(n * 64 + 24, true);
-				item.h7 = dataViewStepToday.getUint16(n * 64 + 26, true);
-				item.h8 = dataViewStepToday.getUint16(n * 64 + 28, true);
-				item.h9 = dataViewStepToday.getUint16(n * 64 + 30, true);
-				item.h10 = dataViewStepToday.getUint16(n * 64 + 32, true);
-				item.h11 = dataViewStepToday.getUint16(n * 64 + 34, true);
-				item.h12 = dataViewStepToday.getUint16(n * 64 + 36, true);
-				item.h13 = dataViewStepToday.getUint16(n * 64 + 38, true);
-				item.h14 = dataViewStepToday.getUint16(n * 64 + 40, true);
-				item.h15 = dataViewStepToday.getUint16(n * 64 + 42, true);
-				item.h16 = dataViewStepToday.getUint16(n * 64 + 44, true);
-				item.h17 = dataViewStepToday.getUint16(n * 64 + 46, true);
-				item.h18 = dataViewStepToday.getUint16(n * 64 + 48, true);
-				item.h19 = dataViewStepToday.getUint16(n * 64 + 50, true);
-				item.h20 = dataViewStepToday.getUint16(n * 64 + 52, true);
-				item.h21 = dataViewStepToday.getUint16(n * 64 + 54, true);
-				item.h22 = dataViewStepToday.getUint16(n * 64 + 56, true);
-				item.h23 = dataViewStepToday.getUint16(n * 64 + 58, true);
-
-				if (valate == 0x34567890) {
-					//			var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					//			stepDataJsonToday[pDate] = item;
-					//		console.log("today ^_^---step data=" + item.step);
-					wx.setStorageSync("today", item);
-					console.log("----设置当天->>>>>", item);
-					wx.request({
-						url: util.getUrl('ble.php?action=save_today_step_data'),
-						data: {
-							step_data: util.objToBase64(item),
-							run_date: util.getDateOffset(0, "yyyy-MM-dd"),
-							uid: wx.getStorageSync('serverId')
-						},
-						method: 'POST',
-						header: { 'content-type': 'application/x-www-form-urlencoded' },
-						success: function (res) {
-
-							console.log("save--processStepToday--", res);
-
-						}
-					});
-					getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
-				}
-				else if (valate == 0x45678901) {
-					//	console.log("today ^_^---sleep data=" + item.step);
-					//		var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					//		sleepDataJsonToday[pDate] = item;
-					console.log("睡眠时间:", item);
-					wx.setStorageSync("today", item);
-
-				}
-				else {
-					console.log("unused data......^_^");
-				}
-
-			}
-		}
-		//	console.log("run---run---" + JSON.stringify(stepDataJsonToday));
-
-	}
 }
 function processStepHistory(val) {
 	let dataView = new DataView(val);
@@ -803,7 +713,7 @@ function processStepHistory(val) {
 	}
 
 	if (seq == (total - 1)) {
-		wx.setStorageSync("sync_flag", util.getDateOffset(0, "yyyy-MM-dd"));
+		//wx.setStorageSync("sync_flag", util.getDateOffset(0, "yyyy-MM-dd"));
 		for (var n = 0; n < (16 * total) / 64; n++) {
 
 			var runDate = dataViewStep.getUint32(n * 64, true);
@@ -843,7 +753,7 @@ function processStepHistory(val) {
 					stepDataJson[pDate] = item;
 
 					console.log(pDate + "---^_^当日运动数据---step data="+item.step + "运动时间:"+item.time);
-					wx.setStorageSync("step-" + pDate, item);
+					getApp().setDeviceHisData(pDate, "step", item);
 				}
 				else if (valate == 0x45678901) {//睡眠数据
 					item.startTime = dataViewStep.getUint32(n * 64 + 0, true);
@@ -860,7 +770,7 @@ function processStepHistory(val) {
 
 					sleepDataJson[pDate] = item;
 					console.log(pDate + "^_^---sleep data=", item);
-					wx.setStorageSync("sleep-" + pDate, item);
+					getApp().setDeviceHisData(pDate, "step", item);
 				}
 				else {
 					console.log("unused data......^_^");
@@ -872,57 +782,7 @@ function processStepHistory(val) {
 		showAndSaveStepData();
 	}
 }
-function processHeartHistory(val) {
-	return;
-	let dataView = new DataView(val);
 
-	var total = dataView.getUint16(0, true);
-	var seq = dataView.getUint16(2, true) - 1;
-
-	console.log(readHistoryType + " readHistoryType, total=" + total + " seq=" + seq);
-
-	if (seq == 0) {
-		bufferStep = new ArrayBuffer(16 * total);
-		dataViewStep = new DataView(bufferStep);
-	}
-	for (var n = 4; n < 20; n++) {
-		dataViewStep.setUint8(seq * 16 + n - 4, dataView.getUint8(n));
-	}
-
-	if (seq == (total - 1)) {
-		var offset = 0;
-		for (var offset = 0; offset < (16 * total);) {
-			if (util.isValDate(dataViewStep.getUint32(offset, true)) == false) {
-				offset = offset + 8 * count + 8;
-				continue;
-			}
-			var currDate = util.getDataFrom1970(dataViewStep.getUint32(offset, true), "yyyy-MM-dd");
-			var count = dataViewStep.getUint16(offset + 4, true);
-			var val = dataViewStep.getUint16(offset + 6, true);
-			if (val != 0x9012) {
-				offset = offset + 8 * count + 8;
-				continue;
-			}
-
-
-			for (var n = 0; n < count; n++) {
-				var seq = offset + 8 + n * 8;
-				var hour = dataViewStep.getUint8(seq + 0, true);
-				var min = dataViewStep.getUint8(seq + 1, true);
-				var hb = dataViewStep.getUint8(seq + 2, true);
-				var max_bp = dataViewStep.getUint8(seq + 3, true);
-				var min_bp = dataViewStep.getUint8(seq + 4, true);
-
-				console.log(currDate + " " + hour + ":" + min + " hb=" + hb + " max_bp=" + max_bp + " min_bp=" + min_bp + "  val=" + val + "---" + 0x9012);
-
-			}
-
-			offset = offset + 8 * count + 8;
-
-		}//end for
-
-	}
-}
 function uploadConfig() {
 	console.log("--------uploadConfig-----------");
 	wx.request({
@@ -973,52 +833,93 @@ function bleCommNotifyRegister() {
 			wx.setStorageSync("sw_version", dataView.getUint16(11));
 			wx.setStorageSync("hw_version", dataView.getUint16(13));
 			wx.setStorageSync("model", t);
-			syncTodayDate();
+			currSyncDay=0;
+			syncStep(0);
 		}
 		else if (dataView.getUint8(0) == 0x5A && dataView.getUint8(1) == 0x05){//当前步数同步
 			if (syncDataType=="step") //步数
-				processStepToday(dataView);
+				procStep(dataView);
 			else if (syncDataType == "sleep")//睡眠
-				processSleepToday(dataView);
+				procSleep(dataView);
 			else if (syncDataType == "hb")//心率
-				processHbAll(dataView);
+				procHb(dataView);
 			else if (syncDataType == "bp")//血压
-				processBpAll(dataView);
+				procBp(dataView);
 			return ;
 		}
 		else if (dataView.getUint8(0) == 0x5A && dataView.getUint8(1) == 0x07) {//当天睡眠同步
-			console.log("--sleep----");
-			processSleepToday(dataView);
+			console.warn("--sleep----");
+			procSleep(dataView);
 			return;
 		}
+		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x03 && dataView.getUint16(3, true) == 0) {//没有计步的情况
+			currSyncDay++;
+			console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+			if (currSyncDay < maxSyncDays) {
+				syncStep(currSyncDay);
+			}
+			else {
+				currSyncDay = 0;
+				syncSleep(0);
+				console.warn("当前无数据....结束了...." + currSyncDay);
+			}
+		}
 		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x07) {//当天无睡眠同步
-		//	console.log("--sleep----");
 			allDays = dataView.getInt16(3);
 			if (allDays==0){
-				syncTodayHb();
+				currSyncDay++;
+				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				if (currSyncDay < maxSyncDays) {
+					syncSleep(currSyncDay);
+				}
+				else {
+					currSyncDay = 0;
+					syncHb(0);
+					console.warn("当前无数据....结束了...." + currSyncDay);
+				}
 			}
-			//processSleepToday(dataView);
 			return;
 		}
 
 		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x20) {//当前心率
 			allDays=dataView.getInt16(3);
 			if (allDays==0){
-				syncTodayBp();
+				currSyncDay++;
+				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				if (currSyncDay < maxSyncDays) {
+					syncHb(currSyncDay);
+				}
+				else {
+					currSyncDay = 0;
+					//syncSleep(0);
+					console.warn("当前无数据....结束了...." + currSyncDay);
+				}
+				//syncTodayBp();
 			}
 			console.log("心率天数:" + allDays);
-		//	processSleepToday(dataView);
+
 			return;
 		}
-		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x1D) {//当前心率
+		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x1D) {//当前血压
 			allDays = dataView.getInt16(3);
 			if (allDays == 0) {
-			
+				currSyncDay++;
+				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				if (currSyncDay < maxSyncDays) {
+					syncBp(currSyncDay);
+				}
+				else {
+					currSyncDay = 0;
+					getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+					wx.hideLoading();
+					console.warn("整个同步过程完成!");
+				}
+
 			}
 			console.log("血压天数:" + allDays);
-			//	processSleepToday(dataView);
 			return;
 		}
+
 		else if (dataView.getUint8(0) == 0x5A && dataView.getUint8(1) == 0x0D 
 			 && dataView.getUint8(2) == 0x00 && dataView.getUint8(3) == 0x02) {
 			var low = -1;
@@ -1133,7 +1034,7 @@ function bleCommNotifyRegister() {
 			todayData.h23 = 0;
 			todayData.time = dataView.getUint32(14, true);
 
-			wx.setStorageSync("today", todayData);
+			getApp().setDeviceHisData(util.getDateOffset(0, "yyyy-MM-dd"), "step", item);
 			console.log(dataView.getUint32(14, true) + " ---save today....", todayData);
 
 			var h1 = wx.getStorageSync("step-" + util.getDateOffset(-1, "yyyy-MM-dd"));
@@ -1165,7 +1066,7 @@ function bleCommNotifyRegister() {
 		else if (res.characteristicId.indexOf("FF13") > 0) {//读取当天的数据
 			//	console.log(ddd + `>>>yls-begin today>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
 			//  util.dumpArrayBuffer(dataView);
-			processStepToday(dataView);
+			procStep(dataView);
 			if (isNeedSyncHistory == true) {
 				isNeedSyncHistory = false;
 				syncStepHistory();
@@ -1182,7 +1083,23 @@ function bleCommNotifyRegister() {
 	});
 }
 
-function syncTodayDate() {
+function syncStep(days) {
+	if (days!=0){
+		var obj = getApp().getDeviceHisData(util.getDateOffset(-days, "yyyy-MM-dd"),"step");
+		console.warn(util.getDateOffset(days, "yyyy-MM-dd")+" -----step--------", obj)
+		if (obj!=null && obj!=''){
+			currSyncDay++;
+			if (currSyncDay >= maxSyncDays){
+				currSyncDay=0;
+				syncSleep(0);
+				return ;
+			}
+			else{
+				syncStep(currSyncDay);
+				return ;
+			}
+		}
+	}
 	syncDataType = "step";
 	console.log("开始同步当前的数据.....");
 	let buffer = new ArrayBuffer(20);
@@ -1190,14 +1107,18 @@ function syncTodayDate() {
 	for (var n = 0; n < 20; n++) {
 		dataView.setUint8(n, 0x00);
 	}
+	wx.showLoading({
+		title: '同步计步'+days
+	})
 	dataView.setUint8(0, 0x5A);
 	dataView.setUint8(1, 0x03);
 	dataView.setUint8(2, 0x00);
-	var now = new Date();
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
 	dataView.setUint8(3, now.getFullYear() - 2000);
 	dataView.setUint8(4, now.getMonth() + 1);
 	dataView.setUint8(5, now.getDate());
-
+	
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
 	dataView.setUint8(6, now.getFullYear() - 2000);
 	dataView.setUint8(7, now.getMonth() + 1);
 	dataView.setUint8(8, now.getDate());
@@ -1209,7 +1130,7 @@ function syncTodayDate() {
 		characteristicId: g_characteristics_write,
 		value: buffer,
 		success: function (res) {
-			console.log("sync write 同步当天步数....", res);
+			console.log(days+">>>sync write 同步当天步数....", res);
 
 		},
 		fail: function (res) {
@@ -1219,7 +1140,24 @@ function syncTodayDate() {
 	//读取当前的数据
 
 }
-function syncTodaySleep() {
+function syncSleep(days) {
+
+	if (days != 0) {
+		var obj = getApp().getDeviceHisData(util.getDateOffset(-days, "yyyy-MM-dd"), "sleep");
+		console.warn(util.getDateOffset(days, "yyyy-MM-dd") + " -----step--------", obj)
+		if (obj != null && obj != '') {
+			currSyncDay++;
+			if (currSyncDay >= maxSyncDays) {
+				currSyncDay = 0;
+				syncHb(0);
+				return;
+			}
+			else {
+				syncSleep(currSyncDay);
+				return;
+			}
+		}
+	}
 	syncDataType = "sleep";
 	console.log("开始当天的睡眠数据.....");
 	let buffer = new ArrayBuffer(20);
@@ -1230,27 +1168,28 @@ function syncTodaySleep() {
 	dataView.setUint8(0, 0x5A);
 	dataView.setUint8(1, 0x07);
 	dataView.setUint8(2, 0x00);
-	
-//	var now = new Date((new Date().getTime() - parseInt(1) * 3600 * 24 * 1000));
-	var now = new Date();
+	wx.showLoading({
+		title: '同步睡眠'+days,
+	})
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
+
 	dataView.setUint8(3, now.getFullYear() - 2000);
 	dataView.setUint8(4, now.getMonth() + 1);
 	dataView.setUint8(5, now.getDate());
 
-	var now = new Date();
-//	var now = new Date((new Date().getTime() + parseInt(1) * 3600 * 24 * 1000));
+	var now = new Date((new Date().getTime() + parseInt(days) * 3600 * 24 * 1000));
 	dataView.setUint8(6, now.getFullYear() - 2000);
 	dataView.setUint8(7, now.getMonth() + 1);
 	dataView.setUint8(8, now.getDate());
 
-	util.dumpArrayBuffer(dataView,"发送数据");
+	//util.dumpArrayBuffer(dataView,"发送数据");
 	wx.writeBLECharacteristicValue({
 		deviceId: g_deviceId,
 		serviceId: g_services,
 		characteristicId: g_characteristics_write,
 		value: buffer,
 		success: function (res) {
-			console.log("sync write 同步睡眠数据....", res);
+			console.log(days+" sync write 同步睡眠数据....", res);
 		},
 		fail: function (res) {
 			console.log("写入睡眠数据失败:", res);
@@ -1259,13 +1198,33 @@ function syncTodaySleep() {
 
 
 }
-function syncTodayHb() {
+function syncHb(days) {
 	if (supportHb==false)
 		return false;
+
+	if (days != 0) {
+		var obj = getApp().getDeviceHisData(util.getDateOffset(-days, "yyyy-MM-dd"), "hb");
+		console.warn(util.getDateOffset(days, "yyyy-MM-dd") + " -----hb--------", obj)
+		if (obj != null && obj != '') {
+			currSyncDay++;
+			if (currSyncDay >= maxSyncDays) {
+				currSyncDay = 0;
+				syncBp(0);
+				return;
+			}
+			else {
+				syncHb(currSyncDay);
+				return;
+			}
+		}
+	}
 	syncDataType = "hb";
 	console.log("开始当天的心率数据.....");
 	currDay = 0;
 	allDays = 0;
+	wx.showLoading({
+		title: '同步心率'+days
+	})
 
 	let buffer = new ArrayBuffer(20);
 	let dataView = new DataView(buffer);
@@ -1276,42 +1235,65 @@ function syncTodayHb() {
 	dataView.setUint8(1, 0x20);
 	dataView.setUint8(2, 0x00);
 
-	var now = new Date((new Date().getTime() - parseInt(7) * 3600 * 24 * 1000));
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
+
 	dataView.setUint8(3, now.getFullYear() - 2000);
 	dataView.setUint8(4, now.getMonth() + 1);
 	dataView.setUint8(5, now.getDate());
 	dataView.setUint8(6, 0);
 	dataView.setUint8(7, 0);
 
-	var now = new Date();
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
 	dataView.setUint8(8, now.getFullYear() - 2000);
 	dataView.setUint8(9, now.getMonth() + 1);
 	dataView.setUint8(10, now.getDate());
 	dataView.setUint8(11,23);
 	dataView.setUint8(12, 59);
 
+	setTimeout(function(){
+		wx.writeBLECharacteristicValue({
+			deviceId: g_deviceId,
+			serviceId: g_services,
+			characteristicId: g_characteristics_write,
+			value: buffer,
+			success: function (res) {
+				console.log("sync write 同步心率数据....", res);
 
+			},
+			fail: function (res) {
+				console.log("写入心率数据失败:", res);
+			}
+		});
+	},1000);
 
-	wx.writeBLECharacteristicValue({
-		deviceId: g_deviceId,
-		serviceId: g_services,
-		characteristicId: g_characteristics_write,
-		value: buffer,
-		success: function (res) {
-			console.log("sync write 同步心率数据....", res);
-
-		},
-		fail: function (res) {
-			console.log("写入心率数据失败:", res);
-		}
-	});
 }
-function syncTodayBp() {
+function syncBp(days) {
 	if (supportHb==false)
 		return ;
+
+	if (days != 0) {
+		var obj = getApp().getDeviceHisData(util.getDateOffset(-days, "yyyy-MM-dd"), "hb");
+		console.warn(util.getDateOffset(days, "yyyy-MM-dd") + " -----hb--------", obj)
+		if (obj != null && obj != '') {
+			currSyncDay++;
+			if (currSyncDay >= maxSyncDays) {
+				currSyncDay=0;
+				getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+				wx.hideLoading();
+				return;
+			}
+			else {
+				syncBp(currSyncDay);
+				return;
+			}
+		}
+	}
 	syncDataType = "bp";
 	currDay=0;
 	allDays=0;
+	wx.showLoading({
+		title: '同步血压'+days,
+	})
 	console.log("开始当天的血压数据.....");
 	let buffer = new ArrayBuffer(20);
 	let dataView = new DataView(buffer);
@@ -1322,7 +1304,8 @@ function syncTodayBp() {
 	dataView.setUint8(1, 0x1D);
 	dataView.setUint8(2, 0x00);
 	
-	var now = new Date((new Date().getTime() - parseInt(7) * 3600 * 24 * 1000));
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
+
 	dataView.setUint8(3, now.getFullYear() - 2000);
 	dataView.setUint8(4, now.getMonth() + 1);
 	dataView.setUint8(5, now.getDate());
@@ -1330,7 +1313,7 @@ function syncTodayBp() {
 	dataView.setUint8(7, 0);
 
 
-	var now = new Date();
+	var now = new Date((new Date().getTime() - parseInt(days) * 3600 * 24 * 1000));
 	dataView.setUint8(8, now.getFullYear() - 2000);
 	dataView.setUint8(9, now.getMonth() + 1);
 	dataView.setUint8(10, now.getDate());
@@ -1360,6 +1343,7 @@ function showAndSaveStepData() {
 		url: util.getUrl('ble.php?action=save_step_data'),
 		data: {
 			step_data: util.objToBase64(stepDataJson),
+			device_id: getApp().data.currDeviceId,
 			sleep_data: util.objToBase64(sleepDataJson),
 			uid: wx.getStorageSync('serverId')
 		},

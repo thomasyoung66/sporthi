@@ -26,9 +26,16 @@
   width: 100%;
   align-items: center;
   background: rgba(44, 210, 168,255);
-	z-index: 999;
+ z-index: 999;
 }
+.mymy {
 
+
+	/* position: fixed;
+//	top: 200px;
+//	position:absolute;
+	 width: 100%;*/
+}
 .power {
   display: flex;
   flex-direction: column;

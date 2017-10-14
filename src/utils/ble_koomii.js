@@ -131,7 +131,7 @@ function readAllConfig() {
 		characteristicId: getCharacter("FF14"),
 		success: function (res) {
 			//读取当前的数据
-		//	return;
+			//	return;
 			wx.notifyBLECharacteristicValueChanged({
 				deviceId: g_deviceId,
 				serviceId: getServerId("FFC0"),
@@ -579,7 +579,7 @@ function readPowerUsed() {
 		}
 	});
 	return;
-	
+
 	if (wx.getSystemInfoSync().platform == "android") {
 		wx.readBLECharacteristicValue({
 			deviceId: g_deviceId,
@@ -630,7 +630,7 @@ let bufferStep;
 let dataViewStep;
 var stepDataJson = {};//
 var sleepDataJson = {};
-var readHistoryType = 0;//0 运动计步  1：心率
+var readHistoryType = "step";//0 运动计步  1：心率
 
 
 let bufferStepToday;
@@ -659,8 +659,8 @@ function processStepToday(dataView) {
 				var item = {};
 				item.time = dataViewStepToday.getUint32(n * 64 + 4, true);
 				item.step = dataViewStepToday.getUint32(n * 64 + 8, true);
-				item.detail=new Array();
-				item.type=24;
+				item.detail = new Array();
+				item.type = 24;
 				var valate = dataViewStepToday.getUint32(n * 64 + 60, true);
 				item.detail.push(dataViewStepToday.getUint16(n * 64 + 12, true));
 				item.detail.push(dataViewStepToday.getUint16(n * 64 + 14, true));
@@ -687,16 +687,16 @@ function processStepToday(dataView) {
 				item.detail.push(dataViewStepToday.getUint16(n * 64 + 56, true));
 				item.detail.push(dataViewStepToday.getUint16(n * 64 + 58, true));
 
+				console.log("----当天->>>>>" + valate);
 				if (valate == 0x34567890) {
-					//			var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
-					//			stepDataJsonToday[pDate] = item;
-					//		console.log("today ^_^---step data=" + item.step);
-					wx.setStorageSync("today", item);
+					//wx.setStorageSync("today", item);
+					getApp().setDeviceHisData(util.getDateOffset(0, "yyyy-MM-dd"),"step",item);
 					console.log("----设置当天->>>>>", item);
 					wx.request({
 						url: util.getUrl('ble.php?action=save_today_step_data'),
 						data: {
 							step_data: util.objToBase64(item),
+							device_id: getApp().data.currDeviceId,
 							run_date: util.getDateOffset(0, "yyyy-MM-dd"),
 							uid: wx.getStorageSync('serverId')
 						},
@@ -708,14 +708,16 @@ function processStepToday(dataView) {
 
 						}
 					});
-					getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+				//	getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+					isNeedSyncHistory = true;
+					return true;
 				}
 				else if (valate == 0x45678901) {
 					//	console.log("today ^_^---sleep data=" + item.step);
 					//		var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
 					//		sleepDataJsonToday[pDate] = item;
 					console.log("睡眠时间:", item);
-					wx.setStorageSync("today", item);
+				//	wx.setStorageSync("today", item);
 
 				}
 				else {
@@ -727,30 +729,53 @@ function processStepToday(dataView) {
 		//	console.log("run---run---" + JSON.stringify(stepDataJsonToday));
 
 	}
+	return false;
 }
 function processStepHistory(val) {
 	let dataView = new DataView(val);
 	var total = dataView.getUint16(0, true);
 	var seq = dataView.getUint16(2, true) - 1;
+//	console.log("处理历史记录...包序列号:"+seq+" 包总数:"+total);
+//	util.dumpArrayBuffer(dataView,">>>>"+dataView.byteLength);
+	
 
 	if (seq == 0) {
 		console.log("begin--------" + 16 * total);
 		bufferStep = new ArrayBuffer(16 * total);
 		dataViewStep = new DataView(bufferStep);
 	}
+
+	if (dataViewStep==null){
+		wx.showToast({
+			title: '读取历史记录发生错误！'
+		})
+		if (seq==total-1){
+		//	wx.showToast({
+		//		title: '重新同步历史纪录'
+		//	})
+		//	syncStepHistory();
+			//syncHeartBeatHistory();
+		}	
+		else{
+
+		}
+
+		return ;
+	}
+	
 	for (var n = 4; n < 20; n++) {
 		dataViewStep.setUint8(seq * 16 + n - 4, dataView.getUint8(n));
 	}
 
 	if (seq == (total - 1)) {
-		wx.setStorageSync("sync_flag", util.getDateOffset(0, "yyyy-MM-dd"));
 		for (var n = 0; n < (16 * total) / 64; n++) {
 
 			var runDate = dataViewStep.getUint32(n * 64, true);
+
 			if (util.isValDate(runDate)) {
 				var item = {};
 				var valate = dataViewStep.getUint32(n * 64 + 60, true);
-				item.detail=new Array();
+				item.detail = new Array();
 				item.detail.push(dataViewStep.getUint16(n * 64 + 12, true));
 				item.detail.push(dataViewStep.getUint16(n * 64 + 14, true));
 				item.detail.push(dataViewStep.getUint16(n * 64 + 16, true));
@@ -783,16 +808,20 @@ function processStepHistory(val) {
 					var pDate = util.getDataFrom1970(runDate, "yyyy-MM-dd");
 					stepDataJson[pDate] = item;
 
-					console.log(pDate + "---^_^当日运动数据---step data="+item.step + "运动时间:"+item.time);
-					wx.setStorageSync("step-" + pDate, item);
+					console.log(pDate + "---^_^当日运动数据---step data=" + item.step + "运动时间:" + item.time);
+					getApp().setDeviceHisData(pDate, "step", item);
+				//	wx.setStorageSync("step-" + pDate, item);
 				}
 				else if (valate == 0x45678901) {//睡眠数据
+				
+				//	console.log("^_^睡眠数据" + dataViewStep.getUint16(n * 64 + 34, true))
 					item.startTime = dataViewStep.getUint32(n * 64 + 0, true);
 					item.endTime = dataViewStep.getUint32(n * 64 + 4, true);
 					item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
 					item.restless = dataViewStep.getUint16(n * 64 + 10, true);
 					item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;
 
+					//item.restless = ;
 
 					//item.runTime = dataViewStep.getUint32(n * 64 + 4, true);
 					//item.step = dataViewStep.getUint32(n * 64 + 8, true);
@@ -801,7 +830,7 @@ function processStepHistory(val) {
 
 					sleepDataJson[pDate] = item;
 					console.log(pDate + "^_^---sleep data=", item);
-					wx.setStorageSync("sleep-" + pDate, item);
+					getApp().setDeviceHisData(pDate, "sleep", item);
 				}
 				else {
 					console.log("unused data......^_^");
@@ -811,16 +840,19 @@ function processStepHistory(val) {
 		}//end for
 
 		showAndSaveStepData();
+		syncHeartBeatHistory();
 	}
+	return false;
 }
 function processHeartHistory(val) {
-	return;
+
+//	console.log("处理心率数据....");
 	let dataView = new DataView(val);
 
 	var total = dataView.getUint16(0, true);
 	var seq = dataView.getUint16(2, true) - 1;
 
-	console.log(readHistoryType + " readHistoryType, total=" + total + " seq=" + seq);
+//	console.log(readHistoryType + " readHistoryType, total=" + total + " seq=" + seq);
 
 	if (seq == 0) {
 		bufferStep = new ArrayBuffer(16 * total);
@@ -831,37 +863,72 @@ function processHeartHistory(val) {
 	}
 
 	if (seq == (total - 1)) {
-		var offset = 0;
-		for (var offset = 0; offset < (16 * total);) {
-			if (util.isValDate(dataViewStep.getUint32(offset, true)) == false) {
-				offset = offset + 8 * count + 8;
-				continue;
-			}
+//		console.log("遇到结束......" + total);
+//		util.dumpArrayBuffer(dataViewStep,"所有的数据");
+		var allCount=0;
+		var json=new Object();
+		for(var n=0;n<7;n++){
+			var offset=n*16;
 			var currDate = util.getDataFrom1970(dataViewStep.getUint32(offset, true), "yyyy-MM-dd");
 			var count = dataViewStep.getUint16(offset + 4, true);
-			var val = dataViewStep.getUint16(offset + 6, true);
-			if (val != 0x9012) {
-				offset = offset + 8 * count + 8;
+			var magic = dataViewStep.getUint16(offset + 6, true);
+			
+			if (magic != 0x9012) {
 				continue;
 			}
+			var hbItem=[];
+			var bpItem = [];
 
-
-			for (var n = 0; n < count; n++) {
-				var seq = offset + 8 + n * 8;
+			for(var p=0;p<count;p++){
+				var seq = 16 * 7 + allCount*8+p*8;
 				var hour = dataViewStep.getUint8(seq + 0, true);
 				var min = dataViewStep.getUint8(seq + 1, true);
 				var hb = dataViewStep.getUint8(seq + 2, true);
 				var max_bp = dataViewStep.getUint8(seq + 3, true);
 				var min_bp = dataViewStep.getUint8(seq + 4, true);
-
-				console.log(currDate + " " + hour + ":" + min + " hb=" + hb + " max_bp=" + max_bp + " min_bp=" + min_bp + "  val=" + val + "---" + 0x9012);
-
+				hbItem.push((hour*60+min)+":"+hb);
+				bpItem.push((hour * 60 + min) + ":" + max_bp + ":" + min_bp);
+			//	console.log(currDate + " " + hour + ":" + min + " hb=" + hb + " max_bp=" + max_bp + " min_bp=" + min_bp + "  val=" + magic + "---" + 0x9012);	
 			}
+	
 
-			offset = offset + 8 * count + 8;
+			json[currDate]=new Object();
+			json[currDate]["hb"]=new Object();
+			json[currDate]["bp"] = new Object();
+			json[currDate]["hb"]["date"] = currDate;
+			json[currDate]["bp"]["date"] = currDate;
+			json[currDate]["hb"]["detail"] = hbItem.join(";");
+			json[currDate]["bp"]["detail"] = bpItem.join(";");
+			
+			getApp().setDeviceHisData(currDate, "hb", json[currDate]["hb"]);
+			getApp().setDeviceHisData(currDate, "bp", json[currDate]["bp"]);
 
-		}//end for
-		wx.hideLoading();
+			if (magic == 0x9012) {
+				allCount = allCount + count;
+			}
+			console.log("date="+currDate+" count="+count+" magic="+magic);
+		}
+		wx.showLoading({
+			title: '正在上传数据',
+		})
+		wx.request({
+			url: util.getUrl('ble.php?action=save_hb_bp_data'),
+				data: {
+					data: util.objToBase64(json),
+					//run_date: currDate,
+					device_id: getApp().data.currDeviceId,
+					uid: wx.getStorageSync('serverId')
+				},
+				method: 'POST',
+				header: { 'content-type': 'application/x-www-form-urlencoded' },
+				success: function (res) {
+					wx.hideLoading();
+				}
+		});
+		console.log("----------------恭喜同步结束--------------------",json);
+		getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
+	//	console.log("all",json);
+	
 	}
 }
 function uploadConfig() {
@@ -882,20 +949,21 @@ function uploadConfig() {
 		method: 'POST',
 		header: { 'content-type': 'application/x-www-form-urlencoded' },
 		success: function (res) {
-			console.log("save--uploadConfig--", res);
+		//	console.log("save--uploadConfig--", res);
 		}
 	});
 
 	syncTodayDate();
-//	isNeedSyncHistory=true;
+	//syncTodayDate();
+	//	isNeedSyncHistory=true;
 
 }
 function bleCommNotifyRegister() {
 
 	wx.onBLECharacteristicValueChange(function (res) {
-	//	console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
+		//console.log(`---(^_^)---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 		let dataView = new DataView(res.value);
-
+	//	util.dumpArrayBuffer(dataView, res.characteristicId);
 		if (res.characteristicId.indexOf("FF14") > 0) { //系统参数
 			console.log("系统参数..." + dataView.getInt8(0));
 			if (dataView.getInt8(0) == 0) {
@@ -1108,22 +1176,21 @@ function bleCommNotifyRegister() {
 
 			// syncStepHistory();
 			// 
-
+			console.log("结束同步当天的数据")
+			return ;
 			if (h1 == null || h1.hasOwnProperty("step") == false) {
-				console.log("-----save^_^-----", h1);
 				var syncFlag = wx.getStorageSync("sync_flag");
 				console.log("syncFlag=", syncFlag);
 				if (syncFlag == null || syncFlag == "") {
 					isNeedSyncHistory = true;
-					//   syncStepHistory();
 				}
 				else {
 					if (syncFlag != util.getDateOffset(0, "yyyy-MM-dd")) {
 						isNeedSyncHistory = true;
-						//syncStepHistory();
 					}
 				}
-				//	syncStepHistory();
+				isNeedSyncHistory = true;
+
 
 			}
 			else {
@@ -1133,18 +1200,26 @@ function bleCommNotifyRegister() {
 			console.log("syncStep=" + str);
 		}
 		else if (res.characteristicId.indexOf("FF13") > 0) {//读取当天的数据
-			//	console.log(ddd + `>>>yls-begin today>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
-			//  util.dumpArrayBuffer(dataView);
-			processStepToday(dataView);
+
+			var ret=processStepToday(dataView);
 			if (isNeedSyncHistory == true) {
 				isNeedSyncHistory = false;
 				syncStepHistory();
+			
 			}
+			if (ret==true){
+				console.log("同步计步后标志：" + isNeedSyncHistory);
+		
+				//else{
+				//	syncHeartBeatHistory();
+				//}	
+			}
+
 
 		}
 		else if (res.characteristicId.indexOf("FF21") > 0) {//读取历史数据
 			// console.log(readHistoryType + `>>>yls-begin history>>>>>characteristic ${res.characteristicId} has changed, now is ${res.value}`);
-			if (readHistoryType == 0)
+			if (readHistoryType == "step")
 				processStepHistory(res.value);
 			else
 				processHeartHistory(res.value);
@@ -1159,7 +1234,6 @@ function initCharacteristic180A() {
 		success: function (res) {
 			console.log("initCharacteristic180A...read power...");
 			readPowerUsed();
-			//	readMacAddr();
 		},
 		fail: function (res) {
 			console.log('180A蓝牙返回错误:readBLECharacteristicValue:', res);
@@ -1167,36 +1241,68 @@ function initCharacteristic180A() {
 	});
 }
 function syncTodayDate() {
-
-	wx.readBLECharacteristicValue({
-		deviceId: g_deviceId,
-		serviceId: getServerId("FFC0"),
-		characteristicId: getCharacter("FF13"),
-		success: function (res) {
-			wx.notifyBLECharacteristicValueChanged({
-				deviceId: g_deviceId,
-				serviceId: getServerId("FFC0"),
-				characteristicId: getCharacter("FF13"),
-				state: true,
-				success: function (res) {
-					// success
-
-					console.log("-------succed----", res);
-				},
-				fail: function (res) {
-					console.log("-------failure----", res);
-					// fail
-				}
-			});
-			console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
-			total++;
-		},
-		fail: function (res) {
-			console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
-		}
+	wx.showLoading({
+		title: '同步当天计步'
 	});
-	//读取当前的数据
+	console.log("---os------"+getApp().globalData.isIphone);
+	if (getApp().globalData.isIphone==true){
+		wx.readBLECharacteristicValue({
+			deviceId: g_deviceId,
+			serviceId: getServerId("FFC0"),
+			characteristicId: getCharacter("FF13"),
+			success: function (res) {
+				wx.notifyBLECharacteristicValueChanged({
+					deviceId: g_deviceId,
+					serviceId: getServerId("FFC0"),
+					characteristicId: getCharacter("FF13"),
+					state: true,
+					success: function (res) {
+						// success
+						console.log("---${getApp().globalData.isIphone}---写入同步当天数据成功-succed----", res);
+					},
+					fail: function (res) {
+						console.log("-----写入同步当天数据成功--failure----", res);
+						// fail
+					}
+				});
+				console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
+				total++;
+			},
+			fail: function (res) {
+				console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
+			}
+		});
+	}
+	else{
 
+		wx.notifyBLECharacteristicValueChanged({
+			deviceId: g_deviceId,
+			serviceId: getServerId("FFC0"),
+			characteristicId: getCharacter("FF13"),
+			state: true,
+			success: function (res) {
+				setTimeout(function(){
+					wx.readBLECharacteristicValue({
+						deviceId: g_deviceId,
+						serviceId: getServerId("FFC0"),
+						characteristicId: getCharacter("FF13"),
+						success: function (res) {
+							console.log("读成功....");
+						},
+						fail: function (res) {
+							console.log("读失败....");
+						}
+					});
+				},500)
+			},
+			fail: function (res) {
+				console.log("-----写入同步当天数据成功--failure----", res);
+				// fail
+			}
+		});
+
+		return ;
+	}
 }
 function syncRunStep() {
 	bleCommNotifyRegister();
@@ -1207,7 +1313,6 @@ function syncRunStep() {
 		success: function (res) {
 			console.log(total + '蓝牙返回成功:readBLECharacteristicValue:', res);
 			total++;
-
 		},
 		fail: function (res) {
 			console.log('蓝牙返回错误:readBLECharacteristicValue:', res);
@@ -1224,13 +1329,12 @@ function showAndSaveStepData() {
 		data: {
 			step_data: util.objToBase64(stepDataJson),
 			sleep_data: util.objToBase64(sleepDataJson),
+			device_id: getApp().data.currDeviceId,
 			uid: wx.getStorageSync('serverId')
 		},
 		method: 'POST',
 		header: { 'content-type': 'application/x-www-form-urlencoded' },
 		success: function (res) {
-			wx.hideLoading();
-			console.log("save--showAndSaveStepData--", res);
 
 		}
 	});
@@ -1253,7 +1357,6 @@ function endHeartBeatTest() {
 		value: buffer,
 		success: function (res) {
 			console.log("sync write....", res);
-
 		},
 		fail: function (res) {
 			console.log("写入数据失败:", res);
@@ -1291,7 +1394,7 @@ function beginH() {
 			console.log("写入数据失败:", res);
 		}
 	});
-	return ;
+	return;
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
 		serviceId: getServerId("1810"),
@@ -1355,9 +1458,9 @@ function beginHeartBeatTest() {
 
 function syncHeartBeatHistory() {
 	wx.showLoading({
-		title: '同步心率血压数据...',
+		title: '同步心率血压数据',
 	});
-	readHistoryType = 1;
+	readHistoryType = "hb";
 	//读取当前的数据
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
@@ -1366,13 +1469,52 @@ function syncHeartBeatHistory() {
 		state: true,
 		success: function (res) {
 			// success
-			console.log("-------succed----", res);
+			console.log("-----同步心率血压数据--succed----", res);
 		},
 		fail: function (res) {
-			console.log("-------failure----", res);
+			console.log("----同步心率血压数据---failure----", res);
 			// fail
 		}
 	});
+	if (getApp().globalData.isIphone==false){
+		console.log("-----同步心率血压数据--notifyBLECharacteristicValueChanged----succed----");
+
+		wx.notifyBLECharacteristicValueChanged({
+			deviceId: g_deviceId,
+			serviceId: getServerId("FFC0"),
+			characteristicId: getCharacter("FF21"),
+			state: true,
+			success: function (res) {
+
+				setTimeout(function(){
+					let buffer = new ArrayBuffer(20);
+					let dataView = new DataView(buffer);
+					for (var n = 0; n < 20; n++) {
+						dataView.setUint8(n, 0x00);
+					}
+					dataView.setUint8(0, 0x01);
+					dataView.setUint8(1, 0x02);
+					dataView.setUint8(2, 0x22);
+
+					wx.writeBLECharacteristicValue({
+						deviceId: g_deviceId,
+						serviceId: getServerId("FFC0"),
+						characteristicId: getCharacter("FF12"),
+						value: buffer,
+						success: function (res) {
+							console.log("sync write....", res);
+						},
+						fail: function (res) {
+							console.log("写入数据失败:", res);
+						}
+					});
+				},500)
+
+			}
+		});
+
+		return ;
+	}
 
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
@@ -1380,6 +1522,8 @@ function syncHeartBeatHistory() {
 		characteristicId: getCharacter("FF21"),
 		state: true,
 		success: function (res) {
+
+			console.log("-----同步心率血压数据--notifyBLECharacteristicValueChanged----succed----", res);
 			let buffer = new ArrayBuffer(20);
 			let dataView = new DataView(buffer);
 			for (var n = 0; n < 20; n++) {
@@ -1414,8 +1558,7 @@ function syncHeartBeatHistory() {
 
 	return;
 }
-function readNotify()
-{
+function readNotify() {
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
 		serviceId: getServerId("FFC0"),
@@ -1433,63 +1576,50 @@ function readNotify()
 		}
 	});
 }
-function endSync()
-{
-	wx.hideLoading();
-}
+
 function syncStepHistory() {
 	wx.showLoading({
-		title: '同步历史数据...',
+		title: '同步计步历史',
 	});
-	setTimeout(endSync,10*1000);
-	readHistoryType = 0;
 
-		// success
-		let buffer = new ArrayBuffer(20);
-		let dataView = new DataView(buffer);
-		for (var n = 0; n < 20; n++) {
-			dataView.setUint8(n, 0x00);
-		}
-		dataView.setUint8(0, 0x01);
-		dataView.setUint8(1, 0x02);
-		dataView.setUint8(2, 0x20);
-
-
-		wx.writeBLECharacteristicValue({
+	dataViewStep=null;
+	readHistoryType = "step";
+	if (getApp().globalData.isIphone==false){
+		wx.notifyBLECharacteristicValueChanged({
 			deviceId: g_deviceId,
 			serviceId: getServerId("FFC0"),
-			characteristicId: getCharacter("FF12"),
-			value: buffer,
-			success: function (res) {
-				readNotify();
-				console.log("sync write....", res);
-			},
-			fail: function (res) {
-				console.log("写入数据失败:", res);
-			}
-		});
-
-		return;
-	//}
-		
-
-	//读取当前的数据
-/*
-	wx.notifyBLECharacteristicValueChanged({
-			deviceId: g_deviceId,
-			serviceId: getServerId("FFC0"),
-			characteristicId: getCharacter("FF13"),
+			characteristicId: getCharacter("FF21"),
 			state: true,
 			success: function (res) {
-				// success
-				console.log("-------succed----", res);
-			},
-			fail: function (res) {
-				console.log("-------failure----", res);
-				// fail
-			}
-		});*/
+				setTimeout(function(){
+					let buffer = new ArrayBuffer(20);
+					let dataView = new DataView(buffer);
+					for (var n = 0; n < 20; n++) {
+						dataView.setUint8(n, 0x00);
+					}
+					dataView.setUint8(0, 0x01);
+					dataView.setUint8(1, 0x02);
+					dataView.setUint8(2, 0x20);
 
+
+					wx.writeBLECharacteristicValue({
+						deviceId: g_deviceId,
+						serviceId: getServerId("FFC0"),
+						characteristicId: getCharacter("FF12"),
+						value: buffer,
+						success: function (res) {
+							console.log("sync write....", res);
+						},
+						fail: function (res) {
+							console.log("写入数据失败:", res);
+						}
+					});
+				},500);
+
+			}
+		});
+		return ;
+	}
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
 		serviceId: getServerId("FFC0"),
@@ -1506,7 +1636,6 @@ function syncStepHistory() {
 			dataView.setUint8(1, 0x02);
 			dataView.setUint8(2, 0x20);
 
-
 			wx.writeBLECharacteristicValue({
 				deviceId: g_deviceId,
 				serviceId: getServerId("FFC0"),
@@ -1519,14 +1648,6 @@ function syncStepHistory() {
 					console.log("写入数据失败:", res);
 				}
 			});
-		},
-		fail: function (res) {
-			console.log("-------failure----", res);
-			// fail
-		},
-		complete: function (res) {
-			//console.log("-------complete----", res);
-			// complete
 		}
 	});
 	return;
@@ -1539,7 +1660,7 @@ function beginService() {
 			g_services = res.services[1].uuid;
 			for (var n = 0; n < res.services.length; n++) {
 				g_services = "" + res.services[n].uuid;
-			
+
 				if (g_services.indexOf("FFC0") > 0)
 					break;
 			}
@@ -1640,7 +1761,7 @@ function loadBleDevice(serviceId) {
 	wx.createBLEConnection({
 		deviceId: serviceId,
 		success: function (res) {
-			wx.hideLoading()
+			//wx.hideLoading()
 			wx.showToast({
 				title: '连接成功',
 				icon: 'success',
@@ -1655,7 +1776,7 @@ function loadBleDevice(serviceId) {
 
 		},
 		fail: function (res) {
-			wx.hideLoading()
+		//	wx.hideLoading()
 			wx.showToast({
 				title: '连接设备失败',
 				icon: 'success',
@@ -1703,8 +1824,7 @@ function openBleDevice() {
 function getConnectState() {
 	return isConnect;
 }
-function disConnect()
-{
+function disConnect() {
 	console.log("will  be disconnect....");
 }
 module.exports = {

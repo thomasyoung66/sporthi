@@ -55,6 +55,7 @@ Page({
 		power_ps: 0,
 		power_text: 0,
 		canvasWidth: 360,
+		sleep_width:200,
 		end: 0
 	},
 	showDetail: function (data) {
@@ -306,8 +307,16 @@ Page({
 	//	this.drawSleepCanvas(null, null, null);
 		if (getApp().globalData.needReconnect==1){
 			getApp().globalData.needReconnect=0;
+			var obj = wx.getStorageSync("curr_devices");
+			console.log("-------------", obj);
+			wx.setNavigationBarTitle({
+				title: "HiSport (" + obj.brand + ")"
+			})
+			console.log("设置标题:" + "HiSport (" + obj.brand + ")");
 			setTimeout(this.reConnect,1000);
 		}
+
+
 		if (ble.getConnectState() != that.data.isConnect) {
 			console.log(ble.getConnectState() + "--------------set------------" + that.data.isConnect);
 			this.setConnectStatus(ble.getConnectState());
@@ -433,25 +442,22 @@ Page({
 	},
 	showHistoryData: function (pDate) {
 		//show step data....
-		var stepData = wx.getStorageSync("step-" + pDate);
-		var sleepData = wx.getStorageSync("sleep-" + pDate);
-
-
-		if (util.getDateOffset(0, "yyyy-MM-dd") == pDate) {
-			stepData = wx.getStorageSync("today");
-			sleepData = wx.getStorageSync("today_sleep");
-			console.log("today....", stepData);
-		}
+		var stepData = getApp().getDeviceHisData(pDate, "step");
+		var sleepData = getApp().getDeviceHisData(pDate, "sleep");
+		var hb = getApp().getDeviceHisData(pDate, "hb");
+		var bp = getApp().getDeviceHisData(pDate, "bp");
+		console.log("===============================================");
+		console.log("============开始画图============================");
+		console.log("===============================================");
+		console.log("所有数据:", wx.getStorageSync(getApp().data.currDeviceId));
+		console.log(pDate+"---显示历史----", stepData, sleepData,hb,bp);
+		console.log(pDate + "---当前设备----", getApp().globalData.currDevice);
 
 		if (stepData == null || stepData.hasOwnProperty("step") == false) {
-			console.log("stepData==", stepData);
 			this.showCurrStepInfo(0);
-
 			this.drawStepCanvas(24, new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-	
 		}
 		else {
-			console.log("stepData==", stepData);
 			this.showCurrStepInfo(stepData.step, stepData.hasOwnProperty("time") ? stepData.time : 0);
 			if (stepData.hasOwnProperty("detail")){
 				this.drawStepCanvas(stepData.type,stepData.detail);
@@ -459,8 +465,7 @@ Page({
 				
 		}
 
-
-		if (sleepData == null || sleepData.hasOwnProperty("sleep")==false) {
+		if (sleepData == null || sleepData=="") {
 			console.log("睡眠是0");
 			this.drawSleepCanvas(null,null,null);
 			this.setData({
@@ -473,28 +478,106 @@ Page({
 		else {
 			console.log("睡眠是有志");
 			
-			/*item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
-			item.restless = dataViewStep.getUint16(n * 64 + 10, true);
-			item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;*/
-			this.setData({
-				sleep_total: util.toHourMinute(sleepData.sleep),
-				good_sleep_time: util.toHourMinute(sleepData.deep),
-				bad_sleep_time: util.toHourMinute(sleepData.shallow),
-				sober_sleep_time: util.toHourMinute(0)
-			});
-			var sleepCol=new Array();
-			var sleepVal = new Array();
-			var sleepStauts=new Array();
-			for (var n = 0; n < sleepData.detail.length;n++){
-				var str =""+ sleepData.detail[n];
-				var f=str.split(',');
-				sleepCol.push(f[0]);
-				sleepVal.push(f[1]);
-				sleepStauts.push(f[2]);
+			if (getApp().globalData.currDevice.brand=="Koomii"){
+				var sleepCol=[];
+				//var sleepData = sleepData.detail;
+				for(var n3=0;n3<24;n3++){
+					if (n3%2==0){
+						sleepCol.push(n3/2+":00");
+					}
+					else{
+						sleepCol.push("");
+					}
+				}
+			
+				this.setData({
+					sleep_width: 360,
+					sleep_total: util.toHourMinute(parseInt((sleepData.endTime - sleepData.startTime)/60)),
+					good_sleep_time: util.toHourMinute(parseInt(sleepData.deep)),
+					bad_sleep_time: util.toHourMinute(sleepData.restless),
+					sober_sleep_time: util.toHourMinute(sleepData.runMin)
+				});
+				new Charts({
+						canvasId: 'sleepCanvas',
+						//type: 'column',
+						type: 'line',
+						categories: sleepCol,
+						series: [{
+							name: '翻身数量统计',
+							data: sleepData.detail
+						}],
+						yAxis: {
+							format: function (val) {
+								return val + '次';
+							}
+						},
+						width: canvasWidth,
+						height: 200,
+						dataLabel: false
+				});
+
 			}
-			this.drawSleepCanvas(sleepCol, sleepVal,sleepStauts);
+			else{
+				/*item.runMin = dataViewStep.getUint16(n * 64 + 8, true);
+				item.restless = dataViewStep.getUint16(n * 64 + 10, true);
+				item.deep = (item.endTime - item.startTime) / 60 - item.runMin - item.restless;*/
+				this.setData({
+					sleep_total: util.toHourMinute(sleepData.sleep),
+					good_sleep_time: util.toHourMinute(sleepData.deep),
+					bad_sleep_time: util.toHourMinute(sleepData.shallow),
+					sober_sleep_time: util.toHourMinute(0)
+				});
+				var sleepCol = new Array();
+				var sleepVal = new Array();
+				var sleepStauts = new Array();
+				for (var n = 0; n < sleepData.detail.length; n++) {
+					var str = "" + sleepData.detail[n];
+					var f = str.split(',');
+					sleepCol.push(f[0]);
+					sleepVal.push(f[1]);
+					sleepStauts.push(f[2]);
+				}
+				this.drawSleepCanvas(sleepCol, sleepVal, sleepStauts);
+			}
+
 		}
 
+	
+		if (hb!=null){
+
+			var col=[];
+			var data=[];
+			var arr=hb.detail.split(";");
+			for(var n=0;n<arr.length;n++){
+				var f=arr[n].split(":");
+				col.push(util.toHourMinute(f[0]));
+				data.push(f[1]);
+			}
+			this.drawHistoryHeartRateCanvas(col,data);
+		}
+
+		if (bp != null) {
+
+			var col = [];
+			var high = [];
+			var low = [];
+
+			var arr = bp.detail.split(";");
+			for (var n = 0; n < arr.length; n++) {
+				var f = arr[n].split(":");
+				if (f.length==2){
+					col.push("");
+					high.push(f[0]);
+					low.push(f[1]);
+				}
+				else{
+					col.push(util.toHourMinute(f[0]));
+					high.push(f[1]);
+					low.push(f[2]);
+				}
+			}
+			this.drawBpCanvas(col, high,low);
+		}
 	},
 	prepDateTap: function () {
 		var pDate = util.getPrevDate(this.data.currDateShow, -1);
@@ -529,23 +612,29 @@ Page({
 		})
 		this.showHistoryData(pDate);
 	},
-	drawBpCanvas: function () {
+	drawBpCanvas: function (col,high,low) {
+		//return ;
+		if (col==null || col.length==0)
+		return ;
+		var maxBp=high[high.length-1];
+		var minBp = low[low.length - 1];
+
+		this.setData({
+			bp_last: maxBp + "/" + minBp,
+			bp_max: util.max(high) + "/" + util.max(low),
+			bp_avg: util.max(high) + "/" + util.max(low),
+			bp_min: util.min(high) + "/" + util.min(low)
+		});
 		new Charts({
 			canvasId: 'bpCanvas',
 			type: 'line',
-			categories: ['0:00', '', '', '',
-				'4:00', '', '', '',
-				'8:00', '', '', '',
-				'12:00', '', '', '',
-				'16:00', '', '', '',
-				'20:00', '', '', '',
-				'24:00'],
+			categories: col,
 			series: [{
-				name: '低压(舒张压)',
-				data: [0]
-			}, {
 				name: '高压(收缩压)',
-				data: [0]
+				data: high
+			}, {
+				name: '低压(舒张压)',
+				data: low
 			}],
 			yAxis: {
 				format: function (val) {
@@ -560,6 +649,8 @@ Page({
 	},
 	drawHistoryHeartRateCanvas: function (col,hist) {
 		var last=0;
+		if (col==null ||hist==null)
+		return ;
 		if (hist.length>0){
 			last=hist[hist.length-1];
 		}
@@ -569,9 +660,11 @@ Page({
 			hb_avg: util.avg(hist),
 			hb_min: util.min(hist)
 		});
+	
+
 		new Charts({
 			canvasId: 'heartrateCanvas',
-			type: 'column',
+			type: 'line',
 			categories: col,
 			series: [{
 				name: '历史心率',
@@ -584,7 +677,7 @@ Page({
 			},
 			width: canvasWidth,
 			height: 200,
-			dataLabel: true
+			dataLabel: false
 		});
 		return;
 	},
@@ -615,13 +708,12 @@ Page({
 		return;
 	},
 	drawStepCanvas: function (otype,stepData) {
-		console.log("画图了....");
+
 		if (stepImage != null) {
 			console.log("步数初始化....设置数据.", stepData);
 			stepImage.updateData(stepData);
 		}
 		else {
-			console.log("步数初始化.....", stepData);
 			var timeCol;
 			if (otype==24){
 				timeCol = ['0:00', '', '', '',
@@ -669,6 +761,9 @@ Page({
 		return;
 	},
 	drawSleepCanvas: function (sleepCol, sleepData,sleepStatus) {
+		this.setData({
+			sleep_width:200
+		});
 		const ctx = wx.createCanvasContext('sleepCanvas');
 		console.log("睡眠数据:sleepCol", sleepCol, sleepData, sleepStatus);
 
@@ -816,38 +911,7 @@ Page({
 
 		ctx.draw();
 		return;
-		if (sleepCol == null) {
-			sleepCol = ['20:00', '', '', '',
-				'0:00', '', '', '',
-				'4:00', '', '', '',
-				'8:00', '', '', '',
-				'12:00', '', '', '',
-				'16:00', '', '', '',];
-		}
-		if (sleepImage != null) {
-			sleepImage.updateData(sleepData);
-		}
-		else {
-			new Charts({
-				canvasId: 'sleepCanvas',
-				type: 'column',
-				//	type: 'line',
-				categories: sleepCol,
-				series: [{
-					name: '翻身数量统计',
-					data: sleepData
-				}],
-				yAxis: {
-					format: function (val) {
-						return val + '次';
-					}
-				},
-				width: canvasWidth,
-				height: 200,
-				dataLabel: false
-			});
-		}
-		return;
+
 	},
 	reConnect: function () {
 		wx.showToast({
@@ -876,15 +940,25 @@ Page({
 		}
 		var obj = wx.getStorageSync("curr_devices");
 		console.log("-------------",obj);
-		wx.setNavigationBarTitle({
-			title: "HiSport ("+obj.brand+")",
-		})
+		if (obj==null || obj==''){
+			wx.setNavigationBarTitle({
+				title: "HiSport(未绑定设备)",
+			})		
+		}
+		else{
+			wx.setNavigationBarTitle({
+				title: "HiSport (" + obj.brand + ")",
+			})
+			getApp().globalData.currDevice = obj;
+			getApp().setDeviceId(obj.device_id);
+		}
+
 		getApp().get_open_id();
-		getApp().globalData.currDevice =obj;
+
 		var that = this;
 		var now = new Date();
 		var pDate = util.sprintf("%d-%02d-%02d", now.getFullYear(), now.getMonth() + 1, now.getDate());
-		var currDevice
+		//var currDevice
 		that.setData({
 			step_dest: wx.getStorageSync('dest'),
 			currDateShow: pDate,
@@ -903,11 +977,15 @@ Page({
 			setInterval(this.onTimer, 1000);
 		}
 
-
+		this.drawSleepCanvas(null, null, null);
+		
 		this.drawStepCanvas(24,new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-		this.drawSleepCanvas(null,null,null);
+		
 		this.drawHeartRateCanvas();
 		this.drawBpCanvas();
+		
+
+		this.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
 
 		/*
 		  wx.getLocation({

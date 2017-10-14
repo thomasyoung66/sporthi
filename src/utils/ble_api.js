@@ -12,6 +12,9 @@ var g_movnow_m5_service = "0000FEE9-0000-1000-8000-00805F9B34FB";
 var g_movnow_m5_characteristics_notify = "D44BC439-ABFD-45A2-B575-925416129601";
 var g_novmow_m5_characteristics_write =  "D44BC439-ABFD-45A2-B575-925416129600";
 
+var g_movnow_w030_service = "0000FEE9-0000-1000-8000-00805F9B34FB";
+var g_movnow_w030_characteristics_notify = "D44BC439-ABFD-45A2-B575-925416129601";
+var g_novmow_w030_characteristics_write = "D44BC439-ABFD-45A2-B575-925416129600";
 /*
 
 var g_movnow_m5_service = "0000FFB0-0000-1000-8000-00805F9B34FB";
@@ -64,7 +67,7 @@ function run(deviceId) {
 		case "ble_movnow":
 			var obj = wx.getStorageSync("curr_devices");
 			console.log("当前设备:",obj);
-			if (obj.name == "M5") {
+			if (obj.name == "M5" || obj.name=="W030C") {
 				ble_movnow.initBle(deviceId,g_movnow_m5_service, g_movnow_m5_characteristics_notify, g_novmow_m5_characteristics_write,true);
 			}
 			else {

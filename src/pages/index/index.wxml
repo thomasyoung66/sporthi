@@ -1,11 +1,7 @@
 <!--index.wxml-->
 
 <view class="section1" style="background:#f8f8f8" >
-<!--
-<view class="main_header11">
-111111111111111
-222222222222222
-</view>-->
+
 <view>
 <!--bindtouchstart="touchStart" bindtouchend="touchEnd" -->
   <view class="main_header">
@@ -38,7 +34,7 @@
     <text class="unconnect_text" bindtap='reConnect'>设备未连接(点击重连)</text>
   </view>
 
-
+	<view class="mymy">
   <scroll-view class="scroll-view {{isConnect==0?'':'main_body'}}" scroll-y="true" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
 
     <view class="step_frame">
@@ -153,7 +149,7 @@
         <!--结束卡路里-->
         <view class="def_row_view_center">
 
-          <canvas   class="canvas_style" style="width: 200px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
+          <canvas   class="canvas_style" style="width: {{sleep_width}}px; height: 200px;border:1px soild red" canvas-id="sleepCanvas"></canvas>
         </view>
       </view>
     </view>
@@ -259,5 +255,6 @@
     </view>
     <!--结束心率-->
   </scroll-view>
+  </view>
 </view>
 </view>
