@@ -285,7 +285,17 @@ Page({
 					}
 			//		item.brand = rule[n].brand;
 			//		item.corp = rule[n].corp;
-
+					wx.closeBLEConnection({
+						deviceId: serviceId,
+						success: function (res) {
+							console.log(res)
+						},
+						fail: function (res) {
+							wx.showToast({
+								title: '关闭蓝牙失败!',
+							});
+						}
+					});
 					wx.request({
 						url: util.getUrl('ble.php?action=update_device'),
 						data: {
@@ -303,6 +313,8 @@ Page({
 						success: function (res) {
 							console.log("save----", res);
 							//global data....
+							getApp().setAllDevice(res.data.devices);
+
 							if (res.data.code==0)
 								wx.setStorageSync('devices', res.data.devices);
 
@@ -314,13 +326,15 @@ Page({
 						deviceconnected: true,
 						connectedDeviceId: serviceId
 					})
+
 					//ssss
+					/*
 					getApp().setCurrDevice(serviceId);
 					wx.setStorage({
 						key: 'curr_device_id',
 						data: serviceId
-					});
-
+					});*/
+				/*
 					wx.notifyBLECharacteristicValueChanged({
 						state: true, // 启用 notify 功能
 						deviceId: that.data.connectedDeviceId,
@@ -329,7 +343,7 @@ Page({
 						success: function (res) {
 							console.log("启用notify")
 						}
-					})
+					})*/
 
 					getApp().globalData.backToIndex = 1;
 					wx.navigateBack();

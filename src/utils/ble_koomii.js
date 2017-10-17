@@ -1771,6 +1771,20 @@ function loadBleDevice(serviceId) {
 
 			console.log(res)
 			isConnect = 1;
+
+			wx.onBLEConnectionStateChange(function (res) {
+				// 该方法回调中可以用于处理连接意外断开等异常情况
+				console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+				if (res.connected == false) {
+					isConnect = 0;
+					getApp().globalData.indexPage.setConnectStatus(0);
+				}
+				else {
+					isConnect = 1;
+					getApp().globalData.indexPage.setConnectStatus(1);
+				}
+			})
+
 			beginService();
 			//  findService();
 
@@ -1788,27 +1802,16 @@ function loadBleDevice(serviceId) {
 			console.log(res)
 		}
 	});
-	wx.onBLEConnectionStateChange(function (res) {
-		// 该方法回调中可以用于处理连接意外断开等异常情况
-		console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
-		if (res.connected == false) {
-			isConnect = 0;
-			getApp().globalData.indexPage.setConnectStatus(0);
-		}
-		else {
-			isConnect = 1;
-			getApp().globalData.indexPage.setConnectStatus(1);
-		}
-	})
+
 }
 function openBleDevice() {
 	wx.openBluetoothAdapter({
 		success: function (res) {
 			console.log("初始化蓝牙适配器成功")
-
+			/*
 			wx.onBluetoothAdapterStateChange(function (res) {
 				console.log("蓝牙适配器状态变化", res)
-			})
+			})*/
 		},
 		fail: function (res) {
 			console.log("初始化蓝牙适配器失败");
@@ -1837,5 +1840,4 @@ module.exports = {
 	findDevice: findDevice,
 	saveAllConfig: saveAllConfig,
 	disConnect: disConnect
-
 }

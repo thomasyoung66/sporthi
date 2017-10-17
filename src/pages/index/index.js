@@ -1,4 +1,4 @@
-//index.js
+ //index.js
 //获取应用实例
 var util = require('../../utils/util.js');
 var ble = require('../../utils/ble_api.js');
@@ -11,15 +11,18 @@ var hbField = null;
 var hbArrayData = null; //测量心率原始数据
 var bpMaxArrayData = null;//高血压
 var bpMinArrayData = null; //低血压
+var isSync=false;
 
 var canvasWidth=util.isAndroid()?340:380;
 //var canvasWidth = 380;
 //左右滑动
-var time = 0;
 var touchDot = 0;//触摸时的原点
-var interval = "";
-var flag_hd = true;
-
+var time = 0;//  时间记录，用于滑动时且时间小于1s则执行左右滑动
+var interval = "";// 记录/清理 时间记录
+var nth = 0;// 设置活动菜单的index
+var nthMax = 5;//活动菜单的最大个数
+var tmpFlag = true;// 判断左右华东超出菜单最大值时不再执行滑动事件
+var moveType=0;//判断方向
 
 
 var app = getApp()
@@ -56,7 +59,10 @@ Page({
 		power_text: 0,
 		canvasWidth: 360,
 		sleep_width:200,
-		end: 0
+		end: 0,
+		scrollTop: 0,
+		scrollHeight:0,
+		posType:""
 	},
 	showDetail: function (data) {
 		console.log("this is ok.." + data);
@@ -82,34 +88,61 @@ Page({
 	// 触摸开始事件
 	touchStart: function (e) {
 		touchDot = e.touches[0].pageX; // 获取触摸时的原点
-		// 使用js计时器记录时间    
+		// 使用js计时器记录时间   
+		moveType=0; 
 		interval = setInterval(function () {
 			time++;
 		}, 100);
 	},
+	// 触摸移动事件
+	touchMove: function (e) {
+		var touchMove = e.touches[0].pageX;
+	//	console.log("touchMove:" + touchMove + " touchDot:" + touchDot + " diff:" + (touchMove - touchDot));
+		// 向左滑动   
+		if (touchMove - touchDot <= -40 && time < 10) {
+			//nth < nthMax
+			if (tmpFlag && nth >=0) { //每次移动中且滑动时不超过最大值 只执行一次
+		//		this.getNews(name); // 获取新闻列表
+		//		this.setData({ menu: tmp }); // 更新菜单
+
+				moveType=1;
+				return ;
+			}
+		}
+		// 向右滑动
+		if (touchMove - touchDot >= 40 && time < 10) {
+			if (tmpFlag && nth >=0) {
+
+				moveType = 2;
+				// this.prepDateTap();
+				return;
+			//	this.getNews(name); // 获取新闻列表
+			//	this.setData({ menu: tmp }); // 更新菜单
+			}
+		}
+		// touchDot = touchMove; //每移动一次把上一次的点作为原点（好像没啥用）
+	},
 	// 触摸结束事件
 	touchEnd: function (e) {
-		var touchMove = e.changedTouches[0].pageX;
-		// 向左滑动   
-		if (touchMove - touchDot <= -80 && time < 10 && flag_hd == true) {
-			flag_hd = false;
-			//执行切换页面的方法
-			console.log("向右滑动");
-			// this.nextDateTap();
-			//return 
-		}
-		// 向右滑动   
-		if (touchMove - touchDot >= 80 && time < 10 && flag_hd == true) {
-			flag_hd = false;
-			//执行切换页面的方法
-			console.log("向左滑动");
-			// this.prepDateTap();
-			//return ;
-
+		if (moveType == 1 || moveType==2){
+			if (moveType==2){
+				console.log("向右滑动");
+				wx.showToast({
+					title: '向右滑动'
+				})
+			}
+			else{
+				console.log("向左滑动.");
+				wx.showToast({
+					title: '向左滑动'
+				})
+			}
+			
 		}
 		clearInterval(interval); // 清除setInterval
 		time = 0;
-		flag_hd = true;
+		moveType = 0;
+		tmpFlag = true; // 回复滑动事件
 	},
 	connect_action: function () {
 		console.log("ok....." + this.data.isConnect);
@@ -163,6 +196,12 @@ Page({
 	},
 	heartBeatTest: function () {
 		console.log("heartBeat test...");
+		if (isSync==true){
+			wx.showToast({
+				title: '设备正在连接过程中...'
+			})
+			return ;
+		}
 		if (this.data.isConnect == 0) {
 			wx.showToast({
 				title: '设备还未连接，请先连接设备！'
@@ -205,6 +244,12 @@ Page({
 	},
 	bpTest: function () {
 		console.log("heartBeat test...");
+		if (isSync == true) {
+			wx.showToast({
+				title: '设备正在连接过程中...'
+			})
+			return;
+		}
 		if (this.data.isConnect == 0) {
 			wx.showToast({
 				title: '设备还未连接，请先连接设备！'
@@ -249,15 +294,17 @@ Page({
 	 * 页面相关事件处理函数--监听用户下拉动作
 	 */
 	onPullDownRefresh: function () {
+		this.reConnect();
 		console.log("onPullDownRefresh.....");
+	},
+	onReachBottom:function(){
+		console.log("--------onReachBottom--------");
 	},
 	/**
 	 * 生命周期函数--监听页面显示
 	 */
 	onShow: function () {
-		flag_hd = true;    //重新进入页面之后，可以再次执行滑动切换页面代码
-		clearInterval(interval); // 清除setInterval
-		time = 0;
+
 		console.log("on--show....");
 	},
 
@@ -307,6 +354,7 @@ Page({
 	//	this.drawSleepCanvas(null, null, null);
 		if (getApp().globalData.needReconnect==1){
 			getApp().globalData.needReconnect=0;
+			getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
 			var obj = wx.getStorageSync("curr_devices");
 			console.log("-------------", obj);
 			wx.setNavigationBarTitle({
@@ -442,13 +490,18 @@ Page({
 	},
 	showHistoryData: function (pDate) {
 		//show step data....
+	
 		var stepData = getApp().getDeviceHisData(pDate, "step");
 		var sleepData = getApp().getDeviceHisData(pDate, "sleep");
 		var hb = getApp().getDeviceHisData(pDate, "hb");
 		var bp = getApp().getDeviceHisData(pDate, "bp");
-		console.log("===============================================");
+
+		console.log("===============================================" + isSync);
+		isSync = false;
+		wx.hideNavigationBarLoading();
+
 		console.log("============开始画图============================");
-		console.log("===============================================");
+		console.log("===============================================" + isSync);
 		console.log("所有数据:", wx.getStorageSync(getApp().data.currDeviceId));
 		console.log(pDate+"---显示历史----", stepData, sleepData,hb,bp);
 		console.log(pDate + "---当前设备----", getApp().globalData.currDevice);
@@ -530,10 +583,28 @@ Page({
 				var sleepCol = new Array();
 				var sleepVal = new Array();
 				var sleepStauts = new Array();
+				var prevDay = util.getPrevDate(pDate,-1);
+				var prevSleep = getApp().getDeviceHisData(prevDay,"sleep");
+				if (prevSleep!=null && prevSleep!=''){
+					for (var n = 0; n < prevSleep.detail.length; n++) {
+						var str = "" + prevSleep.detail[n];
+						var f = str.split(',');
+						if (f[0] < 60 * 21)
+							continue;
+						sleepCol.push(f[0]);
+						console.log("前一天睡眠时间段:" + util.toHourMinute(f[0]));
+						sleepVal.push(f[1]);
+						sleepStauts.push(f[2]);
+					}		
+				}
+				console.log("prevDay=====" + prevDay);
 				for (var n = 0; n < sleepData.detail.length; n++) {
 					var str = "" + sleepData.detail[n];
 					var f = str.split(',');
+					if (f[0]>60*8)
+						continue;
 					sleepCol.push(f[0]);
+					console.log("睡眠时间段:" + util.toHourMinute(f[0]));
 					sleepVal.push(f[1]);
 					sleepStauts.push(f[2]);
 				}
@@ -578,6 +649,8 @@ Page({
 			}
 			this.drawBpCanvas(col, high,low);
 		}
+
+	
 	},
 	prepDateTap: function () {
 		var pDate = util.getPrevDate(this.data.currDateShow, -1);
@@ -592,7 +665,7 @@ Page({
 	nextDateTap: function () {
 		if (util.getDateOffset(0, "yyyy-MM-dd") == this.data.currDateShow) {
 			wx.showToast({
-				title: '数据已经是最后一天！',
+				title: '已经最后一天',
 			})
 			return;
 		}
@@ -614,17 +687,28 @@ Page({
 	},
 	drawBpCanvas: function (col,high,low) {
 		//return ;
-		if (col==null || col.length==0)
-		return ;
-		var maxBp=high[high.length-1];
-		var minBp = low[low.length - 1];
+		if (col==null || col.length==0){
+			console.log("血压历史数据为0");
+			col=new Array();
+			col.push("-");
+			high = new Array();
+			high.push(0);
+			low = new Array();
+			low.push(0);
 
-		this.setData({
-			bp_last: maxBp + "/" + minBp,
-			bp_max: util.max(high) + "/" + util.max(low),
-			bp_avg: util.max(high) + "/" + util.max(low),
-			bp_min: util.min(high) + "/" + util.min(low)
-		});
+		}
+		else{
+			var maxBp = high[high.length - 1];
+			var minBp = low[low.length - 1];
+
+			this.setData({
+				bp_last: maxBp + "/" + minBp,
+				bp_max: util.max(high) + "/" + util.max(low),
+				bp_avg: util.max(high) + "/" + util.max(low),
+				bp_min: util.min(high) + "/" + util.min(low)
+			});
+		}
+
 		new Charts({
 			canvasId: 'bpCanvas',
 			type: 'line',
@@ -913,24 +997,76 @@ Page({
 		return;
 
 	},
+
+	topLoad:function(e){
+		console.log("let upper...");
+	},
+	bindDownLoad:function(e){
+		console.log("let lower...");
+	},
 	reConnect: function () {
-		wx.showToast({
-			title: '开始连接设备...',
+
+/*
+		wx.navigateTo({
+			url: 'test?uid=' + wx.getStorageSync('serverId')
 		})
+		return ;
+		*/
+
+
 		if (app.data.currDeviceId.length > 0){
+			wx.showToast({
+				title: '开始连接设备',
+			});
+
+			console.log("------------开始同步----------"+isSync);
+			if (isSync == true) {
+				wx.showToast({
+					title: '同步中',
+					duration: 1000
+				})
+				return ;
+			}
+			if (isSync == false) {
+				isSync = true;
+			}
+
+			wx.showNavigationBarLoading();
 			wx.showLoading({
-				title: '正在连接设备...',
+				title: '正在连接设备',
 			})
+			console.log("currDeviceId====.." + app.data.currDeviceId);
+			ble.init(0);
 			ble.run(app.data.currDeviceId);
 		}
 		else {
+			wx.navigateTo({
+				url: '../my/ble_connect',
+			})
+			return ;
 			wx.showToast({
 				title: '还没有绑定设备!请先绑定设备...',
 			})
 		}
 	},
-	canvasIdErrorCallback: function (e) {
-		console.error("画图绑定错误:", e.detail.errMsg)
+	drawTitle:function (){
+		const ctx = wx.createCanvasContext('titleCanvas');
+
+		ctx.setFillStyle('red');
+		
+		ctx.fillRect(0, 0, wx.getSystemInfoSync().screenWidth, 60);
+		ctx.draw();
+		return ;
+		ctx.setLineWidth(16);
+		// 开始路径
+		//ctx.beginPath();
+
+
+		ctx.setStrokeStyle('#f00');
+		ctx.rect(0, 0, 200, 40);
+		ctx.stroke();
+		//ctx.closePath();
+		ctx.draw();
 	},
 	onLoad: function (opt) {
 		console.log('index ...onLoad...',opt);
@@ -938,8 +1074,14 @@ Page({
 			console.log('onLoad halt');
 			return;
 		}
+
+	//	this.setData({
+		//	scrollHeight: wx.getSystemInfoSync().windowHeight
+	//	});
+
+		//this.drawTitle();
 		var obj = wx.getStorageSync("curr_devices");
-		console.log("-------------",obj);
+		console.log("-------init------",obj);
 		if (obj==null || obj==''){
 			wx.setNavigationBarTitle({
 				title: "HiSport(未绑定设备)",
@@ -967,12 +1109,12 @@ Page({
 		});
 		getApp().globalData.indexPage = this;
 
-		console.log("getTimeDiff=" + this.getTimeDiff());
+
 		if (debug_ui == false) {
 			console.log("currDeviceId" + app.data.currDeviceId);
 			if (app.data.currDeviceId != '' && app.data.currDeviceId.length > 0) {
-				ble.init(0);
-				ble.run(app.data.currDeviceId);
+		//		ble.init(0);
+			//	ble.run(app.data.currDeviceId);
 			}
 			setInterval(this.onTimer, 1000);
 		}
@@ -982,7 +1124,7 @@ Page({
 		this.drawStepCanvas(24,new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 		
 		this.drawHeartRateCanvas();
-		this.drawBpCanvas();
+		this.drawBpCanvas(null,null,null);
 		
 
 		this.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));

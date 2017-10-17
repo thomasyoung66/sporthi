@@ -38,9 +38,17 @@ Page({
 		console.log("参数...", options);
 		var that=this;
 		console.log("run onLoad...." + options.uid);
-		wx.setNavigationBarTitle({
-			title: options.name + ' 历史运动数据'
-		});
+		if (options.name == undefined){
+			wx.setNavigationBarTitle({
+				title:' 历史运动数据'
+			});
+		}
+		else{
+			wx.setNavigationBarTitle({
+				title: options.name+ ' 历史运动数据'
+			});
+		}
+
 
 		wx.showLoading({
 			title: '正在请求数据...'

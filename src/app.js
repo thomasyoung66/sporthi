@@ -13,7 +13,7 @@ App({
 		needReconnect:0,
 		backToIndex:0,
 		uid: null,
-		currDevice:null,
+		currDevice:null, //一组结构体
 		isIphone:false
 	},
 	getTimeDiff: function () {
@@ -71,6 +71,7 @@ App({
 	},
 	myTest: function () {
 	
+
 		var di = this.getTimeDiff();
 		console.log("diff=" + di);
 
@@ -150,15 +151,24 @@ App({
 		var that=this;
 		wx.setStorageSync('devices', devices == null ? "" : devices);
 		this.data.allDevice =devices;
+		var find=false;
 		for (var n = 0; n < devices.length; n++) {
 	//		console.log("loop....", devices[n]);
 
 			if (devices[n].selected == 1) {
 				that.data.currDeviceId =devices[n].device_id;
+				that.globalData.currDevice = devices[n];
 				wx.setStorageSync('curr_devices', devices[n]);
 				this.setCurrDevice(devices[n].device_id);
+				find=true;
 				break;
 			}
+		}
+		if (find==false){
+			that.data.currDeviceId =null;
+			that.globalData.currDevice = null;
+			wx.removeStorageSync('curr_devices');
+//			this.setCurrDevice(devices[n].device_id);	
 		}
 	},
 	save_userinfo_server: function () {

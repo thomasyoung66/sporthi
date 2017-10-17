@@ -1,4 +1,5 @@
 {
+	
 	"pages": [
 		"pages/index/index",
 		"pages/index/test",
@@ -21,9 +22,10 @@
 	],
 	"window": {
 		"backgroundTextStyle": "light",
-		"navigationBarBackgroundColor": "#fff",
+		"navigationBarBackgroundColor": "#373737",
 		"navigationBarTitleText": "海斯波HiSport",
-		"navigationBarTextStyle": "black"
+		"navigationBarTextStyle": "white",
+		"enablePullDownRefresh": true
 	},
 	"tabBar": {
 		"color": "#ccc",

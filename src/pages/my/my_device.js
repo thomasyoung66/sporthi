@@ -39,17 +39,26 @@ Page({
 					header: { 'content-type': 'application/x-www-form-urlencoded' },
 					success: function (res) {
 						console.log("save----", res);
+						wx.closeBLEConnection({
+							deviceId: app.data.currDeviceId,
+							success: function (res) {
+								console.log("关闭蓝牙:",res);
+							}
+						});
 						getApp().setAllDevice(res.data.devices);
 						that.setData({
 							devices: app.data.allDevice
 						});
+
+
 						/*
 						wx.closeBLEConnection({
 							success: function (res) {
 								console.log(res)
 							}
 						})*/
-						getApp().globalData.backToIndex = 1;
+						getApp().globalData.needReconnect = 1;
+						getApp().globalData.backToIndex=1;
 						wx.navigateBack();
 					}
 				});
@@ -74,11 +83,15 @@ Page({
 					method: 'POST',
 					header: { 'content-type': 'application/x-www-form-urlencoded' },
 					success: function (res) {
-						console.log("save----", res);
+						console.log("save---", res);
+						//
+						wx.removeStorageSync(e.target.id);
 						getApp().setAllDevice(res.data.devices);
 						that.setData({
 							devices: app.data.allDevice
 						});
+						getApp().globalData.backToIndex = 1;
+						wx.navigateBack();
 					}
 				});
 			}

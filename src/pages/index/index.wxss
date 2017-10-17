@@ -1,178 +1,221 @@
 /**index.wxss**/
 
 .main_body {
-  margin-top: 60px;
+    margin-top: 10px;
 }
 
-.canvas_style{
- z-index:99;
+.mainbody {
+    background-color: #f6f6f8;
 }
-.main_header11 {
-  height: 60px;
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  align-items: center;
-  background: rgba(44, 210, 168,255);
-  z-index: 2;
+
+.section1 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
 }
+
+.section2 {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 1000px;
+    overflow: auto;
+    top: 60px;
+}
+
+.canvas_style {
+    z-index: 99;
+}
+
+.main_header1 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 60px;
+    top: 0px;
+    width: 100%;
+    align-items: center;
+    background: "#62b900";
+    z-index: 999;
+}
+
 .main_header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 60px;
-  position: fixed;
-  top: 0px;
-  width: 100%;
-  align-items: center;
-  background: rgba(44, 210, 168,255);
- z-index: 999;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 60px;
+    /* position: fixed;*//*top: 100px;*/
+    width: 100%;
+    align-items: center;
+    background: rgba(4, 190, 2, 128);
+    z-index: 999;
 }
+
 .mymy {
-
-
-	/* position: fixed;
+    /* position: fixed;
 //	top: 200px;
 //	position:absolute;
 	 width: 100%;*/
 }
+
 .power {
-  display: flex;
-  flex-direction: column;
-  justify-content:flex-start;
-  align-items: center;
-  text-align: center;
-  font-size: 12px;
-  margin-right: 10px;
-  color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    text-align: center;
+    font-size: 12px;
+    margin-right: 10px;
+    color: #fff;
 }
 
 .main_title_text {
-  color: white;
-  font-size: 14px;
-  text-align: center;
-  align-items: center;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    align-items: center;
 }
 
 .header_img {
-  width: 32px;
-  height: 32px;
-  margin-left: 10px;
+    width: 32px;
+    height: 32px;
+    margin-left: 10px;
+    border-radius: 5px;
 }
 
 .lr_img {
-  width: 16px;
-  height: 32px;
+    width: 16px;
+    height: 32px;
 }
 
 .lr_img1 {
-  width: 48px;
-  height: 48px;
+    width: 48px;
+    height: 48px;
+}
+
+.unconnect_image {
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    top: 65px;
+    left: 0px;
+    z-index: 1000;
 }
 
 .unconnect {
-  text-align: center;
-  font-color: white;
-  margin-top: 60px;
-  background: rgb(255, 75, 145);
-  height: 32px;
+    text-align: center;
+    font-color: white;
+    z-index: 999;
+    /* margin-top: 60px;*//* background-color: #ffdfdf*/
+    margin: 15px 0px 5px 0px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-image: url("https://apps.movnow.com/a/sporthi_web/api/dis_bk.png");
+    height: 40px;
 }
 
 .unconnect_text {
-  color: #fff;
-  font-size: 16px;
-  line-height: 32px;
+    color: #000;
+    font-size: 16px;
+    line-height: 40px;
 }
 
 .step_frame {
-  margin: 5px;
-  background: white;
-  border-radius: 10px;
-  color: #b0b0b0;
+    margin: 5px;
+    background: white;
+    border-radius: 10px;
+    color: #b0b0b0;
 }
 
 .step_total {
-  display: flex;
-  flex-direction: row;
-  //justify-content: flex-start;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0px 0px 0px;
+    display: flex;
+    flex-direction: row;
+    //justify-content: flex-start;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0px 0px 0px;
 }
 
 .step_total_first {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 10px 5px 10px 0px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px 5px 10px 0px;
 }
 
 .view_white_line {
-  height: 1px;
-  background: #f8f8f8;
+    height: 1px;
+    background: #f8f8f8;
 }
 
 .step_ps {
-  height: 30px;
+    height: 30px;
 }
 
 .step_comment {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    margin-bottom: 5px;
 }
 
 .step_ps_frame {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  //margin-left:10px;
-  margin: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    //margin-left: 10px;
+    margin: 5px;
 }
 
 .def_row_view {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 }
+
 .def_row_view_center {
-  display: flex;
-  flex-direction: row;
-  justify-content:center;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
+
 .def_col_view {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
+
 .def_col_view_l {
-  display: flex;
-  flex-direction: column;
-  justify-content:center;
-  align-items: center;
-  font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
 }
+
 .step_detail_frame {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 10px 10px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 10px 10px 10px;
 }
 
 .sleep_frame {
-  margin-top: 10px;
-  border-radius: 10px;
-  background: white;
-  margin: 5px;
-  padding-left:10px;
-  padding-right: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    background: white;
+    margin: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
 }

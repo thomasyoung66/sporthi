@@ -290,6 +290,7 @@ function setSyncConfig()
 
 }
 function readPowerUsed() {
+	console.log("readPowerUsed....");
 	bleCommNotifyRegister();
 	loadHistorying=false;
 	let buffer = new ArrayBuffer(20);
@@ -303,7 +304,8 @@ function readPowerUsed() {
 	dataView.setUint8(3, 0x80);
 	util.dumpArrayBuffer(dataView);
 	console.log("g_deviceId=" + g_deviceId + " g_services=" + g_services + " g_characteristics_write=" + g_characteristics_write);
-
+	
+	if (getApp().globalData.isIphone == true) {
 	wx.notifyBLECharacteristicValueChanged({
 		deviceId: g_deviceId,
 		serviceId: g_services,
@@ -332,6 +334,40 @@ function readPowerUsed() {
 			console.log("写入数据失败 read power:", res);
 		}
 	});
+	}
+	else{
+		wx.notifyBLECharacteristicValueChanged({
+			deviceId: g_deviceId,
+			serviceId: g_services,
+			characteristicId: g_characteristics_notify,
+			state: true,
+			success: function (res) {
+				setTimeout(function(){
+					wx.writeBLECharacteristicValue({
+						deviceId: g_deviceId,
+						serviceId: g_services,
+						characteristicId: g_characteristics_write,
+						value: buffer,
+						success: function (res) {
+							console.log("sync write 电源....", res);
+
+						},
+						fail: function (res) {
+							console.log("写入数据失败 read power:", res);
+						}
+					});
+					console.log("-------succed----", res);
+				},1000);
+
+			},
+			fail: function (res) {
+				console.log("-------failure----", res);
+				// fail
+			}
+		});
+
+
+	}
 	return;
 }
 var total = 0;
@@ -592,6 +628,7 @@ function procBp(dataView) {
 			currSyncDay = 0;
 			getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
 			wx.hideLoading();
+			wx.hideNavigationBarLoading();
 			console.warn("整个过程完成=finihed");
 		}
 		else {
@@ -885,14 +922,14 @@ function bleCommNotifyRegister() {
 			allDays=dataView.getInt16(3);
 			if (allDays==0){
 				currSyncDay++;
-				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				console.log("当前心率---当前无数据...." + currSyncDay + "/" + maxSyncDays);
 				if (currSyncDay < maxSyncDays) {
 					syncHb(currSyncDay);
 				}
 				else {
 					currSyncDay = 0;
-					//syncSleep(0);
-					console.warn("当前无数据....结束了...." + currSyncDay);
+					syncBp(0);
+					console.warn("当前心率---当前无数据....结束了...." + currSyncDay);
 				}
 				//syncTodayBp();
 			}
@@ -1709,56 +1746,66 @@ function findDevice(val) {
 }
 
 function loadBleDevice(serviceId) {
-	wx.showLoading({
-		title: '连接蓝牙设备中...',
-	});
+	/*wx.showLoading({
+		title: '连接蓝牙设备',
+	});*/
 	console.log("uuid=====" + serviceId);
 	wx.createBLEConnection({
 		deviceId: serviceId,
 		success: function (res) {
-			wx.hideLoading()
+		//	wx.hideLoading()
 			wx.showToast({
 				title: '连接成功',
 				icon: 'success',
 				duration: 1000
 			})
+			getApp().globalData.indexPage.setConnectStatus(1);
 			console.log("连接设备成功")
 			wx.showLoading({
 				title: '正在同步数据...',
 			})
 			console.log(res)
 			isConnect = 1;
-			beginService();
 			//findService();
+			wx.onBLEConnectionStateChange(function (res) {
+				// 该方法回调中可以用于处理连接意外断开等异常情况
+				console.log(`device ${res.deviceId} state has changed, >>>connected: ${res.connected}`, res)
+				if (res.connected == false) {
+					isConnect = 0;
+					console.log("设置连接失败....");
+					getApp().globalData.indexPage.setConnectStatus(0);
+				}
+				else {
+					isConnect = 1;
+					console.log("设置连接成功....");
+					getApp().globalData.indexPage.setConnectStatus(1);
+				}
+			})
+			beginService();
+
 
 		},
 		fail: function (res) {
-			wx.hideLoading()
+			wx.hideLoading();
+			wx.hideNavigationBarLoading();
+			wx.showModal({
+				title: '系统告警',
+				content: '连接设备失败',
+				showCancel:false
+			})
+			/*
 			wx.showToast({
 				title: '连接设备失败',
-				icon: 'success',
-				duration: 1000
-			})
+				duration: 2000
+			})*/
+			console.error("连接设备失败。。。")
 			getApp().globalData.indexPage.showHistoryData(util.getDateOffset(0, "yyyy-MM-dd"));
-			console.log("连接设备失败")
+			
 			isConnect = 0;
 			console.log(res)
 		}
 	});
-	wx.onBLEConnectionStateChange(function (res) {
-		// 该方法回调中可以用于处理连接意外断开等异常情况
-		console.log(`device ${res.deviceId} state has changed, >>>connected: ${res.connected}`,res)
-		if (res.connected == false) {
-			isConnect = 0;
-			console.log("设置连接失败....");
-			getApp().globalData.indexPage.setConnectStatus(0);
-		}
-		else {
-			isConnect = 1;
-			console.log("设置连接成功....");
-			getApp().globalData.indexPage.setConnectStatus(1);
-		}
-	})
+
 }
 function openBleDevice() {
 
@@ -1767,9 +1814,9 @@ function openBleDevice() {
 		success: function (res) {
 			console.log("初始化蓝牙适配器成功")
 
-			wx.onBluetoothAdapterStateChange(function (res) {
-				console.log("蓝牙适配器状态变化", res)
-			})
+		//	wx.onBluetoothAdapterStateChange(function (res) {
+		//		console.log("蓝牙适配器状态变化", res)
+		//	})
 		},
 		fail: function (res) {
 			console.log("初始化蓝牙适配器失败");
