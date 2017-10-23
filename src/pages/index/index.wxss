@@ -45,7 +45,8 @@
     flex-direction: row;
     justify-content: space-between;
     height: 60px;
-    /* position: fixed;*//*top: 100px;*/
+    /* position: fixed;*/
+	/*top: 100px;*/
     width: 100%;
     align-items: center;
     background: rgba(4, 190, 2, 128);

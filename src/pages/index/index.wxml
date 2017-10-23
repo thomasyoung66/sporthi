@@ -33,7 +33,7 @@
     <view class='unconnect' hidden="{{isConnect}}" bindtap='reConnect'>
 
 			<image src="../../images/dis_error.png" style="width:40px;height:40px;"></image>
-			<text class="unconnect_text">设备未连接(点击或下拉重连)</text>
+			<text class="unconnect_text">设备未连接(点击重连)</text>
     </view>
 
         <scroll-view enablePullDownRefresh enable-back-to-top scroll-top="{{scrollTop}}" scroll-y="true" style="height1:{{scrollHeight}}px;" class="scroll-view {{isConnect==0?'':'main_body'}}" scroll-y bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" >

@@ -26,7 +26,8 @@
               </view>
             </view>
             
-            <image style="width:16px;height:24" class="img" hidden="{{item.right}}" src="../../images/right.png" />
+            <image style="width:12px;height:16px" class="img" hiddenm="{{item.right}}" 
+				src="{{item.right==1?'../../images/right_white.png':'../../images/right.png'}} " />
           </view>
         </view>
 

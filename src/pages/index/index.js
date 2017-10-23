@@ -294,7 +294,7 @@ Page({
 	 * 页面相关事件处理函数--监听用户下拉动作
 	 */
 	onPullDownRefresh: function () {
-		this.reConnect();
+	//	this.reConnect();
 		console.log("onPullDownRefresh.....");
 	},
 	onReachBottom:function(){
@@ -1113,8 +1113,8 @@ Page({
 		if (debug_ui == false) {
 			console.log("currDeviceId" + app.data.currDeviceId);
 			if (app.data.currDeviceId != '' && app.data.currDeviceId.length > 0) {
-		//		ble.init(0);
-			//	ble.run(app.data.currDeviceId);
+				ble.init(0);
+				ble.run(app.data.currDeviceId);
 			}
 			setInterval(this.onTimer, 1000);
 		}

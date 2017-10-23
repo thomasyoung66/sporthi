@@ -16,6 +16,7 @@ var allDays=0;
 var currDay=0;
 var isConnect = 0;
 var isNeedSyncHistory = false;
+
 var util = require('util.js');
 var currSyncDay=0;//当天同步的天数
 var maxSyncDays=7;//最大同步的天数
@@ -214,32 +215,11 @@ function readMacAddr() {
 	});
 }
 function saveAllConfig() {
-	wx.getBLEDeviceCharacteristics({
-		deviceId: g_deviceId,
-		serviceId: getServerId("FFC0"),
-		success: function (res) {
-			//读取当前的数据
-			saveHwConfigPage1();
-			return;
-			wx.notifyBLECharacteristicValueChanged({
-				deviceId: g_deviceId,
-				serviceId: getServerId("FFC0"),
-				characteristicId: getCharacter("FF14"),
-				state: true,
-				success: function (res) {
-					saveHwConfigPage1();
-				},
-				fail: function (res) {
-					console.log("-------failure----", res);
-					// fail
-				}
-			});
-		},
-		fail: function (res) {
-			console.log('180A蓝牙返回错误:readBLECharacteristicValue:', res);
-		}
-	});
+	var config = wx.getStorageSync("config");
+	console.log("保存所有设置开始....", config);
 
+
+	return ;
 	// saveHwConfigPage2();
 	// saveHwConfigPage3();
 	// saveHwConfigPage4();
@@ -849,7 +829,7 @@ function uploadConfig() {
 function bleCommNotifyRegister() {
 
 	wx.onBLECharacteristicValueChange(function (res) {
-	//	console.log(`---(^_^)` + syncDataType+`---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
+		console.log(`---(^_^)` + syncDataType+`---characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 		
 		let dataView = new DataView(res.value);
 		util.dumpArrayBuffer(dataView, syncDataType);
@@ -885,7 +865,7 @@ function bleCommNotifyRegister() {
 			return ;
 		}
 		else if (dataView.getUint8(0) == 0x5A && dataView.getUint8(1) == 0x07) {//当天睡眠同步
-			console.warn("--sleep----");
+			console.error(util.getDateOffset(-currSyncDay, "yyyy-MM-dd")+"--" + syncDataType +"--no data--");
 			procSleep(dataView);
 			return;
 		}
@@ -905,7 +885,8 @@ function bleCommNotifyRegister() {
 			allDays = dataView.getInt16(3);
 			if (allDays==0){
 				currSyncDay++;
-				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				//console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
+				console.error(util.getDateOffset(-currSyncDay, "yyyy-MM-dd") + "--" + syncDataType + "--no data--");
 				if (currSyncDay < maxSyncDays) {
 					syncSleep(currSyncDay);
 				}
@@ -922,6 +903,7 @@ function bleCommNotifyRegister() {
 			allDays=dataView.getInt16(3);
 			if (allDays==0){
 				currSyncDay++;
+				console.error(util.getDateOffset(-currSyncDay, "yyyy-MM-dd") + "--" + syncDataType + "--no data--");
 				console.log("当前心率---当前无数据...." + currSyncDay + "/" + maxSyncDays);
 				if (currSyncDay < maxSyncDays) {
 					syncHb(currSyncDay);
@@ -929,7 +911,7 @@ function bleCommNotifyRegister() {
 				else {
 					currSyncDay = 0;
 					syncBp(0);
-					console.warn("当前心率---当前无数据....结束了...." + currSyncDay);
+
 				}
 				//syncTodayBp();
 			}
@@ -940,7 +922,9 @@ function bleCommNotifyRegister() {
 		else if (dataView.getUint8(0) == 0x5B && dataView.getUint8(1) == 0x1D) {//当前血压
 			allDays = dataView.getInt16(3);
 			if (allDays == 0) {
+
 				currSyncDay++;
+				console.error(util.getDateOffset(-currSyncDay, "yyyy-MM-dd") + "--" + syncDataType + "--no data--");
 				console.log("当前无数据...." + currSyncDay + "/" + maxSyncDays);
 				if (currSyncDay < maxSyncDays) {
 					syncBp(currSyncDay);
@@ -1394,7 +1378,8 @@ function showAndSaveStepData() {
 	});
 }
 function endHeartBeatTest() {
-	console.log("开始测量心率.....");
+	return ;
+	console.log("开始测量心率......");
 	let buffer = new ArrayBuffer(20);
 	let dataView = new DataView(buffer);
 	for (var n = 0; n < 20; n++) {
@@ -1436,9 +1421,9 @@ function beginHeartBeatTest() {
 	dataView.setUint8(2, 0x00);
 	dataView.setUint8(3, 0x84);
 	dataView.setUint8(4, 1);//开关
-	dataView.setUint16(5, 1);
-	dataView.setUint16(7, 200);
-	dataView.setUint8(9, 0x02);
+	dataView.setUint16(5, 1);//间隔
+	dataView.setUint16(7, 0);//次数
+	dataView.setUint8(9, 0x02);//上传方式
 
 	wx.writeBLECharacteristicValue({
 		deviceId: g_deviceId,
@@ -1455,36 +1440,7 @@ function beginHeartBeatTest() {
 	});
 }
 
-function endBpTest() {
-	console.log("开始测量血压.....");
-	let buffer = new ArrayBuffer(20);
-	let dataView = new DataView(buffer);
-	for (var n = 0; n < 20; n++) {
-		dataView.setUint8(n, 0x00);
-	}
-	dataView.setUint8(0, 0x5A);
-	dataView.setUint8(1, 0x0D);
-	dataView.setUint8(2, 0x00);
-	dataView.setUint8(3, 0x8B);
-	dataView.setUint8(4, 0);//开关
-	dataView.setUint16(5, 1);
-	dataView.setUint16(7, 120);
-	dataView.setUint8(9, 0x02);
 
-	wx.writeBLECharacteristicValue({
-		deviceId: g_deviceId,
-		serviceId: g_services,
-		characteristicId: g_characteristics_write,
-		value: buffer,
-		success: function (res) {
-			console.log("sync write心率数据....", res);
-
-		},
-		fail: function (res) {
-			console.log("写入心率数据失败:", res);
-		}
-	});
-}
 
 function beginBpTest() {
 	console.log("开始血压心率.....");
@@ -1516,7 +1472,37 @@ function beginBpTest() {
 		}
 	});
 }
+function endBpTest() {
+	console.log("开始测量血压.....");
+	return ;
+	let buffer = new ArrayBuffer(20);
+	let dataView = new DataView(buffer);
+	for (var n = 0; n < 20; n++) {
+		dataView.setUint8(n, 0x00);
+	}
+	dataView.setUint8(0, 0x5A);
+	dataView.setUint8(1, 0x0D);
+	dataView.setUint8(2, 0x00);
+	dataView.setUint8(3, 0x8B);
+	dataView.setUint8(4, 0);//开关
+	dataView.setUint16(5, 1);
+	dataView.setUint16(7, 120);
+	dataView.setUint8(9, 0x02);
 
+	wx.writeBLECharacteristicValue({
+		deviceId: g_deviceId,
+		serviceId: g_services,
+		characteristicId: g_characteristics_write,
+		value: buffer,
+		success: function (res) {
+			console.log("sync write心率数据....", res);
+
+		},
+		fail: function (res) {
+			console.log("写入心率数据失败:", res);
+		}
+	});
+}
 function syncHeartBeatHistory() {
 	wx.showLoading({
 		title: '同步心率血压数据...',

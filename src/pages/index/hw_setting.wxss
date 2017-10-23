@@ -49,8 +49,8 @@
 .img {
     width: 48rpx;
     height: 48rpx;
-    margin-right:10px;
-    margin-left: 20rpx;
+    margin-right:5px;
+    margin-left: 0px;
 }
 .main-1 {
     display: flex;
@@ -104,6 +104,7 @@
   flex-direction: row;
   justify-content:  space-between; 
   align-items: center;
+  margin-right: 3px;
 }
 .right-text{
 
@@ -114,7 +115,7 @@
 .right-text-arrow{
    font-size: 20rpx;
     color: #000;
-    margin-left:10px;
+    margin-left:2px;
 }
 .subtitle {
     font-size: 20rpx;
